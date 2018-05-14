@@ -110,6 +110,15 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Новые члены анонимного класса (не родительские) доступны только до конца инструкции (т.е. " +
         "до точки с запятой)")
+
+@Ntrstn("Анонимные классы базируются на существующих классах/интерфейсах и явлются их " +
+        "расширением (переопределение (полей)) или соответственно имплементацией")
+
+@Ntrstn("Чтобы использовать объект внутри внутри анонимного класса, ссылка на него должна " +
+        "быть final")
+
+@Ntrstn("Анонимный класс не может содержать конструктор, так как у конструктора не может быть имени")
+
 public class Anonymous extends ClassToOverride {
     int var; // есть доступ
     static int staticVar; // есть доступ
@@ -152,7 +161,11 @@ public class Anonymous extends ClassToOverride {
 //            void staticMethToOverride(){ // статические методы нельзя переопределять
 //            };
 
-            void newMeth() { // можно объявлять новые методы
+            void newMeth(final int par) { // можно объявлять новые методы
+                ClassToOverride c = new ClassToOverride(){
+                    int parentField = par; // должно быть финализировано?
+                };
+
                 meth();
                 staticMethToOverride();
             }
