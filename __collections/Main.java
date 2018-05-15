@@ -66,6 +66,9 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 /* COLLECTIONS */
 
+
+/* ITERABLE */
+
 /*FOREACH И ITERATOR*/
 
 @Ntrstn("Фреймворк коллекций - это удобный способ манипулирования определенной кучей объектов")

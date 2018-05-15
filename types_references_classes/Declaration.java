@@ -2,6 +2,9 @@ package types_references_classes;
 
 import java.io.Serializable;
 
+import types_references_annotations.my_annotations.Ntrstn;
+
+
 /*ОБЪЯВЛЕНИЕ
  * - модификатор доступа:
  *      - 1 публичный класс в файле
@@ -14,6 +17,10 @@ import java.io.Serializable;
  * - если есть, список имлементируемых методов
  *
  * - тело в фигурных скобках*/
+
+
+@Ntrstn("Java файл может содержать только 1 публичный класс, и имя этого класса должно совпадать с " +
+        "именем файла")
 
 
 /* КЛАСС ВЕРХНЕГО УРОВНЯ НЕ МОЖЕТ БЫТЬ СТАТИЧЕСКИМ */
