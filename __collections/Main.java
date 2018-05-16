@@ -19,12 +19,12 @@ import java.util.TreeSet;
 
 import types_references_annotations.my_annotations.Ntrstn;
 
-/* АЛГОРИТМЫ РЕАЛИЗАЦИИ
- * - Hash
- * - Linked
- * - LinkedHash
- * - Tree
+/* АЛГОРИТМЫ, ИСПОЛЬЗУЕМЫЕ В ИМПЛЕМЕНТАЦИЯХ
  * - Array
+ * - List
+ * - Red-Black Tree
+ * - Hashtable
+ * - BinaryHeap
  * */
 
 
