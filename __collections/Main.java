@@ -1,12 +1,16 @@
 package __collections;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -14,11 +18,59 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import types_references_annotations.my_annotations.Ntrstn;
-/**/
+
+/* АЛГОРИТМЫ РЕАЛИЗАЦИИ
+ * - Hash
+ * - Linked
+ * - LinkedHash
+ * - Tree
+ * - Array
+ * */
+
+
+/* ИЕРАРХИЯ КОНТЕЙНЕРОВ
+ * - {Collection}: группа элементов
+ *      - {List}: упорядоченная группа элементов (последовательность)
+ *          - LinkedList
+ *          - ArrayList
+ *
+ *      - {Set}: группа элементов без дубликатов
+ *          - HashSet
+ *              - LinkedHashSet
+ *          - TreeSet
+ *
+ *      - {Queue}: группа элементов, которые перед обработкой сначала должны быть добавлены
+ *          - PriorityQueue
+ *
+ * - {Map}: связь ключ-значение; не может иметь дубликатов ключей; 1 ключ связан только с 1 значением
+ *      - HashMap
+ *          - LinkedHashMap
+ *      - TreeMap
+ *
+ *
+ *
+ * */
 
 
 
 /* ИНТЕРФЕЙС COLLECTION
+ * - по сути это "случайный интерфейс", появившийся из-за общности между другими интерфейсами
+ *
+ * - позволяет писать более универсальный код - код написанный для интерфейса может применяться к
+ * большему числу объектов
+ *      - в C++ сходство между контейнерами выражается итератором, а не Collection
+ *          - можно было бы и здесь так сделать, но здесь реализация Collection также означает
+ *          поддержку методат iterator()
+ *          - т.е. можно писать методы, принимающие либо Iterator либо Collection
+ *              - но Collection еще и Iterable, т.е. можно форичить
+ *              - но если влом реализовывать для своего класса все методы Collection, тогда удобней
+ *              использовать Iterator
+ *                  - правда, можно легко наследоваться от AbstractCollection
+ *                      - но тогда нельзя ни от чего другого
+ *                      - и все равно нужно реализовывать iterator() и size()
+ *              - короче, Iterator все же модульней. Можно из метода своего класса просто возвращать
+ *              свой итератор
+ *
  * - последовательность отдельных элементов, формируемая по некоторым правилам:
  *      - интерфейс List: хранит элементы в определенной последовательности
  *          - реализация ArrayList:
@@ -43,9 +95,10 @@ import types_references_annotations.my_annotations.Ntrstn;
  *
  * - AbstractCollection предоставляет реализацию по умолчанию
  *
- * - в C++ сходство между контейнерами выражается итератором, а не Collection
- *      - можно было бы и здесь так сделать, но здесь реализация Collection также означает поддержку
- *       методат iterator()
+
+ *
+ * - iterator() - 1 из самых важных методов интерфейса - возвращает объект, реализующий Iterator
+ *
  * */
 
 /* LIST - ГАРАНТИРУЕТ ХРАНЕНИЕ ЭЛЕМЕНТОВ В ОПРЕДЕЛЕННОЙ ПОСЛЕДОВАТЕЛЬНОСТИ
@@ -112,24 +165,24 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* QUEUE
-* - первым пришел первым ушел
-* - для надежного перемещения объектов из одной области в другую
-* - играют важную роль в пареллельном программировании
-* - LinkedList реализует очередь
-* - offer() - добавить элемент в конец или вернуть false(why?)
-* - peek(), element() - вернуть элемент в начале очереди без удаления. peek - возвращает null для
-* пустой очереди, а element - noSuchElementException
-* - poll(), remove() извлекают элемент в начале и возвращают его, но пол возвращает нал для пустой
-* очереди, а ремув - но сач эл
-* - методы специфические для очереди предоставляют полную и законченную функциональность. Т.е. вы
-* получаете работоспособную очередь без испольлзования методов Collection, от которого наследует очередь
-* */
+ * - первым пришел первым ушел
+ * - для надежного перемещения объектов из одной области в другую
+ * - играют важную роль в пареллельном программировании
+ * - LinkedList реализует очередь
+ * - offer() - добавить элемент в конец или вернуть false(why?)
+ * - peek(), element() - вернуть элемент в начале очереди без удаления. peek - возвращает null для
+ * пустой очереди, а element - noSuchElementException
+ * - poll(), remove() извлекают элемент в начале и возвращают его, но пол возвращает нал для пустой
+ * очереди, а ремув - но сач эл
+ * - методы специфические для очереди предоставляют полную и законченную функциональность. Т.е. вы
+ * получаете работоспособную очередь без испольлзования методов Collection, от которого наследует очередь
+ * */
 
 /* PRIORITYQUEUE
-*  - следующим извлекается элемент обладающий наивысшим приоритетом
-*  - работает с Integer, String, Character
-*  - для своих классов можно использовать свой Comparator
-* */
+ *  - следующим извлекается элемент обладающий наивысшим приоритетом
+ *  - работает с Integer, String, Character
+ *  - для своих классов можно использовать свой Comparator
+ * */
 
 /* COLLECTIONS */
 
@@ -148,9 +201,12 @@ import types_references_annotations.my_annotations.Ntrstn;
  * - можно выполнять следующие операции:
  *      - iterator() - запросить итератор у Collector. Итератор готов вернуть начальный элемент
  *      последовательности
+ *
+ * - методы:
  *      - next() - получить следующий элемент последовательности
  *      - hasNext() - проверить, есть ли еще объекты в последовательности
  *      - remove() - удалить из последовательности последний элемент, возвращенный итератором
+ *          - не обязателен для имплементации
  *
  * - унифицируют доступ к контейнерам
  *      - т.е. тип не важен
@@ -176,9 +232,32 @@ import types_references_annotations.my_annotations.Ntrstn;
  * - интерфейс используется foreach для перемещения по списку
  *      - т.е. любой класс, который реализует этот интерфейс может использоваться форичем
  * - реализуется любой Collection, но не Map
+ * - команда форич работает с массивом или любой другой реализацией итерабл но это не означает, что
+ * массив автоматически реализует итерабл и не подразумевает автоматической упаковки
+ *      - т.е. нельзя передать массив вместо итерабл
+ *          - нужно сначала его вручную преобразовать в лист
+ *              - напр. при помощи Arrays.asList()
+ *          - но при этом он все равно работает с форичем
+ *
+ * - при помощи "метода-адаптера" можно добавить другое поведение команды форич
+ *      - напр. также листать в обратную сторону
+ *      - если просто переопределить iterator(), то поведение просто заменится на другое
+ *      - нужен метод, который будет создать интерфейс Iterable с нужным поведением
+ *
  * */
 
 
+/* iterable - простое представление серии элементов, по которым можно пройтись. нет состояния
+ * итерации такой как "текущий элемент",а есть единственный метод, который создает итератор
+ *
+ * iterator - объект с состоянием итерации. позволяет проверять, есть ли элемент и т.д
+ * */
+
+/* при написании программ нет никакой необходимости использовать устаревшие классы Vector, Hashtable,
+ * stack*/
+
+
+/* COMPARABLE И COMPARATOR */
 @Ntrstn("Фреймворк коллекций - это удобный способ манипулирования определенной кучей объектов")
 
 @Ntrstn("Правильней называть коллекциями, только то, что относится к интерфейсу Collection (т.е. НЕ " +
@@ -205,10 +284,10 @@ import types_references_annotations.my_annotations.Ntrstn;
 public class Main {
 
     public static void main(String[] args) {
-        List l = Arrays.asList(2, 3, 3);
+        List<Integer> l = Arrays.asList(2, 3, 3);
 //        l.add(3); // UnsupportedOperationException
 
-        for (Integer aL : (Iterable<Integer>) l) {
+        for (Integer aL : l) {
             System.out.println(aL);
         }
 
@@ -227,5 +306,64 @@ public class Main {
             map.put(r, frequency == null ? 1 : frequency + 1);
         }
         System.out.println(map);
+
+        List<String> l2 = new ArrayList<>();
+        l2.add("sdf");
+        l2.add("sdsdff");
+        l2.add("sdaaf");
+
+        Iterator<String> iterator = l2.iterator();
+        ListIterator<String> listIterator = l2.listIterator();
+
+        while (iterator.hasNext()) {
+            iterator.next();
+        }
+
+        while (listIterator.hasPrevious()) {
+            listIterator.previous();
+        }
+
+        for (Map.Entry entry : System.getenv().entrySet()) { // переменные окружения
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+
+        /*СВОЙ ИТЕРАБЛ*/
+        class ReverseArrayList<T> extends ArrayList<T> {
+            public ReverseArrayList(Collection<T> c) {
+                super(c);
+            }
+
+            public Iterable<T> reversed() {
+                return new Iterable<T>() {
+                    @Override
+                    public Iterator<T> iterator() {
+                        return new Iterator<T>() {
+                            int current = size() - 1;
+
+                            @Override
+                            public boolean hasNext() {
+                                return current > -1;
+                            }
+
+                            @Override
+                            public T next() {
+                                return get(current--);
+                            }
+                        };
+                    }
+                };
+            }
+        }
+
+        ReverseArrayList<String> ral
+                = new ReverseArrayList<>(Arrays.asList("to be or not to be".split(" ")));
+
+        for (String s : ral) { // обычный итератор, вызывается по умолчанию
+            System.out.println(s + " ");
+        }
+
+        for (String s : ral.reversed()) { // мой итератор
+            System.out.println(s + " ");
+        }
     }
 }
