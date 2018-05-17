@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 
+import types_references_annotations.my_annotations.Ntrstn;
+
 /* КЛАСС
  * public final class Formatter
  * extends Object
@@ -283,6 +285,10 @@ import java.util.Formatter;
  * данного объекта при помощи указанной форматной строки specified и аргументов
  * - toString(): возвращает результат вызова toString() для места назначения для вывода */
 
+
+@Ntrstn("Будьте осторожны при преобразовании не булеанов, т.к. они всегда будут давать true")
+
+@Ntrstn("Вызов String.format() удобней и быстрее в случае одноразовой потребности")
 
 public class Formatter_Main {
     static String stringFormat;
