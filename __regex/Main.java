@@ -26,6 +26,8 @@ import types_references_annotations.my_annotations.Ntrstn;
  *
  * - в перегруженную версию Pattern.compile(String regex, int flag) можно передавать флаги
  *      - определяют поведение при сверке
+ *      - флагов может быть несколько:
+ *          - перечисляются через |
  *
  * */
 
@@ -33,15 +35,39 @@ import types_references_annotations.my_annotations.Ntrstn;
 /* ОСНОВНЫЕ МЕТОДЫ PATTERN
  * - compile(String regex): компилирует предоставленное РВ в паттерн
  * - compile(String regex, int flags): компилирует предоставленное РВ в паттерн с учетом флага
- *
- *
+ * - matches(): быстро провести сравнение без создания Matcher
+ *      - напр. Pattern.matches("\\d","1");
+ * - split(): делит вводимую строку по регулярному выражению
+ *      - напр.
+ *          Pattern p = Pattern.compile("\\d");
+            String[] items = p.split("one9two4three7four1five"); // массив отдельных слов
+ * - toString(): вернет строкой выражение, из которого сделан паттерн
+ * - quote(): Returns a literal pattern String for the specified String
+ * */
+
+
+/* АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ STRING
+ * - matches():
+ *      - напр. str.matches(regex) аналогично Pattern.matches(regex, str)
+ * - split()
+ * - replace() Replaces each substring of this string that matches the literal target sequence with the specified literal replacement sequence. The replacement proceeds from the beginning of the string to the end, for example, replacing "aa" with "b" in the string "aaa" will result in "ba" rather than "ab".
  * */
 
 
 /* ОСНОВНЫЕ ФЛАГИ PATTERN
  * - CASE_INSENSITIVE: включает игнорирование регистра
- * - COMMENTS: позволяет присутствовать в паттерне пробелам и комментариям
+ *      - по дефолту включает игнорирование только для US-ASCII
+ *          - для Unicode нужен дополнительный флаг UNICODE_CASE
+ *      - альтернатива - использовать в РВ (?i)
+ *          - напр. (?i)foo
+ *          - называется "выражение со встроенным флагом"
+ *
+ * - COMMENTS: позволяет присутствовать в паттерне пробелам и комментариям, игнорируя их
+ *      - альтернатива - (?x)
+ *
  * - MULTILINE: включает многострочный режим
+ *      - т.е. ^ и $ работают для каждой строки, а не для всего ввода
+ *      - альтернатива - (?u)
  * */
 
 
@@ -54,19 +80,29 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ОСНОВНЫЕ МЕТОДЫ MATCHER
- * - matches(): пытается сверить весь диапазон с выражением
  *
- * - find(): пытается найти следующую подходящую под паттерн подпоследовательность в введенной
- * последовательности
- *
+ * - индексные методы:
  * - start(): вернет стартовый индекс последнего совпадения
  * - start(int group): вернет начальный индекс подпоследовательности, захваченной указанной группой
  * при предыдущей операции сверки
- *
- *
  * - end(): вернет индекс, следующий за последним совпадением
  * - end (int group): вернет индекс последнего символа + 1 подпоследовательности, захваченной
  * указанной группой при предыдущей операции сверки
+ *
+ * - методы изучения:
+ * - matches(): пытается сверить весь диапазон с выражением
+ * - find(): пытается найти следующую подходящую под паттерн подпоследовательность в введенной
+ * последовательности
+ * - lookingAt() Attempts to match the input sequence, starting at the beginning of the region, against the pattern.
+ *
+ * - методы замены:
+ *public Matcher appendReplacement(StringBuffer sb, String replacement): Implements a non-terminal append-and-replace step.
+public StringBuffer appendTail(StringBuffer sb): Implements a terminal append-and-replace step.
+public String replaceAll(String replacement): Replaces every subsequence of the input sequence that matches the pattern with the given replacement string.
+public String replaceFirst(String replacement): Replaces the first subsequence of the input sequence that matches the pattern with the given replacement string.
+public static String quoteReplacement(String s): Returns a literal replacement String for the specified String. This method produces a String that will work as a literal replacement s in the appendReplacement method of the Matcher class. The String produced will match the sequence of characters in s treated as a literal sequence. Slashes ('\') and dollar signs ('$') will be given no special meaning.
+ *
+ *
  *
  * - groupCount(): вернет количество групп в РВ (нулевая группа, т.е. все выражение, не учитывается)
  * - group (int group): возвращает вводимую подподпоследовательность, захваченную указанной группой
@@ -75,6 +111,26 @@ import types_references_annotations.my_annotations.Ntrstn;
  *
  *
  * */
+
+
+/* АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ STRING
+ *public String replaceFirst(String regex, String replacement): Replaces the first substring of this string that matches the given regular expression with the given replacement. An invocation of this method of the form str.replaceFirst(regex, repl) yields exactly the same result as the expression Pattern.compile(regex).matcher(str).replaceFirst(repl)
+public String replaceAll(String regex, String replacement): Replaces each substring of this string that matches the given regular expression with the given replacement. An invocation of this method of the form str.replaceAll(regex, repl) yields exactly the same result as the expression Pattern.compile(regex).matcher(str).replaceAll(repl)
+ *
+ *
+ *
+ * */
+
+
+/*A PatternSyntaxException is an unchecked exception that indicates a syntax error in a regular expression pattern. The PatternSyntaxException class provides the following methods to help you determine what went wrong:
+
+public String getDescription(): Retrieves the description of the error.
+public int getIndex(): Retrieves the error index.
+public String getPattern(): Retrieves the erroneous regular expression pattern.
+public String getMessage(): Returns a multi-line string containing the description of the syntax error and its index, the erroneous regular-expression pattern, and a visual indication of the error index within the pattern.*/
+
+
+
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~СИНТАКСИС~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -87,39 +143,19 @@ import types_references_annotations.my_annotations.Ntrstn;
  *          - т.е. если с 3 индекса (напр. для строки foofoo) начнется следующее вхождение и
  *          диапазоны будут частично пересекаться
  *
- *
- *
  * */
 
-/* МЕТАСИМВОЛЫ <([{\^-=$!|]})?*+.>
- * - в некоторых ситуациях некоторые могут не считаться метасимволами
- *      - 2 способа вручную сделать их не специальными:
- *          - либо перед ним поставить \
- *              - напр. \.
- *          - либо заключить его в \Q \E
- *              - напр. \Q.\E
- *
- * .: любой символ
- * <:
- * (:
- * [:
- * {:
- * \:
- * ^:
- * -:
- * =:
- * $:
- * !:
- * |:
- * ]:
- * }:
- * ):
- * ?:
- * *:
- * +:
- * .:
- * >:
+/* СИМВОЛЫ
+ * B: символ В
+ * \xhh: символ  с 16-ричным кодом 0xhh
+ * \\uhhhh: символ Unicode с 16-ричным представлением 0xhhhh
+ * \t: табуляция
+ * \n: новая строка
+ * \r: возврат курсора
+ * \f: подача страницы
+ * \e: Escape
  * */
+
 
 
 /* КЛАССЫ (ТИПЫ) СИМВОЛОВ - НАБОР СИМВОЛОВ В КВАДРАТНЫХ СКОБКАХ ДЛЯ СВЕРКИ С 1 СИМВОЛОМ В СТРОКОВОМ
@@ -185,7 +221,21 @@ import types_references_annotations.my_annotations.Ntrstn;
  * */
 
 
-
+/*
+* POSIX character classes (US-ASCII only)
+\p{Lower}	A lower-case alphabetic character: [a-z]
+\p{Upper}	An upper-case alphabetic character:[A-Z]
+\p{ASCII}	All ASCII:[\x00-\x7F]
+\p{Alpha}	An alphabetic character:[\p{Lower}\p{Upper}]
+\p{Digit}	A decimal digit: [0-9]
+\p{Alnum}	An alphanumeric character:[\p{Alpha}\p{Digit}]
+\p{Punct}	Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+\p{Graph}	A visible character: [\p{Alnum}\p{Punct}]
+\p{Print}	A printable character: [\p{Graph}\x20]
+\p{Blank}	A space or a tab: [ \t]
+\p{Cntrl}	A control character: [\x00-\x1F\x7F]
+\p{XDigit}	A hexadecimal digit: [0-9a-fA-F]
+\p{Space}	A whitespace character: [ \t\n\x0B\f\r]*/
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~КВАНТИФИКАТОРЫ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -326,22 +376,7 @@ The third example fails to find a match because the quantifier is possessive. In
  *
  * */
 
-/*Методы String для работы с регулярными выражениями:
- * - matches(regex) - соответствует ли строка выражению
- * - split(regex) - разделить строку по выражению
- * - replaceFirst(regex, to), replaceAll(regex, to), - заменить в строке по выражению
- * */
 
-/* СИМВОЛЫ
- * B: символ В
- * \xhh: символ  с 16-ричным кодом 0xhh
- * \\uhhhh: символ Unicode с 16-ричным представлением 0xhhhh
- * \t: табуляция
- * \n: новая строка
- * \r: возврат курсора
- * \f: подача страницы
- * \e: Escape
- * */
 
 /* СИМВОЛЬНЫЕ КЛАССЫ
  * .: любой символ
@@ -366,6 +401,10 @@ The third example fails to find a match because the quantifier is possessive. In
  * - 1 - совпадение первого подвыражения в круглых скобках и т.д.
  * */
 
+
+/* С J7 есть поддержка Unicode 6.0
+ *  - кодовые точки
+ *  - свойства символов*/
 
 @Ntrstn("Регулярные выражения - мощный и гибкий инструмент обработки текстов. Они позволяют " +
         "определять на программном уровне сложные шаблоны для поиска текста во входной строке. " +
@@ -392,6 +431,11 @@ The third example fails to find a match because the quantifier is possessive. In
         "же позиции индекса. Они происходят в следующих случаях: в пустых строках, в начале " +
         "введенной строки, после последнего символа введенной строки или между 2 символами введенной " +
         "строки ")
+
+@Ntrstn("Метод matches есть и у Matcher и у Pattern")
+
+@Ntrstn("У класса String есть аналогичные методы Pattern и Matcher")
+
 
 public class Main {
 
