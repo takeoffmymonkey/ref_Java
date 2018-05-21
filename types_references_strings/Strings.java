@@ -194,6 +194,8 @@ import types_references_annotations.my_annotations.Ntrstn;
         "переопределен и в переопределении есть вызов самого себя (при помощи this - напр. чтобы " +
         "выводить адрес в памяти), то возникнет рекурсия. Чтобы исправить это, нужно вместо this " +
         "вызывать super.toString() ")
+
+@Ntrstn("методы split и matches дублируют методы из Pattern, а методы replace... - из Matcher")
 public class Strings {
 
     static String stringA;
