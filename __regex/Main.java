@@ -4,6 +4,7 @@ package __regex;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import types_references_annotations.my_annotations.Ntrstn;
 
@@ -115,17 +116,11 @@ import types_references_annotations.my_annotations.Ntrstn;
  *
  *      - end():
  *          - вернет индекс, следующий за последним совпадением
- *          - end (int group): вернет индекс последнего символа + 1 подпоследовательности,
+ *          - end (int group): вернет индекс последнего символа (+1) подпоследовательности,
  *          захваченной указанной группой при предыдущей операции сверки
  *
- * - методы замены:
- *      - public Matcher appendReplacement(StringBuffer sb, String replacement): Implements a non-terminal append-and-replace step.
- *      - public StringBuffer appendTail(StringBuffer sb): Implements a terminal append-and-replace step.
- *      - public String replaceAll(String replacement): Replaces every subsequence of the input sequence that matches the pattern with the given replacement string.
- *      - public String replaceFirst(String replacement): Replaces the first subsequence of the input sequence that matches the pattern with the given replacement string.
- *      - public static String quoteReplacement(String s): Returns a literal replacement String for the specified String. This method produces a String that will work as a literal replacement s in the appendReplacement method of the Matcher class. The String produced will match the sequence of characters in s treated as a literal sequence. Slashes ('\') and dollar signs ('$') will be given no special meaning.
  *
- * - todo методы для работы с группами:
+ *  - методы для работы с группами:
  *      - groupCount():
  *          - вернет количество групп в РВ
  *              - при этом нулевая группа, т.е. все выражение, не учитывается
@@ -134,30 +129,46 @@ import types_references_annotations.my_annotations.Ntrstn;
  *          - возвращает вводимую подподпоследовательность, захваченную указанной группой при
  *          предыдущей операции сверки
  *
- * */
+ *
+ * - методы замены:
+ *      - replaceAll(String replacement):
+ *          - заменяет предоставленной строкой каждую подпоследовательность в тексте, которая
+ *          совпадает с шаблоном
+ *
+ *      - replaceFirst(String replacement):
+ *          - заменяет предоставленной строкой первую подпоследовательноть в тексте, которая
+ *          совпадает с шаблоном */
 
 
 /* АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ STRING
- *public String replaceFirst(String regex, String replacement): Replaces the first substring of this string that matches the given regular expression with the given replacement. An invocation of this method of the form str.replaceFirst(regex, repl) yields exactly the same result as the expression Pattern.compile(regex).matcher(str).replaceFirst(repl)
-public String replaceAll(String regex, String replacement): Replaces each substring of this string that matches the given regular expression with the given replacement. An invocation of this method of the form str.replaceAll(regex, repl) yields exactly the same result as the expression Pattern.compile(regex).matcher(str).replaceAll(repl)
+ * - replaceFirst(String regex, String replacement):
+ *      - аналогично
  *
- * - replace()
- *      Replaces each substring of this string that matches the literal target sequence with the
- *      specified literal replacement sequence. The replacement proceeds from the beginning of the
- *      string to the end, for example, replacing "aa" with "b" in the string "aaa" will result in
- *      "ba" rather than "ab".
+ * - replaceAll(String regex, String replacement):
+ *      - аналогично */
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PATTERNSYNTAXEXCEPTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * - предназначен для иключения, указывающего на синтаксические проблемы в РВ
+ *      - но IDE предупреждает о проблемах еще на стадии компиляции
  *
- * */
+ * - является непроверяемым
+ *      - т.е. не нужно обрамлять try-catch блоком */
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PATTERNSYNTAXEXCEPTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-/*A PatternSyntaxException is an unchecked exception that indicates a syntax error in a regular expression pattern. The PatternSyntaxException class provides the following methods to help you determine what went wrong:
-
-public String getDescription(): Retrieves the description of the error.
-public int getIndex(): Retrieves the error index.
-public String getPattern(): Retrieves the erroneous regular expression pattern.
-public String getMessage(): Returns a multi-line string containing the description of the syntax error and its index, the erroneous regular-expression pattern, and a visual indication of the error index within the pattern.*/
-
+/* МЕТОДЫ PATTERNSYNTAXEXCEPTION
+ * - getDescription():
+ *       - получить описание ошибки
+ *
+ * - getIndex():
+ *       - получить индекс ошибки
+ *
+ * - getPattern():
+ *       - получить паттерн, в котором находится ошибка
+ *
+ * - getMessage():
+ *       - получить многострочную строку с описанием синтаксической ошибки и ее индекса, а также
+ *       проблемный паттерн и визуальное указание на ошибку в паттерне*/
 
 
 
@@ -460,9 +471,10 @@ The third example fails to find a match because the quantifier is possessive. In
         "регулярным выражением, а класс Matcher применяет описанный шаблон к указанному тексту и " +
         "прендазначен для работы с найденными совпадениями. Кроме этих классов в пакете " +
         "java.util.regex также есть класс PatternSyntaxException для работы с исключениями, которые " +
-        "вызываются при неправильно заданном регулярном выражении (т.е. при некорректном синтаксисе). " +
-        "Но кроме этих классов, класс String также обладает некоторыми методами, дублирующими методы " +
-        "классов Pattern и Matcher, без необходимости создавать эти объекты")
+        "вызываются при неправильно заданном регулярном выражении (т.е. при некорректном синтаксисе" +
+        " - хотя IDE отлично справляется с этой работой, предупреждая о проблемах на стадии " +
+        "компиляции). Но кроме этих классов, класс String также обладает некоторыми методами, " +
+        "дублирующими методы классов Pattern и Matcher, без необходимости создавать эти объекты")
 
 @Ntrstn("У обоих классов - Pattern и Matcher - нет конструкторов. Сначала создается объект Pattern " +
         "от статического метода Pattern.compile(String regex), куда на вход передается регулярное " +
@@ -491,22 +503,28 @@ The third example fails to find a match because the quantifier is possessive. In
         "всего текста или для его куска. Также можно переходить по совпадениям" +
         "2 - индексные методы: возвращают начальный и конечный (+1) индексы последнего входжения. " +
         "Но перед этим должен быть совершен поиск, иначе будет выброшено исключение " +
-        "IllegalStateException: No match available. Также есть возможность указать номер искомой " +
-        "группы (заданной в регулярном выражении)" +
-        "3 - методы замены" +
-        "4 - методы групп ")
-
+        "IllegalStateException: No match available. Также есть возможность получить индексы " +
+        "последнего вхождения для определенной группы" +
+        "3 - методы групп: возвращают количество групп, указанных в регулярном выражении, либо " +
+        "нужную группу в виде строки" +
+        "4 - методы замены: заменяют совпадения в тексте другой предоставленной строкой")
 
 @Ntrstn("Методы matches() (класс Matcher) и lookingAt() ищут совпадения в тексте по шаблону, но " +
         "метод matches() вернет true, только если с шаблоном совпадает весь текст, тогда как метод " +
         "lookingAt() вернет true и для отрезка текста, поскольку он просто начинает искать " +
-        "совпадения с начала текстового диапазона. ")
+        "совпадения с начала текстового диапазона.")
 
 @Ntrstn("В отличие от методов matches() и lookingAt(), которые всегда начинают работать с начала " +
         "текста, метод find() начинает поиск с того места, где завершилось последнее вхождение (или " +
         "с начала, если до этого не запускался или не была совершена перезагрузка методом reset()). " +
         "Т.е. по сути, это удобный метод, чтобы переходить с одного вхождения на следующее. Можно " +
         "также указать индекс с символа, с которого нужно начинать поиск вхождения")
+
+@Ntrstn("Методы класса String дублируют методы Pattern: поиск совпадений и разбивание строки на " +
+        "массив в местах совпадений. Также они дублируют методы замены совпадений из класса Matcher")
+
+@Ntrstn("Методы класса PatternSyntaxException позволяют отдельно получить описание, индекс ошибки и " +
+        "сам проблемный паттерн. А метод getMessage() сочетает всю эту информацию")
 
 
 @Ntrstn("Сверка текста с шаблоном осуществляется посимвольно. Существуют классы символов (не те, что " +
@@ -519,7 +537,6 @@ The third example fails to find a match because the quantifier is possessive. In
         "В некоторых случаях варианты POSIX являются короче других предустановленных. Всегда стоит " +
         "пользоваться наиболее короткими и удобочитаемыми версиями")
 
-
 @Ntrstn("нужно экранировать символы дополнительной обратной чертой символы, которые начинаются с " +
         "обратной черты")
 
@@ -529,8 +546,6 @@ The third example fails to find a match because the quantifier is possessive. In
         "же позиции индекса. Они происходят в следующих случаях: в пустых строках, в начале " +
         "введенной строки, после последнего символа введенной строки или между 2 символами введенной " +
         "строки ")
-
-@Ntrstn("Метод matches есть и у Matcher и у Pattern")
 
 
 public class Main {
@@ -612,9 +627,7 @@ public class Main {
         System.out.println("Соответствие шаблону найдено: " + m.find(3)); // true
 
 
-        /*~~~~~~~~~~~~ ИНДЕКСНЫЕ МЕТОДЫ ~~~~~~~~~~~~
-         * - перед этим обязательно должен быть произведен поиск
-         *       - иначе  IllegalStateException: No match available*/
+        /*~~~~~~~~~~~~ МЕТОДЫ ЗАМЕНЫ ~~~~~~~~~~~~*/
         /* START() - стартовый индекс последнего совпадения
          *   - start(int group)*/
         System.out.println("Стартовый индекс последнего вхождения: " + m.start()); // 4
@@ -625,12 +638,44 @@ public class Main {
         System.out.println("Последний индекс последнего вхождения (+1) группы 2: " + m.end(2)); // 6
 
 
+        /*~~~~~~~~~~~~ МЕТОДЫ ГРУПП ~~~~~~~~~~~~*/
+        /*GROUP(int number) - вернуть строкой группу по указанному номеру*/
+        System.out.println("Количество групп в выражении: " + m.group(2)); // f
+        /*GROUPCOUNT() - количество групп в выражении (без учета нулевой)*/
+        System.out.println("Количество групп в выражении: " + m.groupCount()); // 2
 
 
+        /*~~~~~~~~~~~~ МЕТОДЫ ЗАМЕНЫ ~~~~~~~~~~~~*/
+        /* REPLACEFIRST() - замена первого вхождения*/
+        System.out.println("Замена первого вхождения: " + m.replaceFirst("1")); //1ifif
+        /* REPLACEALL() - замена всех вхождений*/
+        System.out.println("Замена всех вхождений: " + m.replaceAll("2")); //222
+
+
+        /* ~~~~~~~~~~~~~~~~~~~~АНАЛОГИЧНЫЕ МЕТОДЫ И КЛАССА STRING ~~~~~~~~~~~~~~~~~~~~ */
+        System.out.println("АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ КЛАССА STRING");
+        regex = "(i(f))";
+        text = "ififif";
+        /* REPLACEFIRST() - замена первого вхождения*/
+        System.out.println("Замена первого вхождения: " + text.replaceFirst(regex, "1")); //1ifif
+        /* REPLACEALL() - замена всех вхождений*/
+        System.out.println("Замена всех вхождений: " + text.replaceAll(regex, "2")); //222
+
+
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ МЕТОДЫ PATTERNSYNTAXEXCEPTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+        System.out.println("МЕТОДЫ КЛАССА PATTERNSYNTAXEXCEPTION");
+//        regex = "(i&"; // нужно сначала раскомитить
+        text = "ififif";
+        try {
+
+            p = Pattern.compile(regex);
+        } catch (PatternSyntaxException e) {
+            System.out.println(e.getMessage()); // Unclosed group near index 3 (i&
+            //                                                                   ^
+        }
 
 
         /*
-
          *//*~~~~~~~~~~~~~~~~~~~~КЛАССЫ (ТИПЫ) СИМВОЛОВ~~~~~~~~~~~~~~~~~~~~*//*
          *//* ПРОСТОЙ КЛАСС *//*
         Pattern patternClassSimple = Pattern.compile("[Ss]ome string"); // любой из указанных символов
