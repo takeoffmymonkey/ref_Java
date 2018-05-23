@@ -212,6 +212,46 @@ import types_references_annotations.my_annotations.Ntrstn;
  * - \p{Space}:	любой символ с пустотой (аналогично[ \t\n\x0B\f\r])*/
 
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~ЗАХВАТ ГРУППЫ И ОБРАТНАЯ ССЫЛКА~~~~~~~~~~~~~~~~~~~~~~~~
+ * - способ объединить несколько символов в 1 группу в рамках одних скобок, чтобы в последствии с
+ * ней работать (как с переменной)
+ *      - во время сверки каждая совпадающая с группой подпоследовательность сохраняется
+ *          - захваченная подпоследовательность может быть:
+ *              - получена после завершения операции сверки в виде совпавшего куска текста
+ *              - использована в процессе сверки при помощи обратной ссылки (backreferencing):
+ *                  - ссылаться на группу можно:
+ *                      - по имени
+ *                          - (?<name>regex)
+ *                              - напр. (a(?<my>ba))
+ *                          - первый символ в должен быть буквенным
+ *                      - по номеру
+ *                          - нумерация идет по открывающимся скобкам
+ *                             - Т.е. для ((A)(B(C))):
+ *                                  0. все выражение
+ *                                      - т.е. то же, что и 1
+ *                                      - не учитывается методом groupCount()
+ *                                  1. ((A)(B(C)))
+ *                                  2. (A)
+ *                                  3. (B(C))
+ *                                  4. (C)
+ *                      - указывается как обратная черта \, после которой идет цифра или имя
+ *                      вызываемой группы
+ *                          - напр. (\d\d) определяет одну захваченную группу, которая соответствует
+ *                          2 цифрам подряд
+ *                              - чтобы было совпадение для 2 цифр, после которых идут эти же цифры,
+ *                              нужно такое РВ: (\d\d)\1
+ *                                  - тогдя для "1212" будет совпадение
+ *                                  - а для "1234" нет
+ *                                  - \1 здесь как ссылка на группу под номером 1
+ *
+ * - некоторые методы Matcher принимают на вход номер группы
+ *      - start(), end(), group()
+ *
+ * - todo группы, которые начинаются с (?, явлюются чистыми незахватывающими группами
+ *      - т.е. когда нужно, чтоб они игнорировались паттерном - не захватывался совпадающий текст и
+ *      не добавлялись в общее число групп */
+
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~КВАНТИФИКАТОРЫ~~~~~~~~~~~~~~~~~~~~~~~~
  * - указывают количество необходимых вхождений для сверки
  *
@@ -226,9 +266,9 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ВИДЫ КВАНТИФИКАТОРОВ
- * - X?: 1 или ни одного
+ * - X?: 0 или 1 раз
  *      - ищет совпадение для каждого символа и для нулевой длины в конце
- *          - т.е. при "а+" будет искать пристутствие или отсутствие в проверяемом символе символа
+ *          - т.е. при "а?" будет искать пристутствие или отсутствие в проверяемом символе символа
  *          "а":
  *              - для "aaaaa" будет 6 совпадений ("a"[1]"a"[2]"a"[3]"a"[4]"a"[5]""[6])
  *              - для "abaaaab" при будет 8 совпадений("a"[1]"b"[2]"a"[3]"a"[4]"a"[5]"a"[6]"b"[7]""[8])
@@ -298,40 +338,7 @@ The third example fails to find a match because the quantifier is possessive. In
  *      */
 
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~ЗАХВАТ ГРУППЫ~~~~~~~~~~~~~~~~~~~~~~~~
- * - способ объединить несколько символов в 1 группу в рамках одних скобок
- * - нумерация идет по открывающимся скобкам. Т.е. для ((A)(B(C))):
- *      1. ((A)(B(C)))
- *      2. (A)
- *      3. (B(C))
- *      4. (C)
- *
- * - нулевая группа - все выражение в целом
- *      - не учитывается методом groupCount
- *
- * - некоторые методы Matcher принимают на вход номер группы
- *
- * - группы, которые начинаются с (?, явлюются чистыми незахватывающими группами
- *      - т.е. не захватывают текст и не добавляются в общее число групп
- *
- * */
-
-/* ОБРАТНАЯ ССЫЛКА НА ГРУППУ (BACKREFERENCING)
- * - часть от вводимой строки, совпадающей с захваченной группой сохраняется в памяти для дальнейшего
- * вызова при помощи обратной ссылки (backreferencing)
- *      - указывается в РВ как обратная черта \, после которой идет цифра, указывающая номер
- *      вызываемой группы
- *          - напр. (\d\d) определяет одну захваченную группу, которая соответствует 2 цифрам подряд
- *              - чтобы было совпадение для 2 цифр, после которых идут эти же цифры, нужно такое РВ:
- *              (\d\d)\1
- *                  - тогдя для "1212" будет совпадение
- *                  - а для "1234" нет
- *      - для вложенный захваченных группы обратные ссылки работают аналогично
- * */
-
-
-
-/* УКАЗАНИЕ МЕСТА, ГДЕ ПРОВОДИТСЯ ПОИСК НА СОВПАДЕНИЕ (BOUNDARY MATCHERS)
+/* ~~~~~~~~~~~~~~~~~~~~~~~~УКАЗАНИЕ УСЛОВИЯ МЕСТА ДЛЯ СОВПАДЕНИЯ~~~~~~~~~~~~~~~~~~~~~~~~
  * - ^: начало строки
  * - $: конец строки
  * - \b: в рамках слова
@@ -345,42 +352,19 @@ The third example fails to find a match because the quantifier is possessive. In
  *      - "dog" для dog dog - 2 совпадения
  *      - "\Gdog" для dog dog - 1 совпадение
  * - \Z: конец ввода, но для конечного прерывателя (final terminator), если таковой имеется
- * - \z: конец ввода
- *
- * */
-
-
-
-/* СИМВОЛЬНЫЕ КЛАССЫ
- * .: любой символ
- * [abc]: любой из символов a, b, c (то же, что и a|b|c)
- * [^abc]: любой символ, кроме a, b, c (отрицание)
- * [a-zA-Z]: любой символ от a до z и от A до Z (диапазон)
- * [abc[hij]]: любой из символов a, b, c, h, i, j (то же, что и a|b|c|h|i|j) (объединение)
- * [a-z&&[hij]]: символ h, i, j (пересечение)
- * \s: пропуск (пробел, табуляция, новая строка, подача страницы, возврат курсора)
- * \S: символ, не являющийся пропуском (то же, что [^\s])
- * \d: цифра [0-9]
- * \D: не цифра [^0-9]
- * \w: символ слова [a-zA-Z_0-9]
- * \W: символ, не являющийся символом слова [^\w]
- *
- * */
-
-
-/* Группы
- * - части регекса, заключенные в скобки, к которым потом можно обращаться по номеру группы
- * - 0 - совпадение всего выражения
- * - 1 - совпадение первого подвыражения в круглых скобках и т.д.
- *
- * - у групп могут быть имена
- * */
+ * - \z: конец ввода */
 
 
 /* С J7 есть поддержка Unicode 6.0
  *  - кодовые точки
  *  - свойства символов*/
 
+
+/* ПОЛЕЗНЫЕ РВ
+ * - проверка имейла
+ * - проверка телефона
+ * - проверка IP
+ * */
 
 @Ntrstn("Регулярное выражение позволяет на специальном языке задать шаблон, который описывает " +
         "некоторое условие, по которому будет производится поиск в тексте. Сам шаблон позволяет " +
@@ -413,19 +397,29 @@ The third example fails to find a match because the quantifier is possessive. In
         "синтаксис для распространенных условий - например \\d означает, что ищется любой цифровой " +
         "символ (аналог [0-9]), а в виде POSIX то же самое записывается как \\p{Digit}. Иногда POSIX " +
         "имеет более короткую форму (но работает только для US-ASCII). Всегда стоит предпочитать предустановленные классы простым!" +
-        "4 - квантификаторы: указывают количество раз, которому должно удовлетворять искомое условие, " +
+        "4 - захват группы: способ объединить несколько символов в 1 группу в рамках одних скобок, " +
+        "чтобы потом с ней работать (совпавший текст сохраняется) - например, (abc(de)) означает, что есть 2 группы (номер " +
+        "считается по открывающейся скобке (также есть нулевая группа - все выражение)) и " +
+        "совпадением, например, для второй группы (de) будет считаться символы de в тексте. Когда " +
+        "нужно указать, что abc должно повторяться 3 раза, abc{3} будет означать только для символа. " +
+        "В самом регулярном выражении можно ссылаться на группу как будто обращаясь к переменной " +
+        "(т.н. backreferencing) - напр. (\\d\\d)\\1 (где 1 - номер группы) будет означать, что при " +
+        "сверке первые 2 цифры запомнятся и следующие 2 цифры должны совпадать с ними, чтобы " +
+        "совпадение для регулярного выражения было засчитано" +
+        "5 - квантификаторы: указывают количество раз, которому должно удовлетворять искомое условие, " +
         "например x* означает, что символ x может быть любое количество раз (даже 0) для совпадения " +
         "с условием. Квантификаторы можно применять как к отдельным символам, так и к классам " +
         "символов и группам. Квантификаторы также имеют алгоритмы (см. ниже)" +
-        "5 - захват группы: способ объединить несколько символов в 1 группу в рамках одних скобок - " +
-        "например, (abc(de)) означает, что есть 2 группы (номер считается по открывающейся скобке " +
-        "(также есть нулевая группы - все выражение)) и совпадением, например, для второй группы (de)" +
-        "будет считаться символы de в тексте. В самом регулярном выражении можно ссылаться на группу " +
-        "при помощи backreferencing - например " +
-        "6 - условие, в каком месте должно искаться совпадениеУКАЗАНИЕ МЕСТА, ГДЕ ПРОВОДИТСЯ ПОИСК НА СОВПАДЕНИЕ (BOUNDARY MATCHERS)" +
-        "")
+        "6 - условие, в каком месте должно искаться совпадение: т.е. в каком месте текста должно " +
+        "находится совпадение, когда оно ищется методом find() класса Matcher. Напр. для выражения " +
+        "what$ для текста what what совпадением будет считаться только последнее what")
 
 @Ntrstn("Алгоритмы квантификаторов.")
+
+@Ntrstn("Совпадения нулевой длины (zero-length matches) - начинаются и заканчиваются в одной и той " +
+        "же позиции индекса. Они происходят в следующих случаях: в пустых строках, в начале " +
+        "введенной строки, после последнего символа введенной строки или между 2 символами введенной " +
+        "строки ")
 
 @Ntrstn("Классический способ работы с регулярными выражениями в Java заключается в использовании 2 " +
         "специальных классов - Pattern и Matcher. Класс Pattern предназначен для работы с самим " +
@@ -488,42 +482,132 @@ The third example fails to find a match because the quantifier is possessive. In
         "сам проблемный паттерн. А метод getMessage() сочетает всю эту информацию")
 
 
-@Ntrstn("Сверка текста с шаблоном осуществляется посимвольно. Существуют классы символов (не те, что " +
-        "в Java), которые указываются в скобках шаблона и с которыми идет сверка. Они указываются в " +
-        "квадратных скобках, напр. [abc] - означает, что совпадение произойдет, если проверяемый " +
-        "символ в тексте является либо а, либо b либо c. Это же условие можно записать, например, " +
-        "как [a|b|c]. А [0-9] означает, что совпадение произойдет, если проверяемый символ является " +
-        "любым числом. Для удобства и легкости чтения, существуют также предустановленные классы " +
-        "символов и POSIX. Например, [0-9] можно записать как \\d или как \\p{Digit} (верcия POSIX)" +
-        "В некоторых случаях варианты POSIX являются короче других предустановленных. Всегда стоит " +
-        "пользоваться наиболее короткими и удобочитаемыми версиями")
-
-
 @Ntrstn("В регулярных выражения ьакже используются && для логического И и | для логического ИЛИ ")
-
-@Ntrstn("Совпадения нулевой длины (zero-length matches) - начинаются и заканчиваются в одной и той " +
-        "же позиции индекса. Они происходят в следующих случаях: в пустых строках, в начале " +
-        "введенной строки, после последнего символа введенной строки или между 2 символами введенной " +
-        "строки ")
 
 
 public class Main {
 
-    public static void main(String[] args) {
-        String regex;
-        String text;
-        Pattern p;
-        Matcher m;
+    static String regex;
+    static String text;
+    static Pattern p;
+    static Matcher m;
 
-        /*~~~~~~~~~~~~~~~~~~СПОСОБЫ ВАЛИДАЦИИ ТЕКСТА ПО ШАБЛОНУ~~~~~~~~~~~~~~~~~~*/
+    static void updateMatcher() {
+        p = Pattern.compile(regex);
+        m = p.matcher(text);
+    }
+
+    static void updateMatcherAndFind() {
+        updateMatcher();
+        m.find();
+    }
+
+    public static void main(String[] args) {
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ СИНТАКСИС ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+        System.out.println("СИНТАКСИС");
+
+        /*~~~~~~~~~~~~~~СИМВОЛЫ~~~~~~~~~~~~~~~~*/
+        System.out.println("СИМВОЛЫ");
+
+        /*ПРОСТЫЕ И СПЕЦИАЛЬНЫЕ СИМВОЛЫ*/
+        System.out.println("ПРОСТЫЕ И СПЕЦИАЛЬНЫЕ СИМВОЛЫ");
+        System.out.println("Простой символ: " + "t".matches("t")); // true
+        System.out.println("Символ табуляции: " + "\t".matches("\\t")); // true
+
+        /*КЛАССЫ СИМВОЛОВ*/
+        System.out.println("КЛАССЫ СИМВОЛОВ");
+        System.out.println("Простой класс (любой из указанных символов): "
+                + "t".matches("[ost]")); // true
+        System.out.println("Диапазон+объединение+отрицание+пересечение (любой символ от a до z, при " +
+                "этом он не должен входить в диапазон от m до p): "
+                + "t".matches("[a-z&&[^m-p]]")); // true
+
+        /*ПРЕДУСТАНОВЛЕННЫЕ КЛАССЫ СИМВОЛОВ*/
+        System.out.println("ПРЕДУСТАНОВЛЕННЫЕ КЛАССЫ СИМВОЛОВ");
+        System.out.println("Любая цифра: " + "4".matches("\\d")); // true
+        System.out.println("Любая цифра (в POSIX): " + "4".matches("\\p{Digit}")); // true
+
+
+        /*~~~~~~~~~~~~~~ЗАХВАТ ГРУППЫ~~~~~~~~~~~~~~~~*/
+        System.out.println("ЗАХВАТ ГРУППЫ");
+        regex = "(a(ba)){2}";
+        text = "abaaba";
+        updateMatcher();
+        System.out.println("паттерн соответствует: " + m.matches()); // true
+        System.out.println("вторая группа: " + m.group(2)); // ba
+
+        /*ОБРАТНАЯ ССЫЛКА*/
+        System.out.println("ОБРАТНАЯ ССЫЛКА");
+        regex = "(\\d\\d){2}"; // без обратной ссылки значения цифр не учитываются
+        text = "1112";
+        updateMatcher();
+        System.out.println("без обратной ссылки значение цифр не учитывается: "
+                + m.matches()); // true
+
+        regex = "(\\d\\d)\\1"; // с обратной ссылки значения цифр учитываются
+        text = "1112";
+        updateMatcher();
+        System.out.println(m.matches()); // false
+        text = "1111";
+        updateMatcher();
+        System.out.println(m.matches()); // true
+
+
+        /*~~~~~~~~~~~~~~КВАНТИФИКАТОРЫ~~~~~~~~~~~~~~~~*/
+        /*~~~~~КВАНТИФИКАТОР ДЛЯ СИМВОЛА~~~~~*/
+        System.out.println("КВАНТИФИКАТОР ДЛЯ СИМВОЛА");
+        System.out.println("b".matches("a?")); // false (другой вообще символ)
+        System.out.println("".matches("a*")); // true (0 или более)
+        System.out.println("".matches("a+")); // false (1 или более)
+        System.out.println("aaa".matches("a{3}")); // true (ровно 3)
+        System.out.println("aaaaa".matches("a{3,}")); // true (3 и больше)
+        System.out.println("aaaaa".matches("a{1,6}")); // true (от 1 до 6)
+
+        /*~~~~~КВАНТИФИКАТОР ДЛЯ КЛАССА СИМВОЛОВ~~~~~*/
+        System.out.println("КВАНТИФИКАТОР ДЛЯ КЛАССА СИМВОЛОВ");
+        System.out.println("aba".matches("[ab]{3}")); // true (ровно 3 раза 1 из указанных)
+
+        /*~~~~~КВАНТИФИКАТОР ДЛЯ ЗАХВАЧЕННОЙ ГРУППЫ~~~~~*/
+        System.out.println("КВАНТИФИКАТОР ДЛЯ ЗАХВАЧЕННОЙ ГРУППЫ");
+        System.out.println("abaaba".matches("(aba){2}")); // true (ровно 2 раза указанная группа)
+
+
+        /*~~~~~~~~~~~~~~УКАЗАНИЕ МЕСТА СОВПАДЕНИЯ~~~~~~~~~~~~~~~~*/
+        System.out.println("УКАЗАНИЕ МЕСТА СОВПАДЕНИЯ");
+        /*В НАЧАЛЕ СТРОКИ*/
+        regex = "^what"; //
+        text = "what wat what";
+        updateMatcherAndFind();
+        System.out.println("совпадение в начале строки найдено, с индекса: " + m.start()); // 0
+
+        /*В КОНЦЕ СТРОКИ*/
+        regex = "what$"; //
+        text = "what wat what";
+        updateMatcherAndFind();
+        System.out.println("совпадение в конце строки найдено с индекса: " + m.start()); // 9
+
+        /*В РАМКАХ СЛОВА */
+        regex = "\\bwhat\\b";
+        text = "whatty whatty whatty";
+        updateMatcher();
+        System.out.println("совпадение в рамках слова найдено: " + m.find()); // false
+        text = "whatty what whatty";
+        updateMatcher();
+        System.out.println("совпадение в рамках слова найдено: " + m.find()); // true
+
+
+        /*~~~~~~~~~~~~~~~~~~~~~~~~~~СПОСОБЫ ВАЛИДАЦИИ ТЕКСТА ПО ШАБЛОНУ~~~~~~~~~~~~~~~~~~~~~~~~~~*/
         System.out.println("ПРОВЕРКА ВСЕГО ТЕКСТА НА СООТВЕТСТВИЕ ШАБЛОНУ");
+
         /* КЛАССИЧЕСКИЙ: PATTERN + MATCHER */
         p = Pattern.compile("[Ss]ome string"); // задается необходимый для поиска шаблон
         m = p.matcher("Some string"); // задается текст, где производится поиск
         System.out.println("Классическая проверка: " + m.matches()); // производится проверка
+
         /* БЫСТРЫЙ: БЕЗ СОЗДАНИЯ ОБЪЕКТА MATCHER */
         System.out.println("Быстрая проверка без объекта Matcher: "
                 + Pattern.matches("[Ss]ome string", ("Some string")));
+
         /* БЫСТРЫЙ: БЕЗ СОЗДАНИЯ СОЗДАНИЯ ОБЪЕКТОВ PATTERN И MATCHER */
         System.out.println("Быстрая проверка без объектов Pattern и Matcher: "
                 + "Some string".matches("[Ss]ome string"));
@@ -531,6 +615,7 @@ public class Main {
 
         /*~~~~~~~~~~~~~~~~~~~~ФЛАГИ PATTERN.COMPILE()~~~~~~~~~~~~~~~~~~~~ */
         System.out.println("ФЛАГИ PATTERN.COMPILE() И ИХ СИНОНИМЫ");
+
         /* CASE_INSENSITIVE - ИГНОРИРОВАНИЕ РЕГИСТРА (+ ДЛЯ СИМВОЛОВ UNICODE)*/
         p = Pattern.compile("строка", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         m = p.matcher("СТРОКА");
@@ -543,12 +628,11 @@ public class Main {
         System.out.println("Игнорирование пробелов и комментариев: " + m.matches());
         System.out.println("Синоним:" + "somestring".matches("(?x)some string"));
 
-        /* MULTILINE - РАЗРЕШЕНИЕ МНОГОСТРОЧНОГО РЕЖИМА ПАТТЕРНА */
-
 
         /* ~~~~~~~~~~~~~~~~~~~~ДРУГИЕ ВАЖНЫЕ МЕТОДЫ PATTERN~~~~~~~~~~~~~~~~~~~~
          * - compile() и matches() см. выше*/
         System.out.println("ДРУГИЕ ВАЖНЫЕ МЕТОДЫ PATTERN");
+
         /* SPLIT() - РАЗДЕЛИТЬ СТРОКУ НА МАССИВ ПО МЕСТАМ СОВПАДЕНИЙ */
         p = Pattern.compile(" ");
         String[] sa = p.split("one two three");
@@ -565,6 +649,7 @@ public class Main {
         /* ~~~~~~~~~~~~~~~~~~~~АНАЛОГИЧНЫЕ МЕТОДЫ И КЛАССА STRING ~~~~~~~~~~~~~~~~~~~~
          * - matches() см. выше */
         System.out.println("АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ КЛАССА STRING");
+
         /* SPLIT() */
         text = "Split this string";
         System.out.println("split(): " + Arrays.toString(text.split(" ")));
@@ -574,8 +659,8 @@ public class Main {
         System.out.println("ГРУППЫ МЕТОДОВ MATCHER");
         regex = "(i(f))";
         text = "ififif";
-        p = Pattern.compile(regex);
-        m = p.matcher(text);
+        updateMatcher();
+
         /*~~~~~~~~~~~~ МЕТОДЫ ИЗУЧЕНИЯ ~~~~~~~~~~~~
          * - кроме matches()*/
         /* LOOKINGAT() - поиск совпадения начиная с начала диапазона, а не для ВСЕГО диапазона*/
@@ -591,6 +676,7 @@ public class Main {
          *   - start(int group)*/
         System.out.println("Стартовый индекс последнего вхождения: " + m.start()); // 4
         System.out.println("Стартовый индекс последнего вхождения группы 2: " + m.start(2)); // 5
+
         /* END () - индекс, следующий за последним совпадением
          * - end(int group)*/
         System.out.println("Последний индекс последнего вхождения (+1): " + m.end()); // 6
@@ -600,6 +686,7 @@ public class Main {
         /*~~~~~~~~~~~~ МЕТОДЫ ГРУПП ~~~~~~~~~~~~*/
         /*GROUP(int number) - вернуть строкой группу по указанному номеру*/
         System.out.println("Количество групп в выражении: " + m.group(2)); // f
+
         /*GROUPCOUNT() - количество групп в выражении (без учета нулевой)*/
         System.out.println("Количество групп в выражении: " + m.groupCount()); // 2
 
@@ -607,6 +694,7 @@ public class Main {
         /*~~~~~~~~~~~~ МЕТОДЫ ЗАМЕНЫ ~~~~~~~~~~~~*/
         /* REPLACEFIRST() - замена первого вхождения*/
         System.out.println("Замена первого вхождения: " + m.replaceFirst("1")); //1ifif
+
         /* REPLACEALL() - замена всех вхождений*/
         System.out.println("Замена всех вхождений: " + m.replaceAll("2")); //222
 
@@ -615,18 +703,18 @@ public class Main {
         System.out.println("АНАЛОГИЧНЫЕ МЕТОДЫ ИЗ КЛАССА STRING");
         regex = "(i(f))";
         text = "ififif";
+
         /* REPLACEFIRST() - замена первого вхождения*/
         System.out.println("Замена первого вхождения: " + text.replaceFirst(regex, "1")); //1ifif
+
         /* REPLACEALL() - замена всех вхождений*/
         System.out.println("Замена всех вхождений: " + text.replaceAll(regex, "2")); //222
-
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ МЕТОДЫ PATTERNSYNTAXEXCEPTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
         System.out.println("МЕТОДЫ КЛАССА PATTERNSYNTAXEXCEPTION");
 //        regex = "(i&"; // нужно сначала раскомитить
         text = "ififif";
         try {
-
             p = Pattern.compile(regex);
         } catch (PatternSyntaxException e) {
             System.out.println(e.getMessage()); // Unclosed group near index 3 (i&
@@ -634,207 +722,25 @@ public class Main {
         }
 
 
-        /*
-         *//*~~~~~~~~~~~~~~~~~~~~КЛАССЫ (ТИПЫ) СИМВОЛОВ~~~~~~~~~~~~~~~~~~~~*//*
-         *//* ПРОСТОЙ КЛАСС *//*
-        Pattern patternClassSimple = Pattern.compile("[Ss]ome string"); // любой из указанных символов
-        *//* ОТРИЦАНИЕ *//*
-        Pattern patternClassNegation = Pattern.compile("[^A]ome string"); // не указанный символ
-        *//* ДИАПАЗОН *//*
-        Pattern patternClassRange = Pattern.compile("[A-Z]ome string"); // любой из указанного диапазона
-        *//* ОБЪЕДИНЕНИЕ *//*
-        Pattern patternClassUnion = Pattern.compile("[A-E[N-Z]]ome string");// любой из указанных диапазонов
-        *//* ПЕРЕСЕЧЕНИЕ *//*
-        Pattern patternClassIntersection = Pattern.compile("[A-Z&&[OPS]]ome string"); // любой из пересечения
-        *//* ВЫЧИТАНИЕ *//*
-        Pattern patternClassSubtraction = Pattern.compile("[A-Z&&[^PQ]]ome string");
-        Pattern patternClassSubtraction2 = Pattern.compile("[A-Z&&[^D-F]]ome string");
 
-        Matcher matcherClassSimple = patternClassSimple.matcher("Some string");
-        Matcher matcherClassRange = patternClassRange.matcher("Some string");
-        Matcher matcherClassUnion = patternClassUnion.matcher("Some string");
-        Matcher matcherClassIntersection = patternClassIntersection.matcher("Some string");
-        Matcher matcherClassSubtraction = patternClassSubtraction.matcher("Some string");
-        Matcher matcherClassSubtraction2 = patternClassSubtraction2.matcher("Some string");
-
-        *//*~~~~~~~~~~~~~~~~~~~~ПРЕДУСТАНОВЛЕННЫЕ КЛАССЫ СИМВОЛОВ~~~~~~~~~~~~~~~~~~~~*//*
-         *//*ЛЮБОЙ СИМВОЛ*//*
-        Pattern patternPredefinedAny = Pattern.compile("[.]ome string");
-        *//*ЦИФРОВОЙ СИМВОЛ*//*
-        Pattern patternPredefinedDigit = Pattern.compile("[\\d]ome string");
-        *//*НЕЦИФРОВОЙ СИМВОЛ*//*
-        Pattern patternPredefinedNonDigit = Pattern.compile("[\\D]ome string");
-        *//*ПУСТОЙ СИМВОЛ*//*
-        Pattern patternPredefinedSpace = Pattern.compile("Some[\\s]string");
-        *//*НЕПУСТОЙ СИМВОЛ*//*
-        Pattern patternPredefinedNonSpace = Pattern.compile("[\\S]ome string");
-        *//*СИМВОЛ В СЛОВЕ*//*
-        Pattern patternPredefinedWord = Pattern.compile("[\\w]ome string");
-        *//*СИМВОЛ В НЕСЛОВЕ*//*
-        Pattern patternPredefinedNonWord = Pattern.compile("Some[\\W]string");
-
-        Matcher matcherPredefinedAny = patternPredefinedAny.matcher("Some string");
-        Matcher matcherPredefinedDigit = patternPredefinedDigit.matcher("Some string");
-        Matcher matcherPredefinedNonDigit = patternPredefinedNonDigit.matcher("Some string");
-        Matcher matcherPredefinedSpace = patternPredefinedSpace.matcher("Some string");
-        Matcher matcherPredefinedNonSpace = patternPredefinedNonSpace.matcher("Some string");
-        Matcher matcherClassPredefinedWord = patternPredefinedWord.matcher("Some string");
-        Matcher matcherPredefinedNonWord = patternPredefinedNonWord.matcher("Some string");
-
-
-        *//* ~~~~~~~~~~~~~~~~~~~~КВАНТИФИКАТОРЫ~~~~~~~~~~~~~~~~~~~~ *//*
-         *//* 1 ИЛИ НИ ОДНОГО *//*
-        Pattern patternQuantifierOnceOrZero = Pattern.compile("[S]?ome string");
-        *//* 0 ИЛИ БОЛЕЕ *//*
-        Pattern patternQuantifierZeroOrMore = Pattern.compile("[S]*ome string");
-        *//* 1 ИЛИ БОЛЕЕ *//*
-        Pattern patternQuantifierOnceOrMore = Pattern.compile("[S]+ome string");
-        *//* УКАЗАННОЕ КОЛИЧЕСТВО РАЗ *//*
-        Pattern patternQuantifierNTimes = Pattern.compile("[S]{1}ome string");
-        *//* МИНИМУМ УКАЗАННОЕ КОЛИЧЕСТВО РАЗ *//*
-        Pattern patternQuantifierMinNTimes = Pattern.compile("[S]{1,}ome string");
-        *//* ДИАПАЗОН УКАЗАННЫХ РАЗ *//*
-        Pattern patternQuantifierRangeTimes = Pattern.compile("[S]{1,10}ome string");
-
-        Matcher matcherQuantifierOnceOrZero = patternQuantifierOnceOrZero.matcher("Some string");
-        Matcher matcherQuantifierZeroOrMore = patternQuantifierZeroOrMore.matcher("Some string");
-        Matcher matcherQuantifierOnceOrMore = patternQuantifierOnceOrMore.matcher("Some string");
-        Matcher matcherQuantifierNTimes = patternQuantifierNTimes.matcher("Some string");
-        Matcher matcherQuantifierMinNTimes = patternQuantifierMinNTimes.matcher("Some string");
-        Matcher matcherQuantifierRangeTimes = patternQuantifierRangeTimes.matcher("Some string");
-
-
-        *//* ~~~~~~~~~~СРАВНЕНИЕ КВАНТИФИКАТОРОВ~~~~~~~~~~ *//*
-        String s = "a";
-
-        String regexOneOrZero = "a?";
-        //1 совпадение: "a" - начало index 0 и конец index 1
-        //2 совпадение: "" - начало index 1 и конец index 1
-
-        String regexAnyNumber = "a*";
-        //1 совпадение: "a" - начало index 0 и конец index 1
-        //2 совпадение: "" - начало index 1 и конец index 1
-
-        String regexOneOrMore = "a+"; //
-        // 1 совпадение: "a" - начало index 0 и конец index 1
-
-
-        String s2 = "aaaaa";
-        // String regexOneOrZero = "a?";
-        //1 совпадение: "a" - начало index 0 и конец index 1
-        //2 совпадение: "a" - начало index 1 и конец index 2
-        //3 совпадение: "a" - начало index 2 и конец index 3
-        //4 совпадение: "a" - начало index 3 и конец index 4
-        //5 совпадение: "a" - начало index 4 и конец index 5
-        //6 совпадение: "" - начало index 5 и конец index 5
-
-        //String regexAnyNumber = "a*";
-        //1 совпадение: "a" - начало index 0 и конец index 1
-        //2 совпадение: "" - начало index 5 и конец index 5
-
-        // String regexOneOrMore = "a+"; //
-        // 1 совпадение: "aaaaa" - начало index 0 и конец index 5
-
-
-        *//* ЗАХВАТ ГРУППЫ *//*
-
-
-
-
-
-         *//*~~~~~~~~~~~~~~~~~~~~ МЕТОДЫ MATCHER ~~~~~~~~~~~~~~~~~~~~*//*
-         *//* MATCHES() - попытка сверить весь диапазон с паттерном *//*
-        System.out.println("matcher: " + mClassic.matches()); // false, должен полностью соответствовать вводу
-        // Простые классы символов
-        System.out.println("matcherClassSimple: " + matcherClassSimple.matches()); // true
-        System.out.println("matcherClassRange: " + matcherClassRange.matches()); // true
-        System.out.println("matcherClassUnion: " + matcherClassUnion.matches()); // true
-        System.out.println("matcherClassIntersection: " + matcherClassIntersection.matches()); // true
-        System.out.println("matcherClassSubtraction: " + matcherClassSubtraction.matches()); // true
-        System.out.println("matcherClassSubtraction2: " + matcherClassSubtraction2.matches()); // true
-        // Специальные классы символов
-        System.out.println("matcherPredefinedAny: " + matcherPredefinedAny.matches()); // true
-        System.out.println("matcherPredefinedDigit: " + matcherPredefinedDigit.matches()); // false
-        System.out.println("matcherPredefinedNonDigit: " + matcherPredefinedNonDigit.matches()); // true
-        System.out.println("matcherPredefinedSpace: " + matcherPredefinedSpace.matches()); // true
-        System.out.println("matcherPredefinedNonSpace: " + matcherPredefinedNonSpace.matches()); // true
-        System.out.println("matcherClassPredefinedWord: " + matcherClassPredefinedWord.matches()); // true
-        System.out.println("matcherPredefinedNonWord: " + matcherPredefinedNonWord.matches()); // true
-        // Квантификаторы
-        System.out.println("matcherQuantifierOnceOrZero: " + matcherQuantifierOnceOrZero.matches()); // true
-        System.out.println("matcherQuantifierZeroOrMore: " + matcherQuantifierZeroOrMore.matches()); // true
-        System.out.println("matcherQuantifierOnceOrMore: " + matcherQuantifierOnceOrMore.matches()); // true
-        System.out.println("matcherQuantifierNTimes: " + matcherQuantifierNTimes.matches()); // true
-        System.out.println("matcherQuantifierMinNTimes: " + matcherQuantifierMinNTimes.matches()); // true
-        System.out.println("matcherQuantifierRangeTimes: " + matcherQuantifierRangeTimes.matches()); // true
-
-
-
-
-
-        *//* FIND() - поиск следующей подпоследовательности, которая соответствует паттерну *//*
-        System.out.println(mClassic.find()); // true
-
-
-
-
-        *//* ~~~~~~~~~~~~~~~~~~~~СОВПАДЕНИЯ НУЛЕВОЙ ДЛИНЫ~~~~~~~~~~~~~~~~~~~~ *//*
-         *//* ПУСТЫЕ СТРОКИ *//*
-        String s1 = "a";
-        // 2 совпадения: "a" - начало index 0 и конец index 1, "" - начало index 1 и конец index 1
-        String regex = "a?"; // 1ое совпадение: на index 0 and ending at index 1
-        String regex2 = "a*"; //
-        // 1 совпадение: "a" - начало index 0 и конец index 1
-        String regex3 = "a+*"; //
-*/
-
-
-
-/*        Console console = System.console();
-        if (console == null) {
-            System.err.println("No console");
-            System.exit(1);
-        }
-
-        while (true) {
-            Pattern pattern = Pattern.compile(console.readLine("%nEnter your regex: "));
-
-            Matcher matcher = pattern.matcher(console.readLine("Enter input string to search: "));
-
-            boolean found = false;
-            while (matcher.find()) {
-                console.format("I found the text \"%s\" starting at index %d and ending at " +
-                                "index %d.%n",
-                        matcher.group(),
-                        matcher.start(),
-                        matcher.end());
-                found = true;
-            }
-
-            if (!found) {
-                console.format("No match found.%n");
-            }
-        }*/
-
-
-
-
-
+        /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ПОЛЕЗНЫЕ РЕГУЛЯРНЫЕ ВЫРАЖЕНИЯ~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
         /* ПРОВЕРКА ТЕЛЕФОНА */
-        /* ПРОВЕРКА EMAIL */
+        regex = "\\+?(\\d)?(\\d)?(\\(\\s)?(\\d){3}(\\)\\s)?(\\d){3}((-\\s)?(\\d){2}){2}";
+        text = "+38(067)437-47-89";
+        updateMatcher();
+        System.out.println("корректная форма украинского номера телефона: " + m.matches());
+
         /* ПРОВЕРКА IP */
+        regex = "";
+        text = "";
+        updateMatcher();
+        System.out.println("корректная форма IP: " + m.matches());
 
-
-
-
-        /*"Необязательный знак "минус", за которым следует однак или нескольких цифр:
-         *      -?\d+ */
-/*        System.out.println("-1234".matches("-?\\d+")); // true
-        System.out.println("1234".matches("-?\\d+")); // true
-        System.out.println("+1234".matches("-?\\d+")); // false
-        *//*То же, но либо плюс либо минус:
-         *      (-|\\+)?\\d+ *//*
-        System.out.println("+1234".matches("(-|\\+)?\\d+")); // false*/
+        /* ПРОВЕРКА EMAIL */
+        regex = "";
+        text = "";
+        updateMatcher();
+        System.out.println("корректная форма email: " + m.matches());
 
     }
 }
