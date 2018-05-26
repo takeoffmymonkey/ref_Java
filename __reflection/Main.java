@@ -4,8 +4,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import types_references_annotations.my_annotations.Ntrstn;
 
@@ -159,26 +162,28 @@ java.lang.annotation.RetentionPolicy RUNTIME*/
 /* МЕТОДЫ ПОЛУЧЕНИЯ ПОЛЕЙ
  * - getDeclaredField(): вернет указанное поле, если оно объявлено в классе, в т.ч. приватное
  * - getDeclaredFields(): вернет указанные поля, если они объявлены в классе, в т.ч. приватные
- * - getField(): вернет указанное поле, если оно также и унаследованно, но не приватное
- * - getFields(): вернет указанные поля, если они также и унаследованны, но не приватные*/
+ * - getField(): вернет указанное ПУБЛИЧНОЕ поле, если оно также и унаследованно, но не приватное
+ * - getFields(): вернет указанные ПУБЛИЧНЫЕ поля, если они также и унаследованны, но не приватные*/
 
 
 /* МЕТОДЫ ПОЛУЧЕНИЯ МЕТОДОВ
- *  - getDeclaredMethod(): вернет указанный метод, если он объявлен в классе, в т.ч. приватные
+ * - getDeclaredMethod(): вернет указанный метод, если он объявлен в классе, в т.ч. приватные
  * - getDeclaredMethods(): вернет указанные методы, если они объявлены в классе, в т.ч. приватные
- * - getMethod(): вернет указанный метод, если он также и унаследованно, но не приватный
- * - getMethods(): вернет указанные методы, если они также и унаследованны, но не приватные*/
+ * - getMethod(): вернет указанный ПУБЛИЧНЫЙ метод, если он также и унаследованно, но не приватный
+ * - getMethods(): вернет указанные ПУБЛИЧНЫЕ методы, если они также и унаследованны, но не приватные*/
 
 
 /* МЕТОДЫ ПОЛУЧЕНИЯ КОНСТРУКТОРОВ
  * - getDeclaredConstructor(): вернет указанный конструктор, если он объявлен в классе, в т.ч. приватные
  * - getDeclaredConstructors(): вернет указанные конструкторы, если они объявлены в классе, в т.ч. приватные
- * - getConstructor(): вернет указанный конструктор, но не приватный
- * - getConstructors(): вернет указанные конструкторы, но не приватные*/
+ * - getConstructor(): вернет указанный ПУБЛИЧНЫЙ конструктор, но не приватный
+ * - getConstructors(): вернет указанные ПУБЛИЧНЫЕ конструкторы, но не приватные*/
 
 
 
-/* ДРУГИЕ МЕТОДЫ КЛАССА CLASS */
+/* ДРУГИЕ МЕТОДЫ КЛАССА CLASS
+ *
+ * - cast() */
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ЧЛЕНЫ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -209,7 +214,9 @@ Returns true if this member was introduced by the compiler; returns false otherw
  *      - модификаторы
  *      - аннотации
  *
+ *
  * - класс.getDeclaredFields(): получение всех полей (в т.ч. приватных), объявленных в данном классе
+ *
  * - класс.getFields(): получение всех публичных полей (в т.ч. унаследованных), кроме приватных
  *      - публичное поле доступно, если это член (1 из):
  *          - данного класса
@@ -217,14 +224,36 @@ Returns true if this member was introduced by the compiler; returns false otherw
  *          - интерфейса, имплементируемого данным классом
  *          - интерфейса, расширенного интерфейсом, имплементируемым данным классом
  *
+ * - компилятор может синтезировать поля, которых нет в исходном коде
+ *      - обычно, не публичное, поэтому нельзя получить через getField()
+ *      - узнать, является ли поле синтезированным при компиляции:
+ *          - isSynthetic()
+ *
+ * - узнать, является ли поле константой перечисления:
+ *      - isEnumConstant()
+ *
+ * - получение информации о типе:
+ *      - поле.getType():
+ *          - возвращает тип поля
+ *          - для обобщенного типа возвращает raw версию
+ *      - поле.getGenericType();
+ *          - возвращает тип поля (в т.ч. для необобщенных полей)
+ *          - для обобщенного типа возвращает обобщенную версию
+ *
+ * - получение и обработка модификаторов:
+ *      - поле.getModifiers();
+ *
+ * - получение и запись значения:
+ *      - должно использоваться как можно реже, т.к. нарушает смысл класса
+ *      - замедляет работу, т.к. требуется проверка доступа
+ *      - операция замены является атомарной, как и простой замене в коде
+ *      - такой код не будет оптимизирован JVM, если б без рефлексии была оптимизация
+ *      - get...(Object, ...)
+ *      - set...(Object, ...)
+ *          - если значение final, то будет вызвано IllegalAccessException
+ *      - если поле статическое, то объект просто игнорируется
+ *      - автоупаковка и автораспаковка не происходит, т.к. это runtime
  * */
-
-/* ПОЛУЧЕНИЕ ИНФОРМАЦИИ О ТИПЕ ПОЛЯ */
-
-/* ПОЛУЧЕНИЕ И ПАРСИНГ МОДИФИКАТОРОВ ПОЛЯ */
-
-/* ПОЛУЧЕНИЕ И ЗАПИСЬ ЗНАЧЕНИЯ ПОЛЯ */
-
 
 
 
@@ -233,10 +262,61 @@ Returns true if this member was introduced by the compiler; returns false otherw
  * java.lang.reflect.Method
  * - предоставляет доступ к информации о типах параметров и возвращаемого значения
  * - предоставляют возможность запускать нужный метод для указанного объекта
+ *
+ * - можно получить:
+ *      - название
+ *      - модификаторы
+ *      - параметры
+ *      - возвращаемый тип
+ *      - список выбрасываемых исключений
+ *
+ * - A Method permits widening conversions to occur when matching the actual parameters to invoke with the underlying method's formal parameters, but it throws an IllegalArgumentException if a narrowing conversion would occur
+ *
+ * - узнать, есть ли у метода переменное число аргументов:
+ *      - Method.isVarArgs()
+ *
+ * - получение информации о типе:
+ *      - возвращаемый тип:
+ *          - getReturnType()
+ *          - getGenericReturnType()
+ *
+ *      - типы параметров:
+ *          - getParameterTypes()
+ *          - getGenericParameterTypes()
+ *
+ *      - типы исключений:
+ *          - getExceptionTypes()
+ *          - getGenericExceptionTypes()
+ *              - exists because it is actually possible to declare a method with a generic exception type. However this is rarely used since it is not possible to catch a generic exception type.
+ *
+ *  - получение имен параметров:
+ *      - только, если код был скомпилирован с опцией -parameters
+ *          - иначе имена типа arg0
+ *              - parameter.isNamePresent() - узнать есть ли нормальное имя
+ *          - по дефолту имена не хранятся, чтобы сократить размер
+ *              - и чтобы нельзя было определить по имени важный параметр (типа secret или password)
+ *      - getParameters():
+ *          - унаследован от java.lang.reflect.Executable.getParameters
+ *              - этот класс наследуется классом Method и Constructor
+ *          - возвращает объекты класса Parameter
+ *              - имеют методы типа getName(), getType(), getModifiers и т.д.
+ *      - параметры могут быть синтезированными и неявными
+ *          - parameter.isSynthetic()
+ *          - parameter.isImplicit()
+ *              - например, у неявного конструктора (который добавляется в любой класс) внутреннего
+ *              класса в параметре также есть ссылка на обрамляющий класс
+ *                  - также добавляется неявное поле с этой ссылкой в сам класс
+ *
+ *
+ * - получение и парсинг модификаторов метода:
+ *
+ *
+ * - запуск метода:
+ *
+ *
+ *
  * */
 
-/* ПОЛУЧЕНИЕ ИНФОРМАЦИИ О ТИПЕ ДЛЯ МЕТОДА */
-/* ПОЛУЧЕНИЕ ИМЕН ПАРАМЕТРОВ МЕТОДА */
 /* ПОЛУЧЕНИЕ И ПАРСИНГ МОДИФИКАТОРОВ МЕТОДА */
 /* ЗАПУСК МЕТОДА */
 
@@ -249,6 +329,8 @@ Returns true if this member was introduced by the compiler; returns false otherw
  * - аналогично методам, кроме:
  *      - не имеет возвращаемого значения
  *      - вызов конструктора приводит к созданию экземпляра
+ *
+ *
  * */
 
 /* ПОИСК КОНСТРУКТОРА */
@@ -270,6 +352,8 @@ Returns true if this member was introduced by the compiler; returns false otherw
 @Ntrstn("По документации, членом является все, что наследуется, поэтому конструктор не является " +
         "членом класса. Однако в рефлексии он все равно считается за член")
 
+@Ntrstn("Я не могу поменять модификаторы и изменить значение финализированного поля")
+
 public class Main {
     static Modifier mod;
     static Class c;
@@ -280,10 +364,14 @@ public class Main {
     static Method[] ma;
     static Constructor k;
     static Constructor[] ka;
+    static Parameter p;
+    static Parameter[] pa;
 
     static Integer i = 33;
     static double[][] da = new double[1][];
     static String[][] sa = new String[1][];
+    static List<?> l = new ArrayList<>();
+    static List<Integer> l2 = new ArrayList<>();
     private Field field;
 
     public static void main(String[] args) {
@@ -353,10 +441,73 @@ public class Main {
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~РАБОТА С ЧЛЕНАМИ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+        /*~~~~~~~~~~~~~~~~~~~~~~ПОЛЯ~~~~~~~~~~~~~~~~~~~~~~*/
+        try {
+            f = c.getDeclaredField("mod");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        /* УЗНАТЬ, СИНТЕЗИРОВАНО ЛИ ПОЛЕ ПРИ КОМПИЛЯЦИИ */
+        f.isSynthetic(); // false
+
+        /* УЗНАТЬ, ЯВЛЯЕТСЯ ЛИ ПОЛЕ ЭКЗЕМПЛЯРОМ ПЕРЕЧИСЛИМОГО ТИПА */
+        f.isEnumConstant(); // false
+
+        /* ПОЛУЧЕНИЕ ИНФОРМАЦИИ О ТИПЕ ПОЛЯ*/
+        try {
+            f = c.getDeclaredField("mod");
+            f.getType(); // class java.lang.reflect.Modifier
+
+            f = c.getDeclaredField("l");
+            f.getType(); // interface java.util.List
+            f.getGenericType(); // java.util.List<?>
+
+            f = c.getDeclaredField("l2");
+            f.getType(); // interface java.util.List
+            f.getGenericType(); // java.util.List<java.lang.Integer>
+
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        /* ПОЛУЧЕНИЕ И ОБРАБОТКА ИНФОРМАЦИИ О МОДИФИКАТОРАХ ПОЛЯ */
+        Modifier.toString(f.getModifiers()); // static
+
+        /* ПОЛУЧЕНИЕ И УСТАНОВКА ЗНАЧЕНИЯ В ПОЛЕ */
+        try {
+            f = c.getDeclaredField("i");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        Main main = new Main();
+
+        /*ПОЛУЧЕНИЕ*/
+        try {
+            i = (Integer) f.get(main);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        /*УСТАНОВКА*/
+        try {
+            f.set(main, 44);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        /*~~~~~~~~~~~~~~~~~~~~~~МЕТОДЫ~~~~~~~~~~~~~~~~~~~~~~*/
+        ma = c.getDeclaredMethods();
+        System.out.println(Arrays.toString(ma));
+        try {
+            m = c.getDeclaredMethod("meth", Integer.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        pa = m.getParameters();
 
 
-        System.out.println(ka.length);
-        System.out.println(Arrays.toString(ka));
+        System.out.println(Arrays.toString(pa));
 
     }
 
@@ -369,6 +520,6 @@ public class Main {
     public class MainInner {
     }
 
-    void meth() {
+    void meth(Integer password) {
     }
 }
