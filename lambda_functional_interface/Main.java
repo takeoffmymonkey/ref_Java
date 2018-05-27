@@ -403,7 +403,7 @@ public class Main {
         /* Л-В */
         Hybrid hybrid2 = () -> {
             // у л-в не может быть членов, все переменные - локальные
-            System.out.println(getClass().getSimpleName()); // имя Main
+            System.out.println(getClass().getSimpleName()); // имя __Implicit_Synthetic_Bridge
             System.out.println(this); // ссылается на обрамляющий класс
 //                public int anonVar = 4; // локальные переменные не могут иметь модификаторы доступа
             classVar = 4; // есть доступ ко всем членам обрамляющего класса

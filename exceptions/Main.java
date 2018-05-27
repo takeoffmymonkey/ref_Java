@@ -699,8 +699,8 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
 //            java.lang.ArithmeticException: / by zero // результат toString()
-//            at exceptions.Main.printStackTraceMeth(Main.java:559) // последний метод
-//            at exceptions.Main.main(Main.java:596) // предпоследний метод
+//            at exceptions.__Implicit_Synthetic_Bridge.printStackTraceMeth(__Implicit_Synthetic_Bridge.java:559) // последний метод
+//            at exceptions.__Implicit_Synthetic_Bridge.main(__Implicit_Synthetic_Bridge.java:596) // предпоследний метод
         }
     }
 
@@ -713,12 +713,12 @@ public class Main {
             e.addSuppressed(new Exception("My suppressed"));
             e.printStackTrace();
 //            java.lang.ArithmeticException: / by zero
-//              at exceptions.Main.addSuppressedMeth(Main.java:579)
-//              at exceptions.Main.main(Main.java:598)
+//              at exceptions.__Implicit_Synthetic_Bridge.addSuppressedMeth(__Implicit_Synthetic_Bridge.java:579)
+//              at exceptions.__Implicit_Synthetic_Bridge.main(__Implicit_Synthetic_Bridge.java:598)
 //              Suppressed: java.lang.Exception: My suppressed // мое добавленное
-//                  at exceptions.Main.addSuppressedMeth(Main.java:581)
+//                  at exceptions.__Implicit_Synthetic_Bridge.addSuppressedMeth(__Implicit_Synthetic_Bridge.java:581)
 //		            ... 1 more // т.е. встреча 2 исключений произошла в addSuppressedMeth,
-// а ... 1 more - это Main.main(Main.java:598)
+// а ... 1 more - это __Implicit_Synthetic_Bridge.main(__Implicit_Synthetic_Bridge.java:598)
         }
     }
 

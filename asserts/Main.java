@@ -33,7 +33,7 @@ public class Main {
         //assert 5 > 10;
         /*ДАСТ ТОЛЬКО СТЕК ТРЕЙС:
          * Exception in thread "main" java.lang.AssertionError
-         * at asserts.Main.main(Main.java:21)*/
+         * at asserts.__Implicit_Synthetic_Bridge.main(__Implicit_Synthetic_Bridge.java:21)*/
 
 
         /*ФОРМА 2: assert Expression1 : Expression2;
@@ -42,6 +42,6 @@ public class Main {
         // assert 5 < 4 : "Хуяня якась"; // здесь мог бы быть код ошибки
         /*ДАСТ СТЕК ТРЕЙС С МОИМ ЗНАЧЕНИЕМ:
          * Exception in thread "main" java.lang.AssertionError: Хуяня якась
-         * at asserts.Main.main(Main.java:34)*/
+         * at asserts.__Implicit_Synthetic_Bridge.main(__Implicit_Synthetic_Bridge.java:34)*/
     }
 }

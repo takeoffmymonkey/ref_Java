@@ -1,7 +1,10 @@
 package __reflection;
 
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -183,7 +186,16 @@ java.lang.annotation.RetentionPolicy RUNTIME*/
 
 /* ДРУГИЕ МЕТОДЫ КЛАССА CLASS
  *
- * - cast() */
+ * - cast()
+ *
+ * setAccessible
+ *
+ * boolean isAssignableFrom(Class<?> cls)
+ * Integer.class.isAssignableFrom(int.class) == false
+ * Strictly speaking, any attempt to set a field of type X to a value of type Y can only succeed if the following statement holds:
+X.class.isAssignableFrom(Y.class) == true
+ *
+ * */
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ЧЛЕНЫ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -309,18 +321,26 @@ Returns true if this member was introduced by the compiler; returns false otherw
  *
  *
  * - получение и парсинг модификаторов метода:
+ *      - метод.getModifiers()
  *
  *
  * - запуск метода:
- *
- *
+ *      - this would only be necessary if it is not possible to cast an instance of the class to the desired type in non-reflective code
+ *      - метод.invoke(Object o, params...)
+ *          - если статический, то вместо объекта null
+ *          - если викидывает исключение будет обвернуто в InvocationTargetException
+ *              - получить оригинал: InvocationTargetException.getCause()
+ *      - если переменное число аргументов, передается массив
  *
  * */
 
-/* ПОЛУЧЕНИЕ И ПАРСИНГ МОДИФИКАТОРОВ МЕТОДА */
-/* ЗАПУСК МЕТОДА */
 
+/*An IllegalAccessException is thrown if an attempt is made to invoke a private or otherwise
+inaccessible method.
+m.setAccessible(true) = solution;
+An access restriction exists which prevents reflective invocation of methods which normally would not be accessible via direct invocation. (This includes---but is not limited to---private methods in a separate class and public methods in a separate private class.) However, Method is declared to extend AccessibleObject which provides the ability to suppress this check via AccessibleObject.setAccessible(). If it succeeds, then subsequent invocations of this method object will not fail due to this problem.
 
+*/
 
 
 
@@ -330,29 +350,133 @@ Returns true if this member was introduced by the compiler; returns false otherw
  *      - не имеет возвращаемого значения
  *      - вызов конструктора приводит к созданию экземпляра
  *
+ * - поиск конструктора:
+ *      класс.getConstructors()
+ *
+ * There is not an explicit Modifier constant which corresponds to "package-private" access, so it
+ * is necessary to check for the absence of all three access modifiers to identify a package-private constructor.
+ *
+ * Constructors implement java.lang.reflect.AnnotatedElement, which provides methods to retrieve runtime annotations with java.lang.annotation.RetentionPolicy.RUNTIME.
+ *
+ *
+ * An important difference between new and Constructor.newInstance() is that new performs method
+ * argument type checking, boxing, and method resolution. None of these occur in reflection, where
+ * explicit choices must be made.
+ *
+ * - создавать экземпляр можно 2 методами:
+ *      - java.lang.reflect.Constructor.newInstance()
+ *          - предпочтительный
+ *              It is preferable to use Constructor.newInstance() over Class.newInstance() because the former API permits examination and handling of arbitrary exceptions thrown by constructors.
+ *          - вызывает конструктор с любым числом аргументов
+ *          - оборачивает исключения в InvocationTargetException
+ *          - в некоторых случаях также может вызывать приватные конструкторы
+ *
+ *      - Class.newInstance()
+ *          - вызывает только конструктор с 0 аргументов
+ *          - выбрасывает любое исключение конструктора
+ *              - проверяемое и не проверяемое
+ *          - конструктор должен быть доступен
+ *
+ *
+ * An access restriction exists which prevents reflective invocation of constructors which normally would not be accessible via direct invocation. (This includes, but is not limited to, private constructors in a separate class and public constructors in a separate private class.) However, Constructor is declared to extend AccessibleObject which provides the ability to suppress this check via AccessibleObject.setAccessible().
+ * */
+
+
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~МАССИВЫ И ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * - с точки зрения рефлексии обычные классы
+ * - все, что описано выше применяется и к ним
+ *      - но для них также есть дополнительные API
+ * */
+
+
+/*~~~~~~~~~~~~~~~~~~~~~МАССИВЫ~~~~~~~~~~~~~~~~~~~~~
+ * - сами массивы имплементированы в JVM, а единственные методы, которые им доступны - Object
+ *
+ * - Class.isArray()
+ *
+ * - java.lang.reflect.Array
+ *      - статические методы позволяют:
+ *          - узнать тип массива
+ *          - узнать тип компонентов
+ *          - создавать новый массив
+ *          - получать и устанавливать значения компонентов
+ *
+ *
+ * - получение и установка массивов:
+ *      - Field.get(Object)
+ *      - Field.set(Object obj, Object value)
+ *
+ * - узнать тип массива (аналогично имени класса): класс.getName()
+ *
+ * - узнать тип компонентов: класс.getComponentType()
+ *
+ * - создание нового массива:
+ *      - java.lang.reflect.Array.newInstance(Class type, int length)
+ *      - Array.newInstance(Class<?> componentType, int... dimensions)
+ *          - для многомерного
+ *
+ * - получение и установка элементов массива:
+ *      - примитивы:
+ *          - Array.set...(Object array, int index, ... value)
+ *          - Array.get...(Object array, int index)
+ *          - методы поддерживают автоматическое расширение
+ *              - т.е. Array.getShort() можно использовать, чтобы установить значение в int-овый
+ *              массив
+ *              - а вызов Array.setLong() для массива из int приведет к IllegalArgumentException
+ *      - ссылочные
+ *          - Array.set(Object array, int index, Object value)
+ *          - Array.get(Object array, int index)
+ *
+ * - узнать длину массива (относится):
+ *      - java.lang.reflect.Array.getLength(Object o)
+ *
+ *
  *
  * */
 
-/* ПОИСК КОНСТРУКТОРА */
-
-/* ПОЛУЧЕНИЕ И ПАРСИНГ МОДИФИКАТОРОВ КОНСТРУКТОРА */
-
-/* СОЗДАНИЕ НОВЫХ ЭКЗЕМПЛЯРОВ */
+/*AccessibleObject*/
 
 
-
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~МАССИВЫ И ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
+/* ~~~~~~~~~~~~~~~~~~~~~ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~
+ * - All enums implicitly extend java.lang.Enum
+ * - Class.isEnum()
+ * - Class.getEnumConstants() retrieves the enum constants defined in an enum.
+ * - java.lang.reflect.Field.isEnumConstant() indicates whether a field is an enumerated type
+ *
+ * - поле.isEnumConstant(): почему-то не работает
+ *
+ * - инициализировать экземпляры нельзя
+ *      - даст IllegalArgumentException
+ *      -  It is a compile-time error to attempt to explicitly instantiate an enum because that would prevent the defined enum constants from being unique. This restriction is also enforced in reflective code. Code which attempts to instantiate classes using their default constructors should invoke Class.isEnum() first to determine if the class is an enum.
+ * For various reasons, including support for evolution of the enum type, the declaration order of enum constants is important. Class.getFields() and Class.getDeclaredFields() do not make any guarantee that the order of the returned values matches the order in the declaring source code. If ordering is required by an application, use Class.getEnumConstants().
+ *
+ *
+ * */
 
 
 /*Class.newInstance() will throw an InstantiationException if an attempt is made to create a new instance of the class and the zero-argument constructor is not visible.*/
+
+@Ntrstn("Упаковка (boxing) и распаковка происходят во время компиляции, поэтому не работают для " +
+        "рефлексии")
+
+@Ntrstn("удобно для IDE показывать структуру класса и отделять синтетические и неявные методы, параметры")
 
 @Ntrstn("По документации, членом является все, что наследуется, поэтому конструктор не является " +
         "членом класса. Однако в рефлексии он все равно считается за член")
 
 @Ntrstn("Я не могу поменять модификаторы и изменить значение финализированного поля")
+
+@Ntrstn("Методы класса Class работают для всех ссылочных типов, включая массивы и перечисления. " +
+        "Однако для последних еще существует отдельное API ")
+
+@Ntrstn("Метод поле.isEnumConstant() предназначен для полей САМОГО класса перечисления, а не полей " +
+        "перечислимого типа в обычных классах. Является ли тип поля обычного класса перечислимым " +
+        "можно определить методом класс.isEnum(), предварительно узнав его тип методом getType")
+
+@Ntrstn("Инициализировать экземпляры перечисления нельзя, при попытке возникнет исключение " +
+        "IllegalArgumentException ")
 
 public class Main {
     static Modifier mod;
@@ -373,8 +497,12 @@ public class Main {
     static List<?> l = new ArrayList<>();
     static List<Integer> l2 = new ArrayList<>();
     private Field field;
+    static TestEnum testEnum = TestEnum.ONE;
 
-    public static void main(String[] args) {
+    enum TestEnum {ONE, TWO}
+
+
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         /* ~~~~~~~~~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЭКЗЕМПЛЯРА CLASS ДЛЯ ТИПА/ОБЪЕКТА~~~~~~~~~~~~~~~~~~~~~~~ */
         /* ~~~~~~~~~ПОЛУЧЕНИЕ ЭКЗЕМПЛЯРА CLASS~~~~~~~~~*/
         /* ДЛЯ ССЫЛОЧНЫХ ТИПОВ ПО ОБЪЕКТАМ */
@@ -393,30 +521,28 @@ public class Main {
         c = Void.TYPE; // void
 
         /* ПО ПОЛНОМУ ИМЕНИ КЛАССА */
-        try {
-            c = Class.forName("java.lang.Integer");
-            c = Class.forName("[[D");
-            c = Class.forName("[[Ljava.lang.String;");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        c = Class.forName("java.lang.Integer");
+        c = Class.forName("[[D");
+        c = Class.forName("[[Ljava.lang.String;");
+
+
 
 
         /* ~~~~~~~~~ПОЛУЧЕНИЕ ЭКЗЕМПЛЯРА CLASS ОТ ДРУГОГО CLASS ~~~~~~~~~*/
         /* ПОЛУЧЕНИЕ РОДИТЕЛЯ */
-        c = Child.class.getSuperclass(); // __reflection.Main
+        c = Child.class.getSuperclass(); // __reflection.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ОБРАМЛЯЮЩЕГО КЛАССА */
-        c = MainInner.class.getEnclosingClass(); // __reflection.Main
+        c = MainInner.class.getEnclosingClass(); // __reflection.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ВСЕХ КЛАССОВ, ИНТЕРФЕЙСОВ И ПЕРЕЧИСЛЕНИЙ, КОТОРЫЕ ЯВЛЯЮТСЯ ЧЛЕНАМИ (В Т.Ч. УНАСЛЕДОВАННЫЕ) */
-        ca = __reflection.Main.class.getClasses(); // [class __reflection.Main$MainInner, class __reflection.Main$Child]
+        ca = __reflection.Main.class.getClasses(); // [class __reflection.__Implicit_Synthetic_Bridge$MainInner, class __reflection.__Implicit_Synthetic_Bridge$Child]
 
         /* ПОЛУЧЕНИЕ ВСЕХ ЧЛЕНОВ, КОТОРЫЕ ЯВНО ОБЪЯВЛЕНЫ В КЛАССЕ */
-        ca = __reflection.Main.Child.class.getDeclaredClasses(); // [class __reflection.Main$Child$ChildOwnInner]
+        ca = __reflection.Main.Child.class.getDeclaredClasses(); // [class __reflection.__Implicit_Synthetic_Bridge$Child$ChildOwnInner]
 
         /* ПОЛУЧЕНИЕ КЛАССА/ЧЛЕНОВ, В КОТОРОМ ОН ОБЪЯВЛЕН */
-        c = __reflection.Main.Child.class.getDeclaringClass(); // __reflection.Main
+        c = __reflection.Main.Child.class.getDeclaringClass(); // __reflection.__Implicit_Synthetic_Bridge
 
 
 
@@ -429,24 +555,18 @@ public class Main {
         /* ~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЧЛЕНОВ (КОНСТРУКТОРОВ, МЕТОДОВ, ПОЛЕЙ) КЛАССА ~~~~~~~~~~~~~~~*/
         c = Main.class;
 
-        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __reflection.Main.mod, etc
-        try {
-            f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __reflection.Main.mod
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __reflection.__Implicit_Synthetic_Bridge.mod, etc
 
-        ma = c.getMethods(); // public static void __reflection.Main.main(java.lang.String[]), etc.
-        ka = c.getConstructors(); // public __reflection.Main()
+        f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __reflection.__Implicit_Synthetic_Bridge.mod
+
+        ma = c.getMethods(); // public static void __reflection.__Implicit_Synthetic_Bridge.main(java.lang.String[]), etc.
+        ka = c.getConstructors(); // public __reflection.__Implicit_Synthetic_Bridge()
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~РАБОТА С ЧЛЕНАМИ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
         /*~~~~~~~~~~~~~~~~~~~~~~ПОЛЯ~~~~~~~~~~~~~~~~~~~~~~*/
-        try {
-            f = c.getDeclaredField("mod");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+
+        f = c.getDeclaredField("mod");
 
         /* УЗНАТЬ, СИНТЕЗИРОВАНО ЛИ ПОЛЕ ПРИ КОМПИЛЯЦИИ */
         f.isSynthetic(); // false
@@ -455,59 +575,108 @@ public class Main {
         f.isEnumConstant(); // false
 
         /* ПОЛУЧЕНИЕ ИНФОРМАЦИИ О ТИПЕ ПОЛЯ*/
-        try {
-            f = c.getDeclaredField("mod");
-            f.getType(); // class java.lang.reflect.Modifier
 
-            f = c.getDeclaredField("l");
-            f.getType(); // interface java.util.List
-            f.getGenericType(); // java.util.List<?>
+        f = c.getDeclaredField("mod");
+        f.getType(); // class java.lang.reflect.Modifier
 
-            f = c.getDeclaredField("l2");
-            f.getType(); // interface java.util.List
-            f.getGenericType(); // java.util.List<java.lang.Integer>
+        f = c.getDeclaredField("l");
+        f.getType(); // interface java.util.List
+        f.getGenericType(); // java.util.List<?>
 
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+        f = c.getDeclaredField("l2");
+        f.getType(); // interface java.util.List
+        f.getGenericType(); // java.util.List<java.lang.Integer>
+
 
         /* ПОЛУЧЕНИЕ И ОБРАБОТКА ИНФОРМАЦИИ О МОДИФИКАТОРАХ ПОЛЯ */
         Modifier.toString(f.getModifiers()); // static
 
         /* ПОЛУЧЕНИЕ И УСТАНОВКА ЗНАЧЕНИЯ В ПОЛЕ */
-        try {
-            f = c.getDeclaredField("i");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+        f = c.getDeclaredField("i");
         Main main = new Main();
 
         /*ПОЛУЧЕНИЕ*/
-        try {
-            i = (Integer) f.get(main);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        i = (Integer) f.get(main);
 
         /*УСТАНОВКА*/
-        try {
-            f.set(main, 44);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        f.set(main, 44);
 
         /*~~~~~~~~~~~~~~~~~~~~~~МЕТОДЫ~~~~~~~~~~~~~~~~~~~~~~*/
         ma = c.getDeclaredMethods();
-        System.out.println(Arrays.toString(ma));
-        try {
-            m = c.getDeclaredMethod("meth", Integer.class);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        m = c.getDeclaredMethod("meth", Integer.class, int[].class);
+
+        /*ПОЛУЧЕНИЕ МОДИФИКАТОРОВ*/
+        m.getModifiers(); // final
+
+        /* ПОЛУЧЕНИЕ ПАРАМЕТРОВ */
+        m.getParameters();
+
+        /* ЗАПУСК МЕТОДА */
+        m.invoke(main, 12345, new int[2]); // password is 12345, numbers are [0,0]
+
+
+        /*~~~~~~~~~~~~~~~~~~~~~~КОНСТРУКТОРЫ~~~~~~~~~~~~~~~~~~~~~~*/
+        class Inside {
+            public Inside() {
+                System.out.println("Default constructor");
+            }
+
+            public Inside(int i) {
+                System.out.println("Constructor with params");
+            }
         }
-        pa = m.getParameters();
+        c = Inside.class;
+
+        /* ДЕФОЛТНЫЙ КОНСТРУКТОР */
+        c.newInstance(); // Default constructor
+
+        /* НЕДЕФОЛТНЫЙ КОНСТРУКТОР */
+        k = c.getDeclaredConstructor(int.class);
+
+        k.newInstance(5);
 
 
-        System.out.println(Arrays.toString(pa));
+        /*~~~~~~~~~~~~~~~~~~~~~~МАССИВЫ~~~~~~~~~~~~~~~~~~~~~~*/
+        c = Main.class;
+        f = c.getDeclaredField("da");
+        c = f.getType(); // [[D
+        c.isArray(); // true
+
+        /*УЗНАТЬ ТИП МАССИВА И ТИП КОМПОНЕНТОВ*/
+        c.getName(); // [[D
+        c.getComponentType(); // class [D
+
+        /*УЗНАТЬ ДЛИНУ МАССИВА*/
+        Array.getLength(da);
+
+        /*~~~~~~~~~~~СОЗДАНИЕ НОВОГО МАССИВА, УСТАНОВКА И ЧТЕНИЕ ЗНАЧЕНИЙ ~~~~~~~~~~~*/
+        /*СОЗДАНИЕ*/
+        Object o = Array.newInstance(double.class, 2);
+
+        /*УСТАНОВКА ЗНАЧЕНИЙ*/
+        Array.set(o, 0, 2.3);
+        Array.set(o, 1, 4.3);
+
+        /*ЧТЕНИЕ ЗНАЧЕНИЙ*/
+        Array.get(o, 1);
+        System.out.println(Array.get(o, 1));
+
+
+        /*~~~~~~~~~~~~~~~~~~~~~~ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~~*/
+        c = Main.TestEnum.class;
+        f = c.getDeclaredField("ONE");
+        System.out.println(f.isEnumConstant());
+
+        f = c.getDeclaredField("testEnum");
+
+        c = f.getType(); // class __reflection.Main$TestEnum
+        c.isEnum(); // true
+
+        /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */
+        Arrays.asList(c.getEnumConstants()); // [ONE, TWO]
+        System.out.println(Arrays.asList(c.getEnumConstants()));
+
+
 
     }
 
@@ -520,6 +689,8 @@ public class Main {
     public class MainInner {
     }
 
-    void meth(Integer password) {
+    final void meth(Integer password, int[] numbers) {
+        System.out.println("password is: " + password);
+        System.out.println("numbers are: " + Arrays.toString(numbers));
     }
 }

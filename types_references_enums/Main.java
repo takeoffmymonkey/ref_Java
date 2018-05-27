@@ -206,8 +206,8 @@ public class Main {
 
 
         /*ЭКЗЕМПЛЯРЫ ЯВЛЯЮТСЯ ТИПОМ СВОЕГО ПЕРЕЧИСЛЕНИЯ*/
-        System.out.println(d.getClass().getName()); // Main$Display
-        System.out.println(d.getDeclaringClass()); // class Main$Display
+        System.out.println(d.getClass().getName()); // __Implicit_Synthetic_Bridge$Display
+        System.out.println(d.getDeclaringClass()); // class __Implicit_Synthetic_Bridge$Display
 
 
         /*~~~~~~~~~~~~~~~~~~РАБОТА С КОНСТАНТАМИ И МЕТОДЫ~~~~~~~~~~~~~~~~~~*/

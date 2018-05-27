@@ -164,6 +164,8 @@ import types_references_annotations.my_annotations.Ntrstn;
         "ссылкам будут правильно клонированы, а для ссылочных переменных с изменяемыми объектами " +
         "будут созданы копии ссылок, а не самих объектов")
 @Ntrstn("Коллекцию удобно создавать методом Arrays.asList(4, 5, 65, 6, 34)")
+
+@Ntrstn("Cами массивы имплементированы в JVM, а единственные методы, которые им доступны - Object")
 public class Main {
     static int[] arrA;
     static String[] stringArr;
