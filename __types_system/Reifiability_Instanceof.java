@@ -1,4 +1,4 @@
-package reifiability_instanceof;
+package __types_system;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import types_references_annotations.my_annotations.Ntrstn;
         "невозможно сделать в runtime")
 
 
-public class Main {
+public class Reifiability_Instanceof {
 
     /*~~~~~~~~~~~~~~~~~~МАТЕРИАЛИЗИРУЕМЫЕ ТИПЫ~~~~~~~~~~~~~~~~~~*/
     Number object = new Integer(1);
@@ -86,7 +86,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        Main m = new Main();
+        Reifiability_Instanceof m = new Reifiability_Instanceof();
 
         System.out.println(m.object instanceof Number);
         System.out.println(m.interf instanceof Serializable);

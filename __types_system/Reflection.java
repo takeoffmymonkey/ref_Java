@@ -1,6 +1,5 @@
-package __reflection;
+package __types_system;
 
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -14,6 +13,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import types_references_annotations.my_annotations.Ntrstn;
+
+/* 1 из способов узнать информацию о типах во время работы программы
+* - РЕФЛЕКСИЯ
+ *      - позволяет обойти ограничения RTTI
+ *          - при программировании компонентов программы
+ *          - при распределенных вычислениях
+ *      - работает только во время выполнения
+ *
+ * */
+
+
 
 /* РЕФЛЕКСИЯ ПОЗВОЛЯЕТ ИССЛЕДОВАТЬ И ИЗМЕНЯТЬ ПОВЕДЕНИЕ ПРОГРАММЫ ВО ВРЕМЯ РАБОТЫ
  * - можно создавать объекты от внешних файлов классов
@@ -80,18 +90,21 @@ Serializable, AnnotatedElement, GenericDeclaration, Type
  *
  *
  * - методы получения объекта Class:
+ *      - Тип.class: для примитивов и void или когда есть тип, но нет объекта
+ *          - наиболее эффективный (не нужно вызывать метод)
+ *              - т.е. это уже готовая ссылка на нужный объект Class
+ *          - проверка осуществляется во время компиляции
+ *
  *      - объект.getClass(): когда есть нужный объект
  *          - только для ссылочных типов
  *              - т.е. наследующих от Object
  *
- *      - Тип.class: для примитивов и void или когда есть тип, но нет объекта
- *
- *      - Оболочка.TYPE: альтернатива для получения примитивов и void от их оболочек
- *          - у каждого класса-оболочки есть поле TYPE с классом их примитива
- *
  *      - Class.forName(): когда есть полное имя класса
  *          - работает только для ссылочных типов
  *          - может выбросить исключение ClassNotFoundException
+ *
+ *      - Оболочка.TYPE: альтернатива Тип.class для получения примитивов и void от их оболочек
+ *          - у каждого класса-оболочки есть поле TYPE с классом их примитива
  *
  *
  * - методы получения объекта Class от другого Class:
@@ -187,6 +200,11 @@ java.lang.annotation.RetentionPolicy RUNTIME*/
 /* ДРУГИЕ МЕТОДЫ КЛАССА CLASS
  *
  * - cast()
+ *      - полезен, когда нельзя исплользовать обычное приведение типа. Напр. при написании
+ *      обобщеннго кода и сохранении ссылки на Class, которая будет использоваться для приведения
+ *      типа позднее. но такие ситуации возникают редко
+ *
+ * - asSubclass() позволяет преобразовать объект класса к более конкретному
  *
  * setAccessible
  *
@@ -195,6 +213,9 @@ java.lang.annotation.RetentionPolicy RUNTIME*/
  * Strictly speaking, any attempt to set a field of type X to a value of type Y can only succeed if the following statement holds:
 X.class.isAssignableFrom(Y.class) == true
  *
+ * - getCanonicalName()
+ *
+ * - isInstance() помогает избавится от громоздких конструкций instanceof
  * */
 
 
@@ -478,7 +499,7 @@ An access restriction exists which prevents reflective invocation of methods whi
 @Ntrstn("Инициализировать экземпляры перечисления нельзя, при попытке возникнет исключение " +
         "IllegalArgumentException ")
 
-public class Main {
+public class Reflection {
     static Modifier mod;
     static Class c;
     static Class[] ca;
@@ -530,37 +551,37 @@ public class Main {
 
         /* ~~~~~~~~~ПОЛУЧЕНИЕ ЭКЗЕМПЛЯРА CLASS ОТ ДРУГОГО CLASS ~~~~~~~~~*/
         /* ПОЛУЧЕНИЕ РОДИТЕЛЯ */
-        c = Child.class.getSuperclass(); // __reflection.__Implicit_Synthetic_Bridge
+        c = Child.class.getSuperclass(); // __types_system.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ОБРАМЛЯЮЩЕГО КЛАССА */
-        c = MainInner.class.getEnclosingClass(); // __reflection.__Implicit_Synthetic_Bridge
+        c = MainInner.class.getEnclosingClass(); // __types_system.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ВСЕХ КЛАССОВ, ИНТЕРФЕЙСОВ И ПЕРЕЧИСЛЕНИЙ, КОТОРЫЕ ЯВЛЯЮТСЯ ЧЛЕНАМИ (В Т.Ч. УНАСЛЕДОВАННЫЕ) */
-        ca = __reflection.Main.class.getClasses(); // [class __reflection.__Implicit_Synthetic_Bridge$MainInner, class __reflection.__Implicit_Synthetic_Bridge$Child]
+        ca = Reflection.class.getClasses(); // [class __types_system.__Implicit_Synthetic_Bridge$MainInner, class __types_system.__Implicit_Synthetic_Bridge$Child]
 
         /* ПОЛУЧЕНИЕ ВСЕХ ЧЛЕНОВ, КОТОРЫЕ ЯВНО ОБЪЯВЛЕНЫ В КЛАССЕ */
-        ca = __reflection.Main.Child.class.getDeclaredClasses(); // [class __reflection.__Implicit_Synthetic_Bridge$Child$ChildOwnInner]
+        ca = Reflection.Child.class.getDeclaredClasses(); // [class __types_system.__Implicit_Synthetic_Bridge$Child$ChildOwnInner]
 
         /* ПОЛУЧЕНИЕ КЛАССА/ЧЛЕНОВ, В КОТОРОМ ОН ОБЪЯВЛЕН */
-        c = __reflection.Main.Child.class.getDeclaringClass(); // __reflection.__Implicit_Synthetic_Bridge
+        c = Reflection.Child.class.getDeclaringClass(); // __types_system.__Implicit_Synthetic_Bridge
 
 
 
         /* ~~~~~~~~~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ МОДИФИКАТОРА КЛАССА И ТИПА ~~~~~~~~~~~~~~~~~~~~~~~ */
-        int modifiers = __reflection.Main.Child.class.getModifiers(); // 25
+        int modifiers = Reflection.Child.class.getModifiers(); // 25
         Modifier.toString(modifiers); // public static final
-        TypeVariable[] params = __reflection.Main.Child.class.getTypeParameters(); // T, V
+        TypeVariable[] params = Reflection.Child.class.getTypeParameters(); // T, V
 
 
         /* ~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЧЛЕНОВ (КОНСТРУКТОРОВ, МЕТОДОВ, ПОЛЕЙ) КЛАССА ~~~~~~~~~~~~~~~*/
-        c = Main.class;
+        c = Reflection.class;
 
-        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __reflection.__Implicit_Synthetic_Bridge.mod, etc
+        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __types_system.__Implicit_Synthetic_Bridge.mod, etc
 
-        f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __reflection.__Implicit_Synthetic_Bridge.mod
+        f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __types_system.__Implicit_Synthetic_Bridge.mod
 
-        ma = c.getMethods(); // public static void __reflection.__Implicit_Synthetic_Bridge.main(java.lang.String[]), etc.
-        ka = c.getConstructors(); // public __reflection.__Implicit_Synthetic_Bridge()
+        ma = c.getMethods(); // public static void __types_system.__Implicit_Synthetic_Bridge.reflection(java.lang.String[]), etc.
+        ka = c.getConstructors(); // public __types_system.__Implicit_Synthetic_Bridge()
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~РАБОТА С ЧЛЕНАМИ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -593,13 +614,13 @@ public class Main {
 
         /* ПОЛУЧЕНИЕ И УСТАНОВКА ЗНАЧЕНИЯ В ПОЛЕ */
         f = c.getDeclaredField("i");
-        Main main = new Main();
+        Reflection reflection = new Reflection();
 
         /*ПОЛУЧЕНИЕ*/
-        i = (Integer) f.get(main);
+        i = (Integer) f.get(reflection);
 
         /*УСТАНОВКА*/
-        f.set(main, 44);
+        f.set(reflection, 44);
 
         /*~~~~~~~~~~~~~~~~~~~~~~МЕТОДЫ~~~~~~~~~~~~~~~~~~~~~~*/
         ma = c.getDeclaredMethods();
@@ -612,7 +633,7 @@ public class Main {
         m.getParameters();
 
         /* ЗАПУСК МЕТОДА */
-        m.invoke(main, 12345, new int[2]); // password is 12345, numbers are [0,0]
+        m.invoke(reflection, 12345, new int[2]); // password is 12345, numbers are [0,0]
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~КОНСТРУКТОРЫ~~~~~~~~~~~~~~~~~~~~~~*/
@@ -637,7 +658,7 @@ public class Main {
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~МАССИВЫ~~~~~~~~~~~~~~~~~~~~~~*/
-        c = Main.class;
+        c = Reflection.class;
         f = c.getDeclaredField("da");
         c = f.getType(); // [[D
         c.isArray(); // true
@@ -663,13 +684,13 @@ public class Main {
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~~*/
-        c = Main.TestEnum.class;
+        c = Reflection.TestEnum.class;
         f = c.getDeclaredField("ONE");
         System.out.println(f.isEnumConstant());
 
         f = c.getDeclaredField("testEnum");
 
-        c = f.getType(); // class __reflection.Main$TestEnum
+        c = f.getType(); // class __types_system.Reifiability_Instanceof$TestEnum
         c.isEnum(); // true
 
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */
@@ -677,11 +698,10 @@ public class Main {
         System.out.println(Arrays.asList(c.getEnumConstants()));
 
 
-
     }
 
 
-    public static final class Child<T, V> extends Main {
+    public static final class Child<T, V> extends Reflection {
         public class ChildOwnInner {
         }
     }
