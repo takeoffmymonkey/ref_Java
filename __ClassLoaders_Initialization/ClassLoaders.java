@@ -1,7 +1,6 @@
-package __types_system;
+package __ClassLoaders_Initialization;
 
-/* КЛАСС CLASS
- * - информация о любом классе (типе), используемом во время работы программы хранится в
+/* - информация о любом классе (типе), используемом во время работы программы хранится в
  * соответствующем объекте типа Class
  *      - создается JVM из .class файла (скомпилированный байт-код), который создался при компиляции
  *          - для создания объектов используется подсистема "загрузчик классов"
@@ -21,8 +20,6 @@ package __types_system;
  *
  * - объект класса Class используется во время работы для создания соотвтетствующий объектов
  *
- * - используется RTTI при преобразованиях
- *
  * - создание ссылки на объект Class синтаксисом .class не приводит к автоматической инициализации
  * объекта Class
  *      - а forName() приводит
@@ -31,12 +28,6 @@ package __types_system;
  * напр. 47 или 2 + 2)
  *
  * - обращение к static без final можно только после компоновки
- *
- * - Class<T>: можно ограничить тип, на который указывает Class
- *      - т.е. я не смогу переназначить ссылку на другой тип
- *      - а Class<?> является эквивалентом просто Class
- *          - но ясно показывает, что ссылка на конкретный класс не используется случайно или по
- *          незнанию, а девелопер сознательно выбирает неконкретную версию
  * */
 
 
@@ -53,49 +44,5 @@ package __types_system;
  * */
 
 
-/* ПОЛУЧЕНИЕ ОБЪЕКТОВ КЛАСС*/
-
-public class Main {
-    public Main() {
-        System.out.println("В конструкторе Main");
-    }
-
-    static {
-        System.out.println("В статическом блоке Main");
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println("В статическом методе класса Main");
-
-        System.out.println("Создание объекта Main");
-        Main m = new Main();
-
-
-//        System.out.println("Поиск класса A");
-//        Class c1 = null;
-//        try {
-//            c1 = Class.forName("A"); // класса еще нет!
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-
-        System.out.println("Получение ссылки на объект Class класса A");
-        Class c = A.class;
-        if (c == null) System.out.println("Ссылка == null");
-
-        System.out.println("Создание объекта А");
-        A a = new A();
-    }
-
-}
-
-class A {
-    public A() {
-        System.out.println("В конструкторе класса A");
-    }
-
-    static {
-        System.out.println("В статическом блоке класса A");
-    }
+public class ClassLoaders {
 }

@@ -63,6 +63,14 @@ Type Parameters:
 T - the type of the class modeled by this Class object. For example, the type of String.class is Class<String>. Use Class<?> if the class being modeled is unknown.
 All Implemented Interfaces:
 Serializable, AnnotatedElement, GenericDeclaration, Type
+ *
+ *
+ *       * - Class<T>: можно ограничить тип, на который указывает Class
+ *      - т.е. я не смогу переназначить ссылку на другой тип
+ *      - а Class<?> является эквивалентом просто Class
+ *          - но ясно показывает, что ссылка на конкретный класс не используется случайно или по
+ *          незнанию, а девелопер сознательно выбирает неконкретную версию
+ *
  *      */
 
 
@@ -499,6 +507,9 @@ An access restriction exists which prevents reflective invocation of methods whi
 @Ntrstn("Инициализировать экземпляры перечисления нельзя, при попытке возникнет исключение " +
         "IllegalArgumentException ")
 
+@Ntrstn("Класс Class находится в пакете java.lang. Все отсальные классы находятся в пакете " +
+        "java.lang.reflect")
+
 public class Reflection {
     static Modifier mod;
     static Class c;
@@ -551,19 +562,19 @@ public class Reflection {
 
         /* ~~~~~~~~~ПОЛУЧЕНИЕ ЭКЗЕМПЛЯРА CLASS ОТ ДРУГОГО CLASS ~~~~~~~~~*/
         /* ПОЛУЧЕНИЕ РОДИТЕЛЯ */
-        c = Child.class.getSuperclass(); // __types_system.__Implicit_Synthetic_Bridge
+        c = Child.class.getSuperclass(); // __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ОБРАМЛЯЮЩЕГО КЛАССА */
-        c = MainInner.class.getEnclosingClass(); // __types_system.__Implicit_Synthetic_Bridge
+        c = MainInner.class.getEnclosingClass(); // __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge
 
         /* ПОЛУЧЕНИЕ ВСЕХ КЛАССОВ, ИНТЕРФЕЙСОВ И ПЕРЕЧИСЛЕНИЙ, КОТОРЫЕ ЯВЛЯЮТСЯ ЧЛЕНАМИ (В Т.Ч. УНАСЛЕДОВАННЫЕ) */
-        ca = Reflection.class.getClasses(); // [class __types_system.__Implicit_Synthetic_Bridge$MainInner, class __types_system.__Implicit_Synthetic_Bridge$Child]
+        ca = Reflection.class.getClasses(); // [class __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge$MainInner, class __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge$Child]
 
         /* ПОЛУЧЕНИЕ ВСЕХ ЧЛЕНОВ, КОТОРЫЕ ЯВНО ОБЪЯВЛЕНЫ В КЛАССЕ */
-        ca = Reflection.Child.class.getDeclaredClasses(); // [class __types_system.__Implicit_Synthetic_Bridge$Child$ChildOwnInner]
+        ca = Reflection.Child.class.getDeclaredClasses(); // [class __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge$Child$ChildOwnInner]
 
         /* ПОЛУЧЕНИЕ КЛАССА/ЧЛЕНОВ, В КОТОРОМ ОН ОБЪЯВЛЕН */
-        c = Reflection.Child.class.getDeclaringClass(); // __types_system.__Implicit_Synthetic_Bridge
+        c = Reflection.Child.class.getDeclaringClass(); // __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge
 
 
 
@@ -576,12 +587,12 @@ public class Reflection {
         /* ~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЧЛЕНОВ (КОНСТРУКТОРОВ, МЕТОДОВ, ПОЛЕЙ) КЛАССА ~~~~~~~~~~~~~~~*/
         c = Reflection.class;
 
-        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __types_system.__Implicit_Synthetic_Bridge.mod, etc
+        fa = c.getDeclaredFields(); // static java.lang.reflect.Modifier __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge.mod, etc
 
-        f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __types_system.__Implicit_Synthetic_Bridge.mod
+        f = c.getDeclaredField("mod"); // static java.lang.reflect.Modifier __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge.mod
 
-        ma = c.getMethods(); // public static void __types_system.__Implicit_Synthetic_Bridge.reflection(java.lang.String[]), etc.
-        ka = c.getConstructors(); // public __types_system.__Implicit_Synthetic_Bridge()
+        ma = c.getMethods(); // public static void __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge.reflection(java.lang.String[]), etc.
+        ka = c.getConstructors(); // public __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge()
 
 
         /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~РАБОТА С ЧЛЕНАМИ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -690,7 +701,7 @@ public class Reflection {
 
         f = c.getDeclaredField("testEnum");
 
-        c = f.getType(); // class __types_system.Reifiability_Instanceof$TestEnum
+        c = f.getType(); // class __types_system.RTTI_Reifiability_Instanceof$TestEnum
         c.isEnum(); // true
 
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */

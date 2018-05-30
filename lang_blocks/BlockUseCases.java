@@ -1,4 +1,4 @@
-package initialization;
+package lang_blocks;
 
 /* БЛОКОВ МОЖЕТ БЫТЬ СКОЛЬКО УГОДНО И ГДЕ УГОДНО (В ТЕЛЕ КЛАССА) */
 
