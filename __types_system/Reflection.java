@@ -224,6 +224,8 @@ X.class.isAssignableFrom(Y.class) == true
  * - getCanonicalName()
  *
  * - isInstance() помогает избавится от громоздких конструкций instanceof
+ *      instanceof и isInstance дают одинаковые результаты
+ *      == не затрагивает наследование
  * */
 
 
@@ -465,7 +467,7 @@ An access restriction exists which prevents reflective invocation of methods whi
  *
  * */
 
-/*AccessibleObject*/
+/* AccessibleObject */
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~
@@ -701,7 +703,7 @@ public class Reflection {
 
         f = c.getDeclaredField("testEnum");
 
-        c = f.getType(); // class __types_system.RTTI_Reifiability_Instanceof$TestEnum
+        c = f.getType(); // class __types_system.Reifiability$TestEnum
         c.isEnum(); // true
 
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */
