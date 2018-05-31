@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,17 +46,18 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ЧТО МОЖНО УЗНАТЬ С ПОМОЩЬЮ РЕФЛЕКСИИ
+ * - пакет класса
+ * - класс-родитель
  * - всю информацию о типе класса, членов, их параметров, элементов массива
  * - все переменные типа (но не их реальные значения - они стерты!)
- * - класс-родитель
- * - пакет класса
  * - все интерфейсы, которые имплементирует класс
  * - все аннотации (у которых стоит RetentionPolicy RUNTIME)
+ * - все модификаторы
  * - все члены - приватные, унаследованные публичные, обобщенные и поля-константы
  * - все названия параметров метода/конструктора
+ * - все выбрасываемые исключения у метода/конструктора
  * - все дополнительные элементы, которых не было при компиляции (например, синтетические методы)
  * - кому принадлежит член (напр. данный внутренний класс)
- * - все модификаторы
  * - является ли член массивом, перечислением, аннотацией, полем-константой, интерфейсом, локальным
  * или анонимным классом, методом имплементируемого интерфейса
  * - является ли член синтезированным, неявным, мостовым
@@ -192,82 +194,87 @@ import types_references_annotations.my_annotations.Ntrstn;
  *          Fields[]) */
 
 
-
-/* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ МОДИФИКАТОРОВ И ТИПОВ (ОБОБЩЕННЫЕ) КЛАСС : МОДИФИКАТОРЫ КЛАССА И ТИПЫ~~~~~~~~~~~~~~~~~~~~~
- * - int класс.getModifiers(): возвращает модификаторы данного класса одним числов
- *      - чтобы его декодировать в модификаторы, нужно использовать методы класса
- *      java.lang.reflect.Modifier
- *          - напр. Modifier.toString(int mod) вернет "public static final"
- *      - для массивов, их модификаторы public, private и protected соответствуют этим модифкаторам
- *      в элементах
- *      - для примитивов и void, модификатор public всегда true, а private false
- *      - If this object represents an array class, a primitive type or void, then its final modifier is always true and its interface modifier is always false. The values of its other modifiers are not determined by this specification
+/* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ МОДИФИКАТОРОВ / КЛАСС JAVA.LANG.REFLECT.MODIFIER ~~~~~~~~~~~~~~
+ * - получить модификаторы: класс\член.getModifiers()
+ *      - возвращается число - закодированные модификаторы
+ *      - раскодировать в строковое значение можно при помощи статического метода Modifier.toString()
  *
+ * - класс Modifier:
+ *      - числовые константы, представляющие соответствующие модификаторы
+ *      - статические методы для работы с модификаторами:
+ *          - узнать модификаторы для указанного поля, конструктора, метода и параметра
+ *          - узнать является ли данный модификатор указанным
+ *          - перевести числовой код модификатора в строковое представление */
+
+
+/* ~~~~~~~~~~~~ ПОЛУЧЕНИЕ ПЕРЕМЕННОЙ ТИПА / ИНТЕРФЕЙС JAVA.LANG.REFLECT.TYPEVARIABLE ~~~~~~~~~~~~
+ * - класс/член.getTypeParameters(): возвращает массив из объектов TypeVariable
  *
- * - получить модификаторы для:
- *      - класса: Class.getModifiers()
- *
- *
- * */
-
-
-/* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ МОДИФИКАТОРОВ / КЛАСС JAVA.LANG.REFLECT.MODIFIER ~~~~~~~~~~~~~~*/
-
-
-/* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ ПАРАМЕТРОВ ТИПА / КЛАСС JAVA.LANG.REFLECT.TYPEVARIABLE ~~~~~~~~~~~~~~ */
-
-
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ЧЛЕНЫ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-/* ~~~~~~~~~~~~~~~~~~~~~~~~ ИНТЕРФЕЙС MEMBER ~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
+ * - методы TypeVariable:
+ *      - getBounds(): вернет массив из Type, представляющий верхную границу(ы) переменной
+ *      - getGenericDeclaration(): вернтет класс, в котором объявлено данное обобщение
+ *      - getName(): вернет имя переменной, какое указано в коде */
 
 
 /* ДРУГИЕ МЕТОДЫ КЛАССА CLASS
+ * - <U> Class<? extends U> asSubclass(Class<U> clazz):
+  *     - позволяет преобразовать объект класса к более конкретному
  *
- * - cast()
+ * - T cast(Object obj): Casts an object to the class or interface represented by this Class object.
  *      - полезен, когда нельзя исплользовать обычное приведение типа. Напр. при написании
  *      обобщеннго кода и сохранении ссылки на Class, которая будет использоваться для приведения
  *      типа позднее. но такие ситуации возникают редко
  *
- * - asSubclass() позволяет преобразовать объект класса к более конкретному
- *
- * setAccessible
- *
- * boolean isAssignableFrom(Class<?> cls)
- * Integer.class.isAssignableFrom(int.class) == false
- * Strictly speaking, any attempt to set a field of type X to a value of type Y can only succeed if the following statement holds:
-X.class.isAssignableFrom(Y.class) == true
- *
- * - getCanonicalName()
- *
  * - isInstance() помогает избавится от громоздких конструкций instanceof
  *      instanceof и isInstance дают одинаковые результаты
  *      == не затрагивает наследование
- * */
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ЧЛЕНЫ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-/* ИНТЕРФЕЙС MEMBER
- * Member is an interface that reflects identifying information about a single member (a field or a method) or a constructor.
  *
- * All Known Implementing Classes: Constructor, Executable, Field, Method
+ * - isAssignableFrom(Class<?> cls)
+ *      Integer.class.isAssignableFrom(int.class) == false
+ *      Strictly speaking, any attempt to set a field of type X to a value of type Y can only succeed if the following statement holds:
+        X.class.isAssignableFrom(Y.class) == true
  *
- * Class<?>	getDeclaringClass()
-Returns the Class object representing the class or interface that declares the member or constructor represented by this Member.
-int	getModifiers()
-Returns the Java language modifiers for the member or constructor represented by this Member, as an integer.
-String	getName()
-Returns the simple name of the underlying member or constructor represented by this Member.
-boolean	isSynthetic()
-Returns true if this member was introduced by the compiler; returns false otherwise.
+ * - getCanonicalName()
  *
  * */
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~ПОЛЯ~~~~~~~~~~~~~~~~~~~~~
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ЧЛЕНЫ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ ИНТЕРФЕЙС JAVA.LANG.REFLECT.MEMBER ~~~~~~~~~~~~~~~~~~~~~~~~
+ * - для идентификации членов класса: полей, методов и конструкторов
+ * - имплементируется классами Field, Method и Constructor
+ * - методы:
+ *      - getDeclaringClass(): вернет класс, которому принадлежит член
+ *      - getModifiers(): вернет закодированное число, представляющее модификаторы члена
+ *      - getName(): вернет имя члена из кода
+ *      - isSynthetic(): проверка, является ли член добавленным при компиляции */
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ КЛАСС JAVA.LANG.REFLECT.ACCESSIBLEOBJECT ~~~~~~~~~~~~~~~~~~~~~~~~
+ * - public class AccessibleObject extends Object implements AnnotatedElement
+ *
+ * - является прямым родителем для Field и прародителем (через класс Executable) для Method и
+ * Constructor
+ *
+ * - предоставляет возможность помечать член для игнорирования стандартных проверок доступа, которые
+ * выполняет Java
+ *      - при чтении и записи полей, вызовах методов и создании экземпляров классов
+ *
+ * - по дефолту для всех членов стоит флаг "не доступен"
+ *      - но все равно можно обращаться к реально доступным членам
+ *          - например, можно установить значение публичному члену, даже если у него стоит флаг "не
+ *          доступен"
+ *              - но работать с фактически не доступными членами (например, private), без установки
+ *              флага "доступен" не получится
+ *
+ * - основные методы:
+ *      - isAccessible(): возвращает значение флага accessible для объекта
+ *      - setAccessible(boolean flag): включение/выключение проверки прав доступа
+ *      - setAccessible(AccessibleObject[] array, boolean flag): удобный и производительный метод
+ *      для установки проверки доступа для массива объектов */
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ ПОЛЯ / КЛАСС JAVA.LANG.REFLECT.FIELD~~~~~~~~~~~~~~~~~~~~~
  * - полем является [класс|интерфейс|перечисление] с ассоциированным значением
  *      - в т.ч. статические
  *
@@ -318,6 +325,28 @@ Returns true if this member was introduced by the compiler; returns false otherw
  *      - автоупаковка и автораспаковка не происходит, т.к. это runtime
  * */
 
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ КЛАСС JAVA.LANG.REFLECT.EXECUTABLE ~~~~~~~~~~~~~~~~~~~~~~~~
+ * - public class AccessibleObject extends Object implements AnnotatedElement
+ *
+ * - является прямым родителем для для Method и Constructor
+ *
+ * - предоставляет возможность помечать член для игнорирования стандартных проверок доступа, которые
+ * выполняет Java
+ *      - при чтении и записи полей, вызовах методов и создании экземпляров классов
+ *
+ * - по дефолту для всех членов стоит флаг "не доступен"
+ *      - но все равно можно обращаться к реально доступным членам
+ *          - например, можно установить значение публичному члену, даже если у него стоит флаг "не
+ *          доступен"
+ *              - но работать с фактически не доступными членами (например, private), без установки
+ *              флага "доступен" не получится
+ *
+ * - основные методы:
+ *      - isAccessible(): возвращает значение флага accessible для объекта
+ *      - setAccessible(boolean flag): включение/выключение проверки прав доступа
+ *      - setAccessible(AccessibleObject[] array, boolean flag): удобный и производительный метод
+ *      для установки проверки доступа для массива объектов */
 
 
 
@@ -535,7 +564,7 @@ An access restriction exists which prevents reflective invocation of methods whi
 @Ntrstn("Класс Class находится в пакете java.lang. Все отсальные классы находятся в пакете " +
         "java.lang.reflect")
 
-public class Reflection {
+public class Reflection<T extends Number> {
     static Modifier mod;
     static Class c;
     static Class[] ca;
@@ -613,11 +642,24 @@ public class Reflection {
         c = Reflection.Child.class.getDeclaringClass(); // __Implicit_Synthetic_Bridge.__Implicit_Synthetic_Bridge
 
 
-
         /* ~~~~~~~~~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ МОДИФИКАТОРА КЛАССА И ТИПА ~~~~~~~~~~~~~~~~~~~~~~~ */
         int modifiers = Reflection.Child.class.getModifiers(); // 25
         Modifier.toString(modifiers); // public static final
-        TypeVariable[] params = Reflection.Child.class.getTypeParameters(); // T, V
+
+        TypeVariable[] typeVariable = Reflection.class.getTypeParameters();
+        typeVariable[0].getName(); // T
+        Type t = typeVariable[0].getBounds()[0]; // class java.lang.Number
+        typeVariable[0].getGenericDeclaration(); // class __types_system.Reflection
+
+
+        /* ~~~~~~~~~~~~~~~~~~~~~~~ОТКЛЮЧЕНИЕ ПРОВЕРКИ ДОСТУПА ДЛЯ ЧЛЕНА ~~~~~~~~~~~~~~~~~~~~~~~*/
+        c = Reflection.Child.class;
+        f = c.getDeclaredField("f");
+        f.isAccessible(); // false (для любого члена по дефолту стоит флаг "не доступен")
+        f.set(new Child(), 3); // но фактически доступным все-равно членом можно пользоваться
+        f.setAccessible(true);
+
+
 
 
         /* ~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЧЛЕНОВ (КОНСТРУКТОРОВ, МЕТОДОВ, ПОЛЕЙ) КЛАССА ~~~~~~~~~~~~~~~*/
@@ -748,11 +790,14 @@ public class Reflection {
 
 
     public static final class Child<T, V> extends Reflection {
-        public class ChildOwnInner {
+        public int f;
+        private int pf;
+
+        class ChildOwnInner {
         }
     }
 
-    public class MainInner {
+    public static class MainInner {
     }
 
     final void meth(Integer password, int[] numbers) {
