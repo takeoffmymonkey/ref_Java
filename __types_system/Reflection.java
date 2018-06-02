@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import types_references_annotations.my_annotations.Ntrstn;
-import types_references_annotations.my_annotations.Ntrstns;
+
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ПАКЕТ JAVA.LANG.REFLECTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * - предоставляет программный доступ к информации о полях, методах и конструкторах загруженных
@@ -176,7 +176,11 @@ import types_references_annotations.my_annotations.Ntrstns;
  *
  * - экземпляр класса Class используется как входная точка в Reflection API
  *      - он предоставляет множество методов для получения членов класса и информации о типе
- *          - для членов существуют отдельные классы java.lang.reflex, но они не имеют конструкторов,
+ *          - например:
+ *              - getFields()
+ *              - getMethods()
+ *              - getConstructors()
+ *          - для членов существуют отдельные классы java.lang.reflect, но они не имеют конструкторов,
  *          поэтому для получения их экземпляров используется соответствующий экземпляр Class
  *
  * - параметризированная версия существует для удобства:
@@ -226,23 +230,6 @@ import types_references_annotations.my_annotations.Ntrstns;
  *              - java.lang.reflect.Constructor.getDeclaringClass() */
 
 
-/* ~~~~~~~~~~~~~~ СПЕЦИФИЧЕСКИЙ СИНТАКСИС ДЛЯ МАССИВОВ ~~~~~~~~~~~~~~
- * - при получении объекта Class по имени нужного класса, для массивов используется особый синтаксис:
- *      - относится и к ссылочным массивам и к примитивным
- *          - [ значит одно измерение массива
- *          - boolean: Z
- *          - byte:	B
- *          - char: C
- *          - класс/интерфейс Lимякласса;
- *          - double: D
- *          - float: F
- *          - int: I
- *          - long: J
- *          - short: S
- *
- * - напр. [[D - значит 2-мерный массив из элементов типа double */
-
-
 /* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ ЧЛЕНОВ КЛАССА / СХОДСТВА В МЕТОДАХ GET...~~~~~~~~~~~~~~
  * - получить член можно соответствующим методом либо по имени либо в массиве
  *      - возваращаемый тип - соответвующая реализация интерфейса java.lang.reflect.Member
@@ -265,6 +252,22 @@ import types_references_annotations.my_annotations.Ntrstns;
  *          - getGeneric...(): возвращает объекты типа Type, предствляющие типы параметров */
 
 
+/* ~~~~~~~~~~~~~~ МЕТОДЫ GET.../SET... КЛАССОВ FIELD И ARRAY И ИХ СХОДСТВА ~~~~~~~~~~~~~~
+ * - get...(...)/set...(...): получение/установка значения с указанным примитивным типом
+ *
+ * - get(Object)/set(Object): получение/установка значения с типом Object
+ *      - если достается примитив, то он будет обвернут в Object
+ *      - при установке поля/элемента, перед установкой оно будет автоматически распаковано из
+ *      Object
+ *          - в т.ч. если это примитив
+ *
+ * - при получении/установке значения поля/элемента автоупаковка и автораспаковка из/в типы-обвертки
+ * не происходит!
+ *      - т.е. в реальное поле типа Integer нельзя передать просто int
+ *
+ * - если устанавливается значение финализированного поля, будет выброшено IllegalAccessException*/
+
+
 /* ~~~~~~~~~~~~~~ ПОЛУЧЕНИЕ МОДИФИКАТОРОВ / КЛАСС MODIFIER ~~~~~~~~~~~~~~
  * - получить модификаторы: класс\член.getModifiers()
  *      - возвращается число - закодированные модификаторы
@@ -275,7 +278,10 @@ import types_references_annotations.my_annotations.Ntrstns;
  *      - статические методы для работы с модификаторами:
  *          - узнать модификаторы для указанного поля, конструктора, метода и параметра
  *          - узнать является ли данный модификатор указанным
- *          - перевести числовой код модификатора в строковое представление */
+ *          - перевести числовой код модификатора в строковое представление
+ *
+ * - для дефолтного модификатора нет константы и метода проверки!
+ *      - поэтому нужно проверять, что член не является ни публичным, ни приватным, ни защищенным */
 
 
 /* ~~~~~~~~~~~~ ПОЛУЧЕНИЕ ПЕРЕМЕННОЙ ТИПА / ИНТЕРФЕЙС TYPEVARIABLE ~~~~~~~~~~~~
@@ -405,6 +411,8 @@ import types_references_annotations.my_annotations.Ntrstns;
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~ ПОЛЯ / КЛАСС FIELD~~~~~~~~~~~~~~~~~~~~~
+ * - public final class Field extends AccessibleObject implements Member
+ *
  * - предоставляет доступ к полю класса или интерфейса
  *
  * - поля могут быть:
@@ -421,9 +429,6 @@ import types_references_annotations.my_annotations.Ntrstns;
  *      - замедляет работу, т.к. требуется проверка доступа
  *      - операция замены является атомарной, как и простой замене в коде
  *      - такой код не будет оптимизирован JVM, если оптимизация должна была бы произойти без рефлексии
- *      - get...(Object, ...)
- *      - set...(Object, ...)
- *          - если значение final, то будет вызвано IllegalAccessException
  *      - если поле статическое, то объект просто игнорируется
  *      - автоупаковка и автораспаковка не происходит, т.к. это runtime
  *          - т.е. в поле типа Integer нельзя установить значение простым int, и наоборот */
@@ -433,6 +438,12 @@ import types_references_annotations.my_annotations.Ntrstns;
  * - public class Executable extends Object implements AnnotatedElement, GenericDeclaration, Member
  *
  * - является прямым родителем для для Method и Constructor
+ *
+ * - в качестве параметра для запуска метода/конструктора можно передать родительский тип, но не тип
+ * наследника (сужение)
+ *      - иначе будет выброшено IllegalArgumentException
+ *
+ * - если это параметр с переменным числом аргументов, то передается массив
  *
  * - основные методы:
  *      - getExceptionTypes(): вернет массив объектов типа Class, который представляет типы
@@ -447,13 +458,18 @@ import types_references_annotations.my_annotations.Ntrstns;
  *      переменные типа (в последовательности объявления) у данного Executable */
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~ КЛАСС PARAMETER ~~~~~~~~~~~~~~~~~~~~~~~~
+/* ~~~~~~~~~~~~~~~~~~~~~~~~ ПАРАМЕТРЫ / КЛАСС PARAMETER ~~~~~~~~~~~~~~~~~~~~~~~~
  * - public final class Parameter extends Object implements AnnotatedElement
  *
- * - представляет информацию о параметрах метода/конструктора
- *      - в т.ч. имя и модификаторы
- *
- * - предоставляет альтернативные средства получения атрибутов параметра
+ * - предоставляет:
+ *     - информацию о параметрах метода/конструктора
+ *          - в т.ч. имя и модификаторы
+ *              - имя модификатора доступно только, если при компиляции указать опцию -parameters
+ *                  - иначе имя будет типа arg0
+ *              - по дефолту не хранятся, чтобы:
+ *                  - сэкономить место
+ *                  - нельзя было по имени найти секретный параметр, например Password
+ *      - альтернативные средства получения атрибутов параметра
  *
  * - параметры могут также быть:
  *      - неявными: проверка - isImplicit()
@@ -466,193 +482,107 @@ import types_references_annotations.my_annotations.Ntrstns;
  *      - hashCode(): вернет hash code на основании hash code Еxecutable и индекса */
 
 
-/* ~~~~~~~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ/ВЫПОЛНЕНИЕ МЕТОДОВ / КЛАСС METHOD ~~~~~~~~~~~~~~~~~~~~~
- * java.lang.reflect.Method
- * - предоставляет доступ к информации о типах параметров и возвращаемого значения
- * - предоставляют возможность запускать нужный метод для указанного объекта
+/* ~~~~~~~~~~~~~~~~~~~~~ МЕТОДЫ / КЛАСС METHOD ~~~~~~~~~~~~~~~~~~~~~
+ * public final class Method extends Executable
  *
- * - можно получить:
- *      - название
- *      - модификаторы
- *      - параметры
- *      - возвращаемый тип
- *      - список выбрасываемых исключений
- *
- * - A Method permits widening conversions to occur when matching the actual parameters to invoke with the underlying method's formal parameters, but it throws an IllegalArgumentException if a narrowing conversion would occur
- *
- * - узнать, есть ли у метода переменное число аргументов:
- *      - Method.isVarArgs()
- *
- * - получение информации о типе:
- *      - возвращаемый тип:
- *          - getReturnType()
- *          - getGenericReturnType()
- *
- *      - типы параметров:
- *          - getParameterTypes()
- *          - getGenericParameterTypes()
- *
- *      - типы исключений:
- *          - getExceptionTypes()
- *          - getGenericExceptionTypes()
- *              - exists because it is actually possible to declare a method with a generic exception type. However this is rarely used since it is not possible to catch a generic exception type.
- *
- *  - получение имен параметров:
- *      - только, если код был скомпилирован с опцией -parameters
- *          - иначе имена типа arg0
- *              - parameter.isNamePresent() - узнать есть ли нормальное имя
- *          - по дефолту имена не хранятся, чтобы сократить размер
- *              - и чтобы нельзя было определить по имени важный параметр (типа secret или password)
- *      - getParameters():
- *          - унаследован от java.lang.reflect.Executable.getParameters
- *              - этот класс наследуется классом Method и Constructor
- *          - возвращает объекты класса Parameter
- *              - имеют методы типа getName(), getType(), getModifiers и т.д.
- *      - параметры могут быть синтезированными и неявными
- *          - parameter.isSynthetic()
- *          - parameter.isImplicit()
- *              - например, у неявного конструктора (который добавляется в любой класс) внутреннего
- *              класса в параметре также есть ссылка на обрамляющий класс
- *                  - также добавляется неявное поле с этой ссылкой в сам класс
- *
- *
- * - получение и парсинг модификаторов метода:
- *      - метод.getModifiers()
- *
+ * - предоставляет:
+ *      - доступ к информации о типах параметров, выбрасываемых исключений и возвращаемого значения
+ *      - возможность запускать нужный метод для указанного объекта
  *
  * - запуск метода:
- *      - this would only be necessary if it is not possible to cast an instance of the class to the desired type in non-reflective code
- *      - метод.invoke(Object o, params...)
- *          - если статический, то вместо объекта null
- *          - если викидывает исключение будет обвернуто в InvocationTargetException
- *              - получить оригинал: InvocationTargetException.getCause()
- *      - если переменное число аргументов, передается массив
+ *      - может понадобится только если невозможно привести экземпляр класса к нужному типу в коде
+ *      без помощи рефлексии
+ *      - public Object invoke(Object obj, Object... args) throws IllegalAccessException,
+ *      IllegalArgumentException, InvocationTargetException
+ *          - если метод статический, то объект игнорируется (может быть null)
+ *          - в случае возникновения исключения, оно будет обвернуто в InvocationTargetException
+ *              - получить оригинал: InvocationTargetException.getCause() */
+
+
+/* ~~~~~~~~~~~~~~~~~~~~~КОНСТРУКТОРЫ / КЛАСС CONSTRUCTOR ~~~~~~~~~~~~~~~~~~~~~
+ * - public final class Constructor<T> extends Executable
  *
- * */
-
-
-/*An IllegalAccessException is thrown if an attempt is made to invoke a private or otherwise
-inaccessible method.
-m.setAccessible(true) = solution;
-An access restriction exists which prevents reflective invocation of methods which normally would not be accessible via direct invocation. (This includes---but is not limited to---private methods in a separate class and public methods in a separate private class.) However, Method is declared to extend AccessibleObject which provides the ability to suppress this check via AccessibleObject.setAccessible(). If it succeeds, then subsequent invocations of this method object will not fail due to this problem.
-
-*/
-
-
-
-/* ~~~~~~~~~~~~~~~~~~~~~КОНСТРУКТОРЫ~~~~~~~~~~~~~~~~~~~~~
- * - java.lang.reflect.Constructor
  * - аналогично методам, кроме:
  *      - не имеет возвращаемого значения
  *      - вызов конструктора приводит к созданию экземпляра
  *
- * - поиск конструктора:
- *      класс.getConstructors()
- *
- * There is not an explicit Modifier constant which corresponds to "package-private" access, so it
- * is necessary to check for the absence of all three access modifiers to identify a package-private constructor.
- *
- * Constructors implement java.lang.reflect.AnnotatedElement, which provides methods to retrieve runtime annotations with java.lang.annotation.RetentionPolicy.RUNTIME.
- *
- *
- * An important difference between new and Constructor.newInstance() is that new performs method
- * argument type checking, boxing, and method resolution. None of these occur in reflection, where
- * explicit choices must be made.
- *
  * - создавать экземпляр можно 2 методами:
- *      - java.lang.reflect.Constructor.newInstance()
+ *      - от объекта Constructor: public T newInstance(Object... initargs) throws
+ *      InstantiationException, IllegalAccessException, IllegalArgumentException,
+ *      InvocationTargetException
  *          - предпочтительный
- *              It is preferable to use Constructor.newInstance() over Class.newInstance() because the former API permits examination and handling of arbitrary exceptions thrown by constructors.
+ *              - можно исследовать и обрабатывать любые вызываемые конструктором исключения
+ *                  - оборачивает исключения в InvocationTargetException
  *          - вызывает конструктор с любым числом аргументов
- *          - оборачивает исключения в InvocationTargetException
- *          - в некоторых случаях также может вызывать приватные конструкторы
  *
- *      - Class.newInstance()
+ *      - от объекта Class: public T newInstance() throws InstantiationException,
+ *      IllegalAccessException
  *          - вызывает только конструктор с 0 аргументов
  *          - выбрасывает любое исключение конструктора
  *              - проверяемое и не проверяемое
- *          - конструктор должен быть доступен
  *
- *
- * An access restriction exists which prevents reflective invocation of constructors which normally would not be accessible via direct invocation. (This includes, but is not limited to, private constructors in a separate class and public constructors in a separate private class.) However, Constructor is declared to extend AccessibleObject which provides the ability to suppress this check via AccessibleObject.setAccessible().
- * */
-
+ * - в отличие от оператора new, не происходит:
+ *     - проверка типа аргументов
+ *     - автоупаковка
+ *     - todo разрешение методов */
 
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~МАССИВЫ И ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * - с точки зрения рефлексии обычные классы
- * - все, что описано выше применяется и к ним
- *      - но для них также есть дополнительные API
- * */
+ * - являются обычными классами и все, что относится к работе с классами, относится и к ним
+ * - также имеют свои дополнительные API:
+ *      - методы класса Class для перечислений и массивов
+ *      - java.lang.reflect.Array для массивов */
 
 
-/*~~~~~~~~~~~~~~~~~~~~~МАССИВЫ~~~~~~~~~~~~~~~~~~~~~
- * - сами массивы имплементированы в JVM, а единственные методы, которые им доступны - Object
+/* ~~~~~~~~~~~~~~~~~~~~~ СПЕЦИФИЧЕСКИЙ СИНТАКСИС ДЛЯ МАССИВОВ ~~~~~~~~~~~~~~~~~~~~~
+ * - при получении объекта Class по имени нужного класса, для массивов используется особый синтаксис:
+ *      - относится и к ссылочным массивам и к примитивным
+ *          - [ значит одно измерение массива
+ *          - boolean: Z
+ *          - byte:	B
+ *          - char: C
+ *          - класс/интерфейс Lимякласса;
+ *          - double: D
+ *          - float: F
+ *          - int: I
+ *          - long: J
+ *          - short: S
  *
- * - Class.isArray()
+ * - напр. [[D - значит 2-мерный массив из элементов типа double */
+
+
+/*~~~~~~~~~~~~~~~~~~~~~МАССИВЫ / КЛАСС JAVA.LANG.REFLECT.ARRAY~~~~~~~~~~~~~~~~~~~~~
+ * - узнать, является ли класс массивом: класс.isArray()
  *
- * - java.lang.reflect.Array
- *      - статические методы позволяют:
- *          - узнать тип массива
- *          - узнать тип компонентов
- *          - создавать новый массив
- *          - получать и устанавливать значения компонентов
- *
- *
- * - получение и установка массивов:
- *      - Field.get(Object)
- *      - Field.set(Object obj, Object value)
- *
- * - узнать тип массива (аналогично имени класса): класс.getName()
+ * - public final class Array extends Object
  *
  * - узнать тип компонентов: класс.getComponentType()
  *
  * - создание нового массива:
- *      - java.lang.reflect.Array.newInstance(Class type, int length)
- *      - Array.newInstance(Class<?> componentType, int... dimensions)
- *          - для многомерного
+ *      - Array.newInstance(Class type, int length)
+ *      - Array.newInstance(Class<?> componentType, int... dimensions): для многомерного
  *
- * - получение и установка элементов массива:
- *      - примитивы:
- *          - Array.set...(Object array, int index, ... value)
- *          - Array.get...(Object array, int index)
- *          - методы поддерживают автоматическое расширение
- *              - т.е. Array.getShort() можно использовать, чтобы установить значение в int-овый
- *              массив
- *              - а вызов Array.setLong() для массива из int приведет к IllegalArgumentException
- *      - ссылочные
- *          - Array.set(Object array, int index, Object value)
- *          - Array.get(Object array, int index)
- *
- * - узнать длину массива (относится):
- *      - java.lang.reflect.Array.getLength(Object o)
- *
- *
- *
- * */
-
-/* AccessibleObject */
+ * - узнать длину массива:
+ *      - Array.getLength(Object o) */
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~ПЕРЕЧИСЛЕНИЯ~~~~~~~~~~~~~~~~~~~~~
- * - All enums implicitly extend java.lang.Enum
- * - Class.isEnum()
- * - Class.getEnumConstants() retrieves the enum constants defined in an enum.
- * - java.lang.reflect.Field.isEnumConstant() indicates whether a field is an enumerated type
+ * - узнать, является ли класс перечислением: Class.isEnum()
  *
- * - поле.isEnumConstant(): почему-то не работает
+ * - получить константы-перечисления (только для классов-перечислений): Class.getEnumConstants()
+ *
+ * - узнать, является ли поле константой-перечислением (только для классов-перечислений): поле.isEnumConstant()
  *
  * - инициализировать экземпляры нельзя
  *      - даст IllegalArgumentException
- *      -  It is a compile-time error to attempt to explicitly instantiate an enum because that would prevent the defined enum constants from being unique. This restriction is also enforced in reflective code. Code which attempts to instantiate classes using their default constructors should invoke Class.isEnum() first to determine if the class is an enum.
- * For various reasons, including support for evolution of the enum type, the declaration order of enum constants is important. Class.getFields() and Class.getDeclaredFields() do not make any guarantee that the order of the returned values matches the order in the declaring source code. If ordering is required by an application, use Class.getEnumConstants().
+ *      - т.к. определенные константы не смогут быть уникальными
+ *      - поэтому перед инициализацией нужно убедится, что класс не является перечислением
  *
- *
- * */
-
-
-/*Class.newInstance() will throw an InstantiationException if an attempt is made to create a new instance of the class and the zero-argument constructor is not visible.*/
+ * - методы Class.getFields() и Class.getDeclaredFields() не гарантируют точный порядок констант,
+ * как он был при объявлении
+ *      - todo иногда это важно (For various reasons, including support for evolution of the enum type)
+ *      - получить поля с соблюдением порядка объявления: Class.getEnumConstants()*/
 
 
 @Ntrstn("Нужный экземпляр класса Class является входной точкой в Reflection API")
@@ -781,10 +711,6 @@ public class Reflection<T extends Number> {
         f.setAccessible(true);
 
 
-        /*~~~~~~~~~~~~~~~~~~~~~~~ПОЛЯ~~~~~~~~~~~~~~~~~~~~~~~*/
-
-
-
         /* ~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ ЧЛЕНОВ (КОНСТРУКТОРОВ, МЕТОДОВ, ПОЛЕЙ) КЛАССА ~~~~~~~~~~~~~~~*/
         c = Reflection.class;
 
@@ -907,8 +833,6 @@ public class Reflection<T extends Number> {
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */
         Arrays.asList(c.getEnumConstants()); // [ONE, TWO]
         System.out.println(Arrays.asList(c.getEnumConstants()));
-
-
     }
 
 
