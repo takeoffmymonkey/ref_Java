@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import types_references_annotations.my_annotations.Ntrstn;
-import types_references_classes.classes_inside.nested_static.Main;
-
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ПАКЕТ JAVA.LANG.REFLECTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * - предоставляет программный доступ к информации о полях, методах и конструкторах загруженных
@@ -374,26 +372,18 @@ import types_references_classes.classes_inside.nested_static.Main;
  *      аннотация для указанного типа присутствует для данного элемента, иначе false*/
 
 
-/* todo ДРУГИЕ МЕТОДЫ КЛАССА CLASS
- * - <U> Class<? extends U> asSubclass(Class<U> clazz):
-  *     - позволяет преобразовать объект класса к более конкретному
+/* ДРУГИЕ МЕТОДЫ КЛАССА CLASS
+ * - todo <U> Class<? extends U> asSubclass(Class<U> clazz): пытается привести данный к класс к
+ * указанному (выбросит исключение, если классы нельзя привести)
  *
- * - T cast(Object obj): Casts an object to the class or interface represented by this Class object.
- *      - полезен, когда нельзя исплользовать обычное приведение типа. Напр. при написании
- *      обобщеннго кода и сохранении ссылки на Class, которая будет использоваться для приведения
- *      типа позднее. но такие ситуации возникают редко
+ * - todo T cast(Object obj): приводит переданный объект к типу, который представляет данный класс
  *
- * - isInstance() помогает избавится от громоздких конструкций instanceof
- *      instanceof и isInstance дают одинаковые результаты
- *      == не затрагивает наследование
+ * - boolean isInstance(Object obj): динамический аналог instanceof - определяет, совместим ли
+ * указанный объект с классом, который представляет объект Class
  *
- * - isAssignableFrom(Class<?> cls)
- *      Integer.class.isAssignableFrom(int.class) == false
- *      Strictly speaking, any attempt to set a field of type X to a value of type Y can only succeed if the following statement holds:
-        X.class.isAssignableFrom(Y.class) == true
- *
- * - getCanonicalName()
- * */
+ * - boolean isAssignableFrom(Class<?> cls): определяет, является ли класс, представляемый данным
+ * объектом Class, тем же или родителем класса, который передается. Т.е. любая попытка установить в
+ * поле типа X значение типа Y удастся только, если: X.class.isAssignableFrom(Y.class) == true */
 
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ЧЛЕНЫ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -1005,6 +995,7 @@ public class Reflection<T extends Number> {
         f = c.getDeclaredField("ONE");
         System.out.println(f.isEnumConstant());
 
+        c = Reflection.class;
         f = c.getDeclaredField("testEnum");
 
         c = f.getType(); // class __types_system.Reifiability$TestEnum
@@ -1013,6 +1004,31 @@ public class Reflection<T extends Number> {
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */
         Arrays.asList(c.getEnumConstants()); // [ONE, TWO]
         System.out.println(Arrays.asList(c.getEnumConstants()));
+
+
+
+        /* ~~~~~~~~~~~~~~~~~~~~~~ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ CLASS~~~~~~~~~~~~~~~~~~~~~~ */
+        /*todo <U> Class<? extends U> asSubclass(Class<U> clazz) */
+        Class c1;
+        Class c2;
+        c1 = Reflection.class;
+//        c2 = c1.asSubclass(Reflection.Child.class); // ClassCastException
+
+        c1 = Reflection.Child.class;
+        c2 = c1.asSubclass(Reflection.class);
+        System.out.println(c2.getCanonicalName()); //
+
+
+        /*todo T cast(Object obj) - привести переданный объект к типу, который имеет данный Class*/
+        c1 = Number.class;
+        Object ob = c1.cast(1);
+
+
+        /*boolean isInstance(Object obj) - динамический аналог instanceof*/
+        System.out.println(c1.isInstance(1));//true
+        c1 = Integer.class;
+        Number n = new Integer(1);
+        System.out.println(c1.isInstance(n));// true
     }
 
 
