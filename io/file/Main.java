@@ -314,14 +314,57 @@ package io.file;
  *          временных файлов
  *          - в обоих можно указать суффикс
  *          - в первом можно указать префикс
+ * */
+
+/* RANDOM ACCESS FILE
+ * - позволяет непоследовательный доступ (чтение/запись) к содержимому файла
+ * - используется интерфейс SeekableByteChannel
+ * - получить можно от:
+ *     - newByteChannel(Path, OpenOption...)/
+ *     - newByteChannel(Path, Set<? extends OpenOption>, FileAttribute<?>...)
+ *     - если привести к FileChannel, то можно расширить фунционал
  *
+ * - методы:
+ *      - position(): текущая позиция канала
+ *      - position(long): установка позиции
+ *      - read(ByteBuffer): чтение байтов в буфер из канала
+ *      - write(ByteBuffer): запись байтов из буфера в канал
+ *      - truncate(long): обрезает файл (или другую сущность), подключенный к каналу
+ * */
+
+
+/* IO VS NIO
+ * - IO: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
+ *      - ориентирован на поток (stream):
+ *          - чтение 1 или нескольких байт за раз из потока
+ *              - они нигде не кешируются
+ *              - нельзя двигаться вперед-назад по потоку
+ *                  - чтобы можно было - нужно сперва закешировать их в буфер
+ *      - блокирующий IO:
+ *          - когда ветка вызывает read/write, она блокируется до конца выполнения
  *
+ * - NIO: удобно, когда нужно управлять кучей малых коротких подключений одновременно (напр. чат)
+ *      - ориентирован на буфер (buffer):
+ *          - данные читаются в буфер, который затем обрабатывается
+ *          - можно двигаться по буферу вперед-назад
+ *      - неблокирующий IO:
+ *          - ветка может запросить у канала чтение данных и получить только то, что сейчас доступно,
+ *          или ничего, если ничего не доступно
+ *              - не обязана ждать, пока появятся данные
+ *              - аналогично с записью
+ *              - может теперь заняться другими каналами
+ *          - поэтому сложнее в работе, т.к. нужно постоянно запрашивать, заполнился ли буфер, чтобы
+ *          можно было с ним работать
+ *      - селекторы:
+ *          - позволяют одной ветке мониторить несколько каналов входа, которые зарегистрированы в
+ *          селекторе
  * */
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileStore;
@@ -354,7 +397,9 @@ public class Main {
         writeTextByBufferedReader();
         createFile();
         createTempFile();
+        randomAccessFileForReadWrite();
     }
+
 
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~PATH~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -365,6 +410,7 @@ public class Main {
             System.out.println(path);
         }
     }
+
     private static void createPath() {
         Path p1 = Paths.get("/tmp/foo");
         Path p2 = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
@@ -394,8 +440,8 @@ public class Main {
     private static void getPathBetween2() {
         Path p1 = Paths.get("home");
         Path p3 = Paths.get("home/sally/bar");
-        Path p1_to_p3 = p1.relativize(p3);// Result is sally/bar
-        Path p3_to_p1 = p3.relativize(p1);// Result is ../..
+        p1.relativize(p3);// sally/bar
+        p3.relativize(p1);// ../..
     }
 
     private static void comparePaths() {
@@ -414,6 +460,7 @@ public class Main {
         boolean isRegularExecutableFile = Files.isRegularFile(file) &
                 Files.isReadable(file) & Files.isExecutable(file); // true
     }
+
     private static void copyFile() throws IOException {
         Path p1 = Paths.get
                 ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
@@ -519,7 +566,44 @@ public class Main {
     }
 
     private static void createTempFile() throws IOException {
-            Path tempFile = Files.createTempFile(null, ".myapp");
-            System.out.format("The temporary file has been created: %s%n", tempFile);
+        Path tempFile = Files.createTempFile(null, ".myapp");
+        System.out.format("The temporary file has been created: %s%n", tempFile);
+    }
+
+
+    private static void randomAccessFileForReadWrite() {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+        String s = "I was here!\n";
+        byte data[] = s.getBytes();
+        ByteBuffer out = ByteBuffer.wrap(data);
+
+        ByteBuffer copy = ByteBuffer.allocate(12);
+
+        try (FileChannel fc = (FileChannel.open(file, StandardOpenOption.READ, StandardOpenOption.WRITE))) {
+            // Read the first 12 bytes of the file.
+            int nread;
+            do {
+                nread = fc.read(copy);
+            } while (nread != -1 && copy.hasRemaining());
+
+            // Write "I was here!" at the beginning of the file.
+            fc.position(0);
+            while (out.hasRemaining())
+                fc.write(out);
+            out.rewind();
+
+            // Move to the end of the file.  Copy the first 12 bytes to
+            // the end of the file.  Then write "I was here!" again.
+            long length = fc.size();
+            fc.position(length - 1);
+            copy.flip();
+            while (copy.hasRemaining())
+                fc.write(copy);
+            while (out.hasRemaining())
+                fc.write(out);
+        } catch (IOException x) {
+            System.out.println("I/O Exception: " + x);
+        }
     }
 }
