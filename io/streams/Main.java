@@ -1,4 +1,4 @@
-package io;
+package io.streams;
 
 /* ПОТОКИ - ПОСЛЕДОВАТЕЛЬНОСТЬ ДАННЫХ, СЧИТЫВАЕМЫХ ИЗ ИСТОЧНИКА ИЛИ ЗАПИСЫВАЕМЫХ В МЕСТО НАЗНАЧЕНИЯ
  * - напр. файлы на диске, устройства, другие программы, массивы памяти и т.д.
@@ -164,8 +164,8 @@ public class Main {
         FileOutputStream out = null;
 
         try {
-            in = new FileInputStream("src\\io\\byte_test_src.txt");
-            out = new FileOutputStream("src\\io\\byte_test_dest.txt");
+            in = new FileInputStream("src\\io\\streams\\byte_test_src.txt");
+            out = new FileOutputStream("src\\io\\streams\\byte_test_dest.txt");
 
             int c;
 
@@ -189,8 +189,8 @@ public class Main {
         FileWriter out = null;
 
         try {
-            in = new FileReader("src\\io\\char_test_src.txt");
-            out = new FileWriter("src\\io\\char_test_dest.txt");
+            in = new FileReader("src\\io\\streams\\char_test_src.txt");
+            out = new FileWriter("src\\io\\streams\\char_test_dest.txt");
 
             int c;
             while ((c = in.read()) != -1) {
@@ -213,8 +213,8 @@ public class Main {
         PrintWriter out = null;
 
         try {
-            in = new BufferedReader(new FileReader("src\\io\\char_line_test_src.txt"));
-            out = new PrintWriter(new FileWriter("src\\io\\char_line_test_dest.txt"));
+            in = new BufferedReader(new FileReader("src\\io\\streams\\char_line_test_src.txt"));
+            out = new PrintWriter(new FileWriter("src\\io\\streams\\char_line_test_dest.txt"));
 
             String l;
             while ((l = in.readLine()) != null) {
@@ -236,7 +236,7 @@ public class Main {
         Scanner s = null;
 
         try {
-            s = new Scanner(new BufferedReader(new FileReader("src\\io\\scan_test_src.txt")));
+            s = new Scanner(new BufferedReader(new FileReader("src\\io\\streams\\scan_test_src.txt")));
 
             int sum = 0;
 
@@ -274,7 +274,7 @@ public class Main {
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(new
-                    BufferedOutputStream(new FileOutputStream("src\\io\\write_data_test.txt")));
+                    BufferedOutputStream(new FileOutputStream("src\\io\\streams\\write_data_test.txt")));
 
             out.writeInt(i);
             out.writeDouble(d);
@@ -287,7 +287,7 @@ public class Main {
         double total = 0.0;
         try {
             in = new DataInputStream(new
-                    BufferedInputStream(new FileInputStream("src\\io\\write_data_test.txt")));
+                    BufferedInputStream(new FileInputStream("src\\io\\streams\\write_data_test.txt")));
 
             int unit;
             double price;
@@ -318,7 +318,7 @@ public class Main {
         ObjectOutputStream out = null;
         try {
             out = new ObjectOutputStream(new
-                    BufferedOutputStream(new FileOutputStream("src\\io\\write_obj_test.txt")));
+                    BufferedOutputStream(new FileOutputStream("src\\io\\streams\\write_obj_test.txt")));
 
             out.writeObject(bigDecimal);
         } finally {
@@ -328,7 +328,7 @@ public class Main {
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(new
-                    BufferedInputStream(new FileInputStream("src\\io\\write_obj_test.txt")));
+                    BufferedInputStream(new FileInputStream("src\\io\\streams\\write_obj_test.txt")));
 
             BigDecimal bigDecimal1 = null;
 
@@ -343,6 +343,4 @@ public class Main {
             in.close();
         }
     }
-
-
 }
