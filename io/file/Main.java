@@ -187,17 +187,154 @@ package io.file;
  *              - перенос даже, если цель уже существует
  *              - если это симлинка, она заменяется, но адрес остается тем же
  *          - ATOMIC_MOVE: атомический перенос
- *              - если ОС не поддерживает - исключение
+ *              - если ОС не поддерживает - исключение */
+
+
+/* МЕТАДАННЫЕ (АТРИБУТЫ) ФАЙЛА
+ * - size(Path): размер файла в байтах
+ * - isDirectory(Path, LinkOption): является ли директорией
+ * - isRegularFile(Path, LinkOption...): является обычным файлом
+ * - isSymbolicLink(Path): является симлинком
+ * - isHidden(Path): является скрытым
+ * - getLastModifiedTime(Path, LinkOption...)/setLastModifiedTime(Path, FileTime):
+ *      - чтение/установка времени последнего изменения файла
+ * - getOwner(Path, LinkOption...)/setOwner(Path, UserPrincipal):
+ *      - чтение/установка владельца
+ * - getPosixFilePermissions(Path, LinkOption...)/setPosixFilePermissions(Path, Set<PosixFilePermission>):
+ *      - чтение/установка разрешений POSIX
+ *          - Portable Operating System Interface
+ * - getAttribute(Path, String, LinkOption...)/setAttribute(Path, String, Object, LinkOption...):
+ *      - чтение/установка значения атрибута
+ * - readAttributes(Path, String, LinkOption...):
+ *      - все атрибуты за раз
+ *      - String - id нужного атрибута
+ * - readAttributes(Path, Class<A>, LinkOption...):
+ *      - все атрибуты за раз
+ *      - Class<A> - тип нужного атрибута
+ *          - возвращает объект этого класса
+ *
+ * - FileStore - класс, представляющий физической место, где находится файл
+ *      - можно, например, узнать сколько места свободного
+ * */
+
+/* - связанные атрибуты сгруппированы в Views
+ *      - View зависит от имплементации конкретной файловой системы или какой-то общей ф-ти
+ *
+ * - BasicFileAttributeView – базовые атрибуты, которые должны поддерживаться всеми имплементациями
+ * файловой системы
+ *
+ * - DosFileAttributeView – расширяет базовые для поддержки атрибутов DOS
+ *
+ * - PosixFileAttributeView – расширяет базовые для поддержки атрибутов POSIX
+ *      - в т.ч. владелец файла, владелец группы, и другие 9 связанные с доступом
+ *
+ * - FileOwnerAttributeView – поддерживается каждой имплементацией файловой системы, которая
+ * поддреживает концепцию владельца файла
+ *
+ * - AclFileAttributeView – поддержка чтения/изменения Access Control Lists (ACL) файла
+ *
+ * - UserDefinedFileAttributeView – поддержка пользовательских метаданных
+ *      - напр. в Solaris OS здесь можно хранить MIME тип файла */
+
+
+/* ЧТЕНИЕ, ЗАПИСЬ И СОЗДАНИЕ ФАЙЛОВ
+ * - по сложности:
+ *      - 1. read/writeAllBytes(), readWriteAllLines()
+ *          - часто используются
+ *          - работа с малыми файлами
+ *
+ *      - 2. newBufferedReader(), newBufferedWriter()
+ *          - работа с текстовыми файлами
+ *
+ *      - 3. newInputStream(), newOutputStream()
+ *          - потоки
+ *          - небуферизированы
+ *          - используй с существующими API
+ *
+ *      - 4. newByteChannel()
+ *          - каналы и ByteBuffers
+ *
+ *      - 5. FileChannel
+ *          - сложные фичи
+ *          - блокировка файла
+ *          - работа с памятью
+ *
+ * - методы по созданию позволяют задавать начальные атрибуты
+ *
+ * - параметр StandardOpenOptions: опциональный параметр в некоторых методах
+ *      - WRITE – открывает файл для записи
+ *      - APPEND – добавляет новые данные в конец файла
+ *          - используется с WRITE или CREATE
+ *      - TRUNCATE_EXISTING – обрезает существующий файл до 0 байт
+ *         - используется с WRITE
+ *      - CREATE_NEW – создает новый файл и выбрасывает исключение, если он существует
+ *      - CREATE – открывает файл, если он существует или создает новый, если не существует
+ *      - DELETE_ON_CLOSE – удаляет файл при закрытии потока (stream)
+ *          - полезно для временных файлов
+ *      - SPARSE – подсказывает, что новосозданный файл будет разреженным (sparse).
+ *          - полезно на некоторых файловых системах (напр., NTFS), где большие файлы с "пробелами"
+ *          данных могут сохраняться более эффективным способом, когда такие пробелы не занимают
+ *          места на диске.
+ *      - SYNC – соблюдает синхронизацию для файла (и содержание и метаданные) на устройсте хранения
+ *      - DSYNC – соблюдает синхронизацию для файла (только содержание ) на устройсте хранения
+ *
+ *
+ * - часто используемые методы для малых файлов
+ *      - чтение всех байтов/строк из файла за раз: readAllBytes(Path)/readAllLines(Path, Charset)
+ *      - запись: write(Path, byte[], OpenOption...)/write(Path, Iterable< extends CharSequence>, Charset, OpenOption...)
+ *
+ * - буферизированные методы для текстовых файлов для Stream I/O:
+ *      - чтение файла при помощи Buffered Stream I/O: newBufferedReader(Path, Charset)
+ *      - запись: newBufferedWriter(Path, Charset, OpenOption...)
+ *
+ * - небуферизированные байтовые методы для Stream I/O:
+ *      - чтение файла байтово при помощи InputStream: newInputStream(Path, OpenOption...)
+ *      - создание и запись
+ *
+ * - методы для Channel I/O и ByteBuffer:
+ *      - Channel API - чтение/запись буфера за раз
+ *          - Stream API - чтение/запись символа за раз
+ *      - ByteChannel интерфейс, который предоставляет базовые операции чтения/записи
+ *      - newByteChannel(Path, OpenOption...)
+ *      - newByteChannel(Path, Set<? extends OpenOption>, FileAttribute<?>...)
+ *      - возвращают SeekableByteChannel
+ *          - есть возможноть сохранять позицию в канале и менять ее, а также обрезать файл и
+ *          запрашивать размер у файла
+ *      - можно приводить к FileChannel
+ *          - доступ к более сложному функционалу, типа работы с памятью, блокировки кусков файлов,
+ *          записи байтов с абсолютной позиции без влияния на текущую позицию канала
+ *
+ * - методы для создания обычных и временных файлов:
+ *      - обычные файлы: createFile(Path, FileAttribute<?>)
+ *          - при существовании файла выбрасывается исключение
+ *          - можно также использовать и методы newOutputStream
+ *      - временные файлы:
+ *          - createTempFile(Path, String, String, FileAttribute<?>): можно указать место создания
+ *          - createTempFile(String, String, FileAttribute<?>): место создания - дефолтная папка для
+ *          временных файлов
+ *          - в обоих можно указать суффикс
+ *          - в первом можно указать префикс
+ *
  *
  * */
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -210,18 +347,24 @@ public class Main {
         checkAccessibility();
         copyFile();
 //        moveFile();
+        readBasicAttributes();
+        readWriteUserAttribute();
+        getStorageInformation();
+        writeSmallFileByLines();
+        writeTextByBufferedReader();
+        createFile();
+        createTempFile();
     }
 
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~PATH~~~~~~~~~~~~~~~~~~~~~~~*/
+
     private static void iteratePath() {
         Path p = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
         for (Path path : p) {
             System.out.println(path);
         }
     }
-
-
     private static void createPath() {
         Path p1 = Paths.get("/tmp/foo");
         Path p2 = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
@@ -263,14 +406,14 @@ public class Main {
         boolean b = p1.startsWith(start);
     }
 
+
     /* ~~~~~~~~~~~~~~~~~~~~~~~FILES~~~~~~~~~~~~~~~~~~~~~~~*/
+
     private static void checkAccessibility() {
         Path file = Paths.get("C:\\autoexec.bat");
         boolean isRegularExecutableFile = Files.isRegularFile(file) &
                 Files.isReadable(file) & Files.isExecutable(file); // true
     }
-
-
     private static void copyFile() throws IOException {
         Path p1 = Paths.get
                 ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
@@ -291,4 +434,92 @@ public class Main {
         Files.move(p1, p2, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
 
+
+    private static void readBasicAttributes() throws IOException {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+
+        System.out.println("creationTime: " + attr.creationTime());
+        System.out.println("lastAccessTime: " + attr.lastAccessTime());
+        System.out.println("lastModifiedTime: " + attr.lastModifiedTime());
+
+        System.out.println("isDirectory: " + attr.isDirectory());
+        System.out.println("isOther: " + attr.isOther());
+        System.out.println("isRegularFile: " + attr.isRegularFile());
+        System.out.println("isSymbolicLink: " + attr.isSymbolicLink());
+        System.out.println("size: " + attr.size());
+    }
+
+
+    private static void readWriteUserAttribute() throws IOException {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+
+        UserDefinedFileAttributeView view = Files
+                .getFileAttributeView(file, UserDefinedFileAttributeView.class);
+        view.write("user.mimetype",
+                Charset.defaultCharset().encode("text/html"));
+
+
+        String name = "user.mimetype";
+        ByteBuffer buf = ByteBuffer.allocate(view.size(name));
+        view.read(name, buf);
+        buf.flip();
+        String value = Charset.defaultCharset().decode(buf).toString();
+        System.out.println("My defined attribute (MIME) value: " + value);
+    }
+
+    private static void getStorageInformation() throws IOException {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+
+        FileStore store = Files.getFileStore(file);
+
+        long total = store.getTotalSpace();
+        long used = (store.getTotalSpace() - store.getUnallocatedSpace());
+        long avail = store.getUsableSpace();
+
+        System.out.println("Total space (bytes): " + total);
+        System.out.println("Used space (bytes): " + used);
+        System.out.println("Available space (bytes): " + avail);
+    }
+
+
+    private static void writeSmallFileByLines() throws IOException {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\writeAllLines.txt");
+
+        List<String> list = Arrays.asList("coo", "coo", "shka");
+
+        Files.write(file, list);
+    }
+
+    private static void writeTextByBufferedReader() {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\writeBufferedText.txt");
+        Charset charset = Charset.forName("US-ASCII");
+        String s = "Writing text via BufferedReader";
+        try (BufferedWriter writer = Files.newBufferedWriter(file, charset, StandardOpenOption.APPEND)) {
+            writer.write(s, 0, s.length());
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+    }
+
+    private static void createFile() throws IOException {
+        Path file = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+        try {
+            Files.createFile(file);
+        } catch (FileAlreadyExistsException x) {
+            System.err.format("file named %s" +
+                    " already exists%n", file);
+        }
+    }
+
+    private static void createTempFile() throws IOException {
+            Path tempFile = Files.createTempFile(null, ".myapp");
+            System.out.format("The temporary file has been created: %s%n", tempFile);
+    }
 }
