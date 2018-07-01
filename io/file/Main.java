@@ -478,6 +478,93 @@ package io.file;
  * */
 
 
+/* LEGACY FILE I/O CODE (до J7/API 26)
+ * - недостатки:
+ *      - многие методы не выбрасывали исключения при фейлах
+ *          - например, при удалении файла и фейле, невозможно узнать из-за чего фейл: нет файла или
+ *          разрешений и т.д.
+ *      - метод rename не работал одинаково на всех платформах
+ *      - не было нормальной поддержки симлинков
+ *      - не было достаточной поддержки метаданных: разрешений, владельца файла, атрибутов безопасности
+ *      - доступ к метаданным был не эффективным
+ *      - многие методы File не масштабировались:
+ *          - запрос листинга большой папки от сервера мог приводить к подвисанию
+ *          - большие папки также могли приводить к проблемам с ресурсами памяти
+ *      - нельзя было написать безопасный код для прохода по дереву каталога и адекватно обрабатывать
+ *      рекурсивные симлинки
+ *
+ * - перевод File в Path и обратно:
+ *      Path input = file.toPath();
+ *      File file = Path.toFile(input);
+ *
+ * - соответствие функционала:
+ *      - IO: java.io.File
+ *      - NIO: java.nio.file.Path
+ *
+ *      - IO: java.io.RandomAccessFile
+ *      - NIO: SeekableByteChannel
+ *
+ *      - IO: File.canRead, canWrite, canExecute
+ *      - NIO: Files.isReadable, Files.isWritable, and Files.isExecutable
+ *
+ *      - IO: Files.isReadable, Files.isWritable, and Files.isExecutable
+ *      - NIO: Files.isDirectory(Path, LinkOption...), Files.isRegularFile(Path, LinkOption...), and Files.size(Path)
+ *
+ *      - IO: File.lastModified() and File.setLastModified(long)
+ *      - NIO: Files.getLastModifiedTime(Path, LinkOption...) and Files.setLastMOdifiedTime(Path, FileTime)
+ *
+ *      - IO: setExecutable, setReadable, setReadOnly, setWritable
+ *      - NIO: setAttribute(Path, String, Object, LinkOption...)
+ *
+ *      - IO: new File(parent, "newfile")
+ *      - NIO: parent.resolve("newfile")
+ *
+ *      - IO: File.renameTo
+ *      - NIO: Files.move
+ *
+ *      - IO: File.delete
+ *      - NIO: Files.delete
+ *
+ *      - IO: File.createNewFile
+ *      - NIO: Files.createFile
+ *
+ *      - IO: File.deleteOnExit
+ *      - NIO: createFile(DELETE_ON_CLOSE)
+ *
+ *      - IO: File.createTempFile
+ *      - NIO: Files.createTempFile(Path, String, FileAttributes<?>), Files.createTempFile(Path, String, String, FileAttributes<?>)
+ *
+ *      - IO: File.exists
+ *      - NIO: Files.exists and Files.notExists
+ *
+ *      - IO: File.compareTo and equals
+ *      - NIO: Path.compareTo and equals
+ *
+ *      - IO: File.getAbsolutePath and getAbsoluteFile
+ *      - NIO: Path.toAbsolutePath
+ *
+ *      - IO: File.getCanonicalPath and getCanonicalFile
+ *      - NIO: Path.toRealPath or normalize
+ *
+ *      - IO: File.toURI
+ *      - NIO: Path.toURI
+ *
+ *      - IO: File.isHidden
+ *      - NIO: Files.isHidden
+ *
+ *      - IO: File.list and listFiles
+ *      - NIO: Path.newDirectoryStream
+ *
+ *      - IO: File.mkdir and mkdirs
+ *      - NIO: Path.createDirectory
+ *
+ *      - IO: File.listRoots
+ *      - NIO: FileSystem.getRootDirectories
+ *
+ *      - IO: File.getTotalSpace, File.getFreeSpace, File.getUsableSpace
+ *      - NIO: FileStore.getTotalSpace, FileStore.getUnallocatedSpace, FileStore.getUsableSpace, FileStore.getTotalSpace
+ * */
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
