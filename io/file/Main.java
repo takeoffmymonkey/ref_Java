@@ -18,7 +18,44 @@ package io.file;
  *      - обычно операции с ними прозрачны для приложений - происходит автоматическая переадресация
  *      - при удалении или переименовании ссылки, сам объект по ссылке не меняется
  *      - разрешение ссылки - подстановка реального файла по адресу
+ *
+ * - Некоторые системы поддерживают жесткие символические линки:
+ *      - адресат у линки обязан существовать
+ *      - обычно запрещены для папок
+ *      - должны ссылаться на то, что находится на том же диске и файловой системе
+ *      - выглядит и ведет себя как обычный файл
+ *
  * */
+
+
+/* IO VS NIO
+ * - IO: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
+ *      - ориентирован на поток (stream):
+ *          - чтение 1 или нескольких байт за раз из потока
+ *              - они нигде не кешируются
+ *              - нельзя двигаться вперед-назад по потоку
+ *                  - чтобы можно было - нужно сперва закешировать их в буфер
+ *      - блокирующий IO:
+ *          - когда ветка вызывает read/write, она блокируется до конца выполнения
+ *
+ * - NIO: удобно, когда нужно управлять кучей малых коротких подключений одновременно (напр. чат)
+ *      - ориентирован на буфер (buffer):
+ *          - данные читаются в буфер, который затем обрабатывается
+ *          - можно двигаться по буферу вперед-назад
+ *      - неблокирующий IO:
+ *          - ветка может запросить у канала чтение данных и получить только то, что сейчас доступно,
+ *          или ничего, если ничего не доступно
+ *              - не обязана ждать, пока появятся данные
+ *              - аналогично с записью
+ *              - может теперь заняться другими каналами
+ *          - поэтому сложнее в работе, т.к. нужно постоянно запрашивать, заполнился ли буфер, чтобы
+ *          можно было с ним работать
+ *      - селекторы:
+ *          - позволяют одной ветке мониторить несколько каналов входа, которые зарегистрированы в
+ *          селекторе
+ * */
+
+
 
 /* ИНТЕРФЕЙС PATH
  * - начиная с J7/API 26
@@ -333,32 +370,113 @@ package io.file;
  * */
 
 
-/* IO VS NIO
- * - IO: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
- *      - ориентирован на поток (stream):
- *          - чтение 1 или нескольких байт за раз из потока
- *              - они нигде не кешируются
- *              - нельзя двигаться вперед-назад по потоку
- *                  - чтобы можно было - нужно сперва закешировать их в буфер
- *      - блокирующий IO:
- *          - когда ветка вызывает read/write, она блокируется до конца выполнения
+/* СОЗДАНИЕ И ЧТЕНИЕ ПАПОК
+ * - получение корневых каталогов системы: FileSystem.getRootDirectories()
  *
- * - NIO: удобно, когда нужно управлять кучей малых коротких подключений одновременно (напр. чат)
- *      - ориентирован на буфер (buffer):
- *          - данные читаются в буфер, который затем обрабатывается
- *          - можно двигаться по буферу вперед-назад
- *      - неблокирующий IO:
- *          - ветка может запросить у канала чтение данных и получить только то, что сейчас доступно,
- *          или ничего, если ничего не доступно
- *              - не обязана ждать, пока появятся данные
- *              - аналогично с записью
- *              - может теперь заняться другими каналами
- *          - поэтому сложнее в работе, т.к. нужно постоянно запрашивать, заполнился ли буфер, чтобы
- *          можно было с ним работать
- *      - селекторы:
- *          - позволяют одной ветке мониторить несколько каналов входа, которые зарегистрированы в
- *          селекторе
+ * - создание папки: createDirectory(Path, FileAttribute<?>)
+ *
+ * - создание всех папок на пути: createDirectories(Path, FileAttribute<?>)
+ *
+ * - создание временной папки:
+ *      - createTempDirectory(Path, String, FileAttribute<?>...): позволяет указать путь
+ *      - createTempDirectory(String, FileAttribute<?>...): создает в дефолтном месте
+ *
+ * - получить содержание: newDirectoryStream(Path)
+ *      - возвращает объект класса, который имплементирует DirectoryStream
+ *          - также является Iterable
+ *      - не забывай закрывать поток!
+ *      - возвращаются все типы содержимого: папки, файлы, симлинки, скрытое
+ *
+ * - фильтрация содержимого:
+ *      - при помощи Glob: newDirectoryStream(Path, String)
+ *      - при момощи своего фильтра: DirectoryStream.Filter<T>
+ *
  * */
+
+
+/*
+ * РАБОТА С ЛИНКАМИ
+ * - создание симлинка: createSymbolicLink(Path, Path, FileAttribute<?>)
+ * - создание жесткой линки: createLink(Path, Path)
+ * - обнаружение симлинки: isSymbolicLink(Path)
+ * - получение адресата симлинки: readSymbolicLink(Path)
+ * */
+
+
+/* ПРОХОД ПО ФАЙЛОВОМУ ДЕРЕВУ
+ * - имплементация интерфейса FileVisitor
+ *      - указывает поведение в ключевых точках:
+ *          - когда посещается файл: visitFile
+ *          - перед доступом к папке: preVisitDirectory
+ *          - после доступа к папке: postVisitDirectory
+ *          - при ошибке: visitFileFailed
+ *      - можно просто расширить SimpleFileVisitor
+ *      - при ошибке выбрасывается IOError
+ *
+ * - запуск прохода:
+ *      - walkFileTree(Path, FileVisitor)
+ *      - walkFileTree(Path, Set<FileVisitOption>, int, FileVisitor)
+ *          - можно указать глубину, напр. Integer.MAX_VALUE
+ *
+ * - контролирование процесса:
+ *      - например, при нахождении остановить дальнейший проход
+ *      - методы FileVisitor возвращают значение FileVisitResult:
+ *          - CONTINUE – нужно продолжать проход.
+ *              - если preVisitDirectory возвращает CONTINUE, директория посещается
+ *          - TERMINATE – прервать проход
+ *              - никакие методы больше не вызываются
+ *          - SKIP_SUBTREE – указанная папка и подпапки пропускаются
+ *          - SKIP_SIBLINGS – в указанной папке больше ничего не происходит
+ *
+ * - поиск:
+ *      - аналогично проходу, но для каждого файла/папки дополнительно сверяется вхождение объектом
+ *      PathMatcher
+ *          - получить: FileSystems.getDefault().getPathMatcher(String);
+ *
+ * - к сведению:
+ *      - точный порядок прохода неизвестен
+ *      - при удалении папки, не забыть удалить сначала содержимое
+ *      - при рекурсивном копировании, перед копированием, нужно создать папку в preVisitDirectory
+ *      - при поиске сравнение происходит в visitFile, но он находит только файлы
+ *          - для папок сравнивать нужно, например, в preVisitDirectory
+ *      - при удалении, необходимо знать, стоит ли следовать по симлинкам
+ *          - по дефолту не следует
+ * */
+
+
+/*
+ * WATCH SERVICE API - отслеживание изменений в папке
+ * - базовые шаги:
+ *      - создать наблюдателя WatchService для файловой системы
+ *      - зарегистрировать отслеживаемую папку в наблюдателе и указать отслеживаемые события
+ *          - при событии придет экземпляр WatchKey
+ *      - имплементировать бесконечный цикл для ожидания наступления события
+ *          - при событии сообщается о ключе и он помещается в очередь наблюдателя
+ *      - получить ключ из очереди наблюдателя
+ *          - из ключа можно получить имя файла
+ *      - получить каждое ожидающее событие для ключа (может быть несколько) и процессить как надо
+ *      - переустановить ключ и продолжить ожидание событий
+ *      - закрыть службу
+ *          - служба закрывается либо при выходе ветки либо методом closed
+ *
+ * - WatchKey потокобезопасен
+ * */
+
+
+/* ДРУГИЕ ПОЛЕЗНЫЕ МЕТОДЫ
+ * - определение MIME типа: probeContentType(Path)
+ *
+ * - дефолтная файловая система: FileSystems.getDefault()
+ *      - обычно используется в цепи вызовов
+ *
+ * - разделитель строки пути:
+ *      - File.separator
+ *      - FileSystems.getDefault().getSeparator()
+ *
+ * - хранилища (т.е. логические диски) в файловой системе:
+ *      - FileSystems.getDefault().getFileStores()
+ * */
+
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -366,18 +484,26 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Arrays;
 import java.util.List;
+
+import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -398,8 +524,15 @@ public class Main {
         createFile();
         createTempFile();
         randomAccessFileForReadWrite();
+        getSystemRootDirectories();
+        createAllDirsOnTheWay();
+        getDirFilteredContent();
+        getDirAdvancedFilteredContent();
+        walkFileTree();
+        findFile();
+        determineMimeType();
+        getDefaultFileSystem();
     }
-
 
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~PATH~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -417,7 +550,6 @@ public class Main {
         Path p3 = FileSystems.getDefault().getPath("/users/sally");
         Path p4 = Paths.get(System.getProperty("user.home"), "logs", "foo.log"); //C:\Users\takeoff\logs\foo.log
     }
-
 
     private static void getPathInfo() {
         Path path = Paths.get("C:\\home\\joe\\foo");
@@ -605,5 +737,168 @@ public class Main {
         } catch (IOException x) {
             System.out.println("I/O Exception: " + x);
         }
+    }
+
+
+    /* ~~~~~~~~~~ПАПКИ~~~~~~~~~~*/
+    private static void getSystemRootDirectories() {
+        Iterable<Path> dirs = FileSystems.getDefault().getRootDirectories();
+        for (Path name : dirs) {
+            System.err.println(name);
+        }
+    }
+
+    private static void createAllDirsOnTheWay() throws IOException {
+        Path dir = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\test_dir\\one_more_dir");
+
+        Files.createDirectories(dir);
+    }
+
+
+    private static void getDirFilteredContent() throws IOException {
+        Path dir = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.txt")) {
+            for (Path file : stream) {
+                System.out.println(file.getFileName());
+            }
+        } catch (DirectoryIteratorException x) {
+            System.err.println(x);
+        }
+    }
+
+
+    private static void getDirAdvancedFilteredContent() throws IOException {
+
+        DirectoryStream.Filter<Path> filter =
+                new DirectoryStream.Filter<Path>() {
+                    public boolean accept(Path file) throws IOException {
+                        return (Files.isDirectory(file));
+                    }
+                };
+
+        Path dir = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+
+        try (DirectoryStream<Path>
+                     stream = Files.newDirectoryStream(dir, filter)) {
+            for (Path entry : stream) {
+                System.out.println(entry.getFileName());
+            }
+        }
+    }
+
+
+    /* ПРОХОД ПО СОДЕРЖИМОМУ ПАПКИ */
+
+    private static void walkFileTree() throws IOException {
+        /* РАСШИРЕНИЕ SimpleFileVisitor ДЛЯ ПОЛУЧЕНИЯ ИМПЛЕМЕНТАЦИИ ИНТЕРФЕЙСА FileVisitor */
+        class PrintFiles extends SimpleFileVisitor<Path> {
+
+            // Print information about each type of file.
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
+                if (attr.isSymbolicLink()) System.out.format("Symbolic link: %s ", file);
+                else if (attr.isRegularFile()) System.out.format("Regular file: %s ", file);
+                else System.out.format("Other: %s ", file);
+                System.out.println("(" + attr.size() + "bytes)");
+                return CONTINUE;
+            }
+
+            // Print each directory visited.
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                System.out.format("Directory: %s%n", dir);
+                return CONTINUE;
+            }
+
+            // If there is some error accessing the file, let the user know.
+            // If you don't override this method and an error occurs, an IOException is thrown.
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                System.err.println(exc);
+                return CONTINUE;
+            }
+        }
+
+        /* ЗАПУСК ПРОЦЕССА */
+        Path startingDir = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+        PrintFiles pf = new PrintFiles();
+        Files.walkFileTree(startingDir, pf);
+    }
+
+    private static void findFile() throws IOException {
+        class Finder extends SimpleFileVisitor<Path> {
+
+            private final PathMatcher matcher;
+            private int numMatches = 0;
+
+            Finder(String pattern) {
+                matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+            }
+
+            // Compares the glob pattern against the file or directory name.
+            void find(Path file) {
+                Path name = file.getFileName();
+                if (name != null && matcher.matches(name)) {
+                    numMatches++;
+                    System.out.println(file);
+                }
+            }
+
+            // Prints the total number of matches to standard out.
+            void done() {
+                System.out.println("Matched: " + numMatches);
+            }
+
+            // Invoke the pattern matching method on each file.
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                find(file);
+                return CONTINUE;
+            }
+
+            // Invoke the pattern matching method on each directory.
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                find(dir);
+                return CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                System.err.println(exc);
+                return CONTINUE;
+            }
+        }
+
+        /* ЗАПУСК ПРОЦЕССА ПОИСКА*/
+        Path startingDir = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+        String pattern = "*.txt";
+
+        Finder finder = new Finder(pattern);
+        Files.walkFileTree(startingDir, finder);
+        finder.done();
+    }
+
+    /*ДРУГИЕ МЕТОДЫ */
+
+    private static void determineMimeType() throws IOException {
+        Path filename = Paths.get
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+        String type = Files.probeContentType(filename);
+        if (type == null) {
+            System.err.format("'%s' has an" + " unknown filetype.%n", filename);
+        } else if (!type.equals("text/plain")) {
+            System.err.format("'%s' is not" + " a plain text file.%n", filename);
+        } else System.out.println("Type is: " + type);
+    }
+
+    private static void getDefaultFileSystem() {
+        FileSystem fileSystem = FileSystems.getDefault(); // sun.nio.fs.WindowsFileSystem@10e140b
     }
 }
