@@ -1,59 +1,111 @@
 package io.file;
 
-/*
- * - Файл идентифицируется своим путем в файловой системе, начиная с корневого узла
- *      - может быть файлом либо каталогом
- *
- * - Путь может быть:
- *      - абсолютным: от корневого узла
- *      - относительным: для нахождения файла должен быть объединен с другим
- *
- * - Делимитер - символ, используемый для разделения имен папок - специфичен для системы:
- *      - Windows: \
- *      - Solaris: /
- *
- *
- * - Некоторые системы поддерживают символические ссылки(symlink/soft link): специальный файл,
- * который служит ссылкой на другой файл
- *      - обычно операции с ними прозрачны для приложений - происходит автоматическая переадресация
- *      - при удалении или переименовании ссылки, сам объект по ссылке не меняется
- *      - разрешение ссылки - подстановка реального файла по адресу
- *
- * - Некоторые системы поддерживают жесткие символические линки:
- *      - адресат у линки обязан существовать
- *      - обычно запрещены для папок
- *      - должны ссылаться на то, что находится на том же диске и файловой системе
- *      - выглядит и ведет себя как обычный файл
- *
- * */
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
+import java.util.Arrays;
+import java.util.List;
+
+import types_references_annotations.my_annotations.Ntrstn;
 
 
-/* IO VS NIO
- * - IO: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
- *      - ориентирован на поток (stream):
- *          - чтение 1 или нескольких байт за раз из потока
- *              - они нигде не кешируются
- *              - нельзя двигаться вперед-назад по потоку
- *                  - чтобы можно было - нужно сперва закешировать их в буфер
- *      - блокирующий IO:
- *          - когда ветка вызывает read/write, она блокируется до конца выполнения
+
+/* КЛЮЧЕВЫЕ АБСТРАКЦИИ NIO
+ * - БУФЕР (java.nio): контейнер для ограниченного объема данных примитивного типа
+ *      - имеет позицию (индекс следующего элемента для записи/чтения)
+ *          - ее можно очищать, переворачивать (flip), перематывать (rewind) и помечать, а также
+ *          переустанавливать ее на предыдущую метку
+ *      - для каждого примитива (кроме boolean) есть класс
+ *          - каждый класс определяет семейство методов:
+ *              - get/put для доставания/записи данных
+ *              - сжатие, дубликация и порезка буфера
+ *              - статические методы для аллоцирования нового буфера и обворачивания существующего
+ *              массива в буфер
+ *      - может использоваться как src и trg для операций IO
+ *      - имеет дополнительные ф-ции, которых нет в других буферах:
+ *          - может аллоцировать прямой буфер, и JVM постарается работать с ним нативно
+ *          - может создаваться мапингом куска файла прямо в память, в результате чего становятся
+ *          доступными несколько дополнительных файловых операций, определенных в MappedByteBuffer
+ *          - предоставляет доступ к своему содержимому как к гетерогенной или гомогенной
+ *          последовательности бинарных данных любого небулеанового примитива либо в big-endian либо
+ *          в little-endian порядках байтов
+ *      - иерархия:
+ *          - Buffer: позиция, лимит и вместимость; очистить, перевернуть, перемотать, пометить и
+ *          переустановить
+ *              - ByteBuffer: получить\положить, сжать, виды; аллоцировать, обернуть
+ *                  - MappedByteBuffer: байтовый буфер, замапенный на файл
+ *              - Char/Double/Float/Int/Long/ShortBuffer: получить\положить, сжать; аллоцировать,
+ *              обернуть
+ *          - ByteOrder: типобезопасное перечисление для порядков байтов
  *
- * - NIO: удобно, когда нужно управлять кучей малых коротких подключений одновременно (напр. чат)
- *      - ориентирован на буфер (buffer):
- *          - данные читаются в буфер, который затем обрабатывается
- *          - можно двигаться по буферу вперед-назад
- *      - неблокирующий IO:
- *          - ветка может запросить у канала чтение данных и получить только то, что сейчас доступно,
- *          или ничего, если ничего не доступно
- *              - не обязана ждать, пока появятся данные
- *              - аналогично с записью
- *              - может теперь заняться другими каналами
- *          - поэтому сложнее в работе, т.к. нужно постоянно запрашивать, заполнился ли буфер, чтобы
- *          можно было с ним работать
- *      - селекторы:
- *          - позволяют одной ветке мониторить несколько каналов входа, которые зарегистрированы в
- *          селекторе
- * */
+ *
+ * - НАБОРЫ СИМВОЛОВ (java.nio.charset) и ассоциированные с ними КОДЕРЫ(в т.ч. ДЕКОДЕРЫ), которые
+ * переводят между байтами и символами Unicode
+ *      - charset: именнованный маппинг 16-битных символов Unicode и последовательностей байтов
+ *      - кодеры работают с буферами байтов и символов
+ *      - обычно эти классы не используются напрямую, а используют существующие связанные с наборами
+ *      символов конструкторы и методы в классе String с InputStreamReader и OutputStreamWriter
+ *      - иерархия:
+ *          - Charset: именованный маппинг между символами и байтами
+ *              - определяет методы для создания кодеров для данного набора символов для получения
+ *              разных имен, ассоциированных с набором
+ *              - определяет методы для тестирования поддержки данного набора, для поиска экземпляра
+ *              набора по имени и для создания мапинга, который содержит каждый набор, чья поддержка
+ *              доступна текущей JVM
+ *          - CharsetDecoder: декодирует байты в символы
+ *          - CharsetEncoder: кодирует символы в байты
+ *          - CoderResult: описывает результаты кодера
+ *          - CodingErrorAction: описывает действия при определении возникновения ошибки кодировки
+ *
+ * - КАНАЛЫ: разные типы, которые представляют подключения к сущностям, способным производить IO
+ * операции
+ *      - например, устройство, сетевой сокет, файл, программный компонент
+ *      - каналы могут быть открытыми или закрытыми
+ *      - являются асинхронно закрываемыми и прерываемыми
+ *      - иерархия:
+ *          - Channel: связующее звено для IO операций
+ *              - ReadableByteChannel: может передавать в буфер
+ *                  - ScatteringByteChannel: может передавать в последовательность буферов
+ *              - WritableByteChannel: может писать из буфера
+ *                  - GatheringByteChannel: может писать из последовательности буферов
+ *              - ByteChannel: может передавать/писать из буфера
+ *                  - SeekableByteChannel: ByteChannel, подключенный к сущности, у которой
+ *                  последовательность байтов переменной длины
+ *                      - методы для запроса и изменений текущей позиции канала и его размера
+ *              - AsynchronousChannel: поддерживает асинхронные операции IO
+ *                  - AsynchronousByteChannel: может передавать/писать из буфера асинхронно
+ *              - NetworkChannel: канал к сетевому сокету,
+ *                  - MulticastChannel: может соединять Internet Protocol (IP) multicast groups
+ *              - Channels: утилитные методы для взаимодействия каналов с потоками
+ *      - файловые каналы:
+ *          - FileChannel: читает, записывает мапит и манипулирует файлами
+ *              - создается от статического метода open или вызовом getChannel у FileInputStream,
+ *              FileOutputStream или RandomAccessFile
+ *          - FileLock: блокировка (куска) файла
+ *          - MappedByteBuffer: прямой байтовый буфер, замапенный на кусок файла
+ *
+ * - СЕЛЕКТОРЫ И КЛЮЧИ СЕЛЕКЦИИ, которые вместе с selectable каналами определяют мультиплексированный
+ * неблокирующий функционал
+ *      - из 3 веток для 3 задач, можно сделать 1 ветку, но многозадачную */
 
 
 
@@ -478,119 +530,8 @@ package io.file;
  * */
 
 
-/* LEGACY FILE I/O CODE (до J7/API 26)
- * - недостатки:
- *      - многие методы не выбрасывали исключения при фейлах
- *          - например, при удалении файла и фейле, невозможно узнать из-за чего фейл: нет файла или
- *          разрешений и т.д.
- *      - метод rename не работал одинаково на всех платформах
- *      - не было нормальной поддержки симлинков
- *      - не было достаточной поддержки метаданных: разрешений, владельца файла, атрибутов безопасности
- *      - доступ к метаданным был не эффективным
- *      - многие методы File не масштабировались:
- *          - запрос листинга большой папки от сервера мог приводить к подвисанию
- *          - большие папки также могли приводить к проблемам с ресурсами памяти
- *      - нельзя было написать безопасный код для прохода по дереву каталога и адекватно обрабатывать
- *      рекурсивные симлинки
- *
- * - перевод File в Path и обратно:
- *      Path input = file.toPath();
- *      File file = Path.toFile(input);
- *
- * - соответствие функционала:
- *      - IO: java.io.File
- *      - NIO: java.nio.file.Path
- *
- *      - IO: java.io.RandomAccessFile
- *      - NIO: SeekableByteChannel
- *
- *      - IO: File.canRead, canWrite, canExecute
- *      - NIO: Files.isReadable, Files.isWritable, and Files.isExecutable
- *
- *      - IO: Files.isReadable, Files.isWritable, and Files.isExecutable
- *      - NIO: Files.isDirectory(Path, LinkOption...), Files.isRegularFile(Path, LinkOption...), and Files.size(Path)
- *
- *      - IO: File.lastModified() and File.setLastModified(long)
- *      - NIO: Files.getLastModifiedTime(Path, LinkOption...) and Files.setLastMOdifiedTime(Path, FileTime)
- *
- *      - IO: setExecutable, setReadable, setReadOnly, setWritable
- *      - NIO: setAttribute(Path, String, Object, LinkOption...)
- *
- *      - IO: new File(parent, "newfile")
- *      - NIO: parent.resolve("newfile")
- *
- *      - IO: File.renameTo
- *      - NIO: Files.move
- *
- *      - IO: File.delete
- *      - NIO: Files.delete
- *
- *      - IO: File.createNewFile
- *      - NIO: Files.createFile
- *
- *      - IO: File.deleteOnExit
- *      - NIO: createFile(DELETE_ON_CLOSE)
- *
- *      - IO: File.createTempFile
- *      - NIO: Files.createTempFile(Path, String, FileAttributes<?>), Files.createTempFile(Path, String, String, FileAttributes<?>)
- *
- *      - IO: File.exists
- *      - NIO: Files.exists and Files.notExists
- *
- *      - IO: File.compareTo and equals
- *      - NIO: Path.compareTo and equals
- *
- *      - IO: File.getAbsolutePath and getAbsoluteFile
- *      - NIO: Path.toAbsolutePath
- *
- *      - IO: File.getCanonicalPath and getCanonicalFile
- *      - NIO: Path.toRealPath or normalize
- *
- *      - IO: File.toURI
- *      - NIO: Path.toURI
- *
- *      - IO: File.isHidden
- *      - NIO: Files.isHidden
- *
- *      - IO: File.list and listFiles
- *      - NIO: Path.newDirectoryStream
- *
- *      - IO: File.mkdir and mkdirs
- *      - NIO: Path.createDirectory
- *
- *      - IO: File.listRoots
- *      - NIO: FileSystem.getRootDirectories
- *
- *      - IO: File.getTotalSpace, File.getFreeSpace, File.getUsableSpace
- *      - NIO: FileStore.getTotalSpace, FileStore.getUnallocatedSpace, FileStore.getUsableSpace, FileStore.getTotalSpace
- * */
+@Ntrstn("Разница между IO и NIO ")
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.file.DirectoryIteratorException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileStore;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.UserDefinedFileAttributeView;
-import java.util.Arrays;
-import java.util.List;
-
-import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -891,14 +832,14 @@ public class Main {
                 else if (attr.isRegularFile()) System.out.format("Regular file: %s ", file);
                 else System.out.format("Other: %s ", file);
                 System.out.println("(" + attr.size() + "bytes)");
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
 
             // Print each directory visited.
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                 System.out.format("Directory: %s%n", dir);
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
 
             // If there is some error accessing the file, let the user know.
@@ -906,7 +847,7 @@ public class Main {
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) {
                 System.err.println(exc);
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
         }
 
@@ -945,20 +886,20 @@ public class Main {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 find(file);
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
 
             // Invoke the pattern matching method on each directory.
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                 find(dir);
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) {
                 System.err.println(exc);
-                return CONTINUE;
+                return FileVisitResult.CONTINUE;
             }
         }
 
