@@ -1,4 +1,4 @@
-package io.file;
+package io_nio_nio2;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import types_references_annotations.my_annotations.Ntrstn;
  *              - сжатие, дубликация и порезка буфера
  *              - статические методы для аллоцирования нового буфера и обворачивания существующего
  *              массива в буфер
- *      - может использоваться как src и trg для операций IO
+ *      - может использоваться как src и trg для операций io
  *      - имеет дополнительные ф-ции, которых нет в других буферах:
  *          - может аллоцировать прямой буфер, и JVM постарается работать с ним нативно
  *          - может создаваться мапингом куска файла прямо в память, в результате чего становятся
@@ -76,13 +76,13 @@ import types_references_annotations.my_annotations.Ntrstn;
  *          - CoderResult: описывает результаты кодера
  *          - CodingErrorAction: описывает действия при определении возникновения ошибки кодировки
  *
- * - КАНАЛЫ: разные типы, которые представляют подключения к сущностям, способным производить IO
+ * - КАНАЛЫ: разные типы, которые представляют подключения к сущностям, способным производить io
  * операции
  *      - например, устройство, сетевой сокет, файл, программный компонент
  *      - каналы могут быть открытыми или закрытыми
  *      - являются асинхронно закрываемыми и прерываемыми
  *      - иерархия:
- *          - Channel: связующее звено для IO операций
+ *          - Channel: связующее звено для io операций
  *              - ReadableByteChannel: может передавать в буфер
  *                  - ScatteringByteChannel: может передавать в последовательность буферов
  *              - WritableByteChannel: может писать из буфера
@@ -91,7 +91,7 @@ import types_references_annotations.my_annotations.Ntrstn;
  *                  - SeekableByteChannel: ByteChannel, подключенный к сущности, у которой
  *                  последовательность байтов переменной длины
  *                      - методы для запроса и изменений текущей позиции канала и его размера
- *              - AsynchronousChannel: поддерживает асинхронные операции IO
+ *              - AsynchronousChannel: поддерживает асинхронные операции io
  *                  - AsynchronousByteChannel: может передавать/писать из буфера асинхронно
  *              - NetworkChannel: канал к сетевому сокету,
  *                  - MulticastChannel: может соединять Internet Protocol (IP) multicast groups
@@ -112,7 +112,7 @@ import types_references_annotations.my_annotations.Ntrstn;
 /* ИНТЕРФЕЙС PATH
  * - начиная с J7/API 26
  * - public interface Path extends Comparable<Path>, Iterable<Path>, Watchable
- * - является одной из первичных точек входа в пакет java.nio.file
+ * - является одной из первичных точек входа в пакет java.nio.io_nio_nio2
  * - программное представление пути в файловой системе
  * - содержит имя файла и список папок, которые формируют путь в данной ОС
  * - используется для исследования, нахождения и манипулирования файлами
@@ -146,7 +146,7 @@ import types_references_annotations.my_annotations.Ntrstn;
  *              - чтобы удостоверится, что в результате путь будет рабочим: toRealPath()
  *
  * - конвертация пути:
- *      - toUri(): в URI: напр. file:///home/logfile
+ *      - toUri(): в URI: напр. io_nio_nio2:///home/logfile
  *      - toAbsolutePath(): в абсолютный путь:
  *      - toRealPath():
  *          - разрешает симлинки
@@ -178,7 +178,7 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* КЛАСС FILES
- * - еще одна первичная точка входа в java.nio.file
+ * - еще одна первичная точка входа в java.nio.io_nio_nio2
  * - работает с объектами Path
  * - предоставляет методы для чтения, записи и манипулирования файлами и папками
  *
@@ -530,7 +530,7 @@ import types_references_annotations.my_annotations.Ntrstn;
  * */
 
 
-@Ntrstn("Разница между IO и NIO ")
+@Ntrstn("Разница между io и NIO ")
 
 
 public class Main {
@@ -566,7 +566,7 @@ public class Main {
     /* ~~~~~~~~~~~~~~~~~~~~~~~PATH~~~~~~~~~~~~~~~~~~~~~~~*/
 
     private static void iteratePath() {
-        Path p = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
+        Path p = Paths.get(URI.create("io_nio_nio2:///Users/joe/FileTest.java"));
         for (Path path : p) {
             System.out.println(path);
         }
@@ -574,7 +574,7 @@ public class Main {
 
     private static void createPath() {
         Path p1 = Paths.get("/tmp/foo");
-        Path p2 = Paths.get(URI.create("file:///Users/joe/FileTest.java"));
+        Path p2 = Paths.get(URI.create("io_nio_nio2:///Users/joe/FileTest.java"));
         Path p3 = FileSystems.getDefault().getPath("/users/sally");
         Path p4 = Paths.get(System.getProperty("user.home"), "logs", "foo.log"); //C:\Users\takeoff\logs\foo.log
     }
@@ -623,20 +623,20 @@ public class Main {
 
     private static void copyFile() throws IOException {
         Path p1 = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\src\\copy_test.txt");
 
         Path p2 = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\trg\\copy_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\trg\\copy_test.txt");
 
         Files.copy(p1, p2, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
     }
 
     private static void moveFile() throws IOException {
         Path p1 = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\move_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\src\\move_test.txt");
 
         Path p2 = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\trg\\move_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\trg\\move_test.txt");
 
         Files.move(p1, p2, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     }
@@ -644,7 +644,7 @@ public class Main {
 
     private static void readBasicAttributes() throws IOException {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\src\\copy_test.txt");
         BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
 
         System.out.println("creationTime: " + attr.creationTime());
@@ -661,7 +661,7 @@ public class Main {
 
     private static void readWriteUserAttribute() throws IOException {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\src\\copy_test.txt");
 
         UserDefinedFileAttributeView view = Files
                 .getFileAttributeView(file, UserDefinedFileAttributeView.class);
@@ -679,7 +679,7 @@ public class Main {
 
     private static void getStorageInformation() throws IOException {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\src\\copy_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\src\\copy_test.txt");
 
         FileStore store = Files.getFileStore(file);
 
@@ -695,7 +695,7 @@ public class Main {
 
     private static void writeSmallFileByLines() throws IOException {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\writeAllLines.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\writeAllLines.txt");
 
         List<String> list = Arrays.asList("coo", "coo", "shka");
 
@@ -704,7 +704,7 @@ public class Main {
 
     private static void writeTextByBufferedReader() {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\writeBufferedText.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\writeBufferedText.txt");
         Charset charset = Charset.forName("US-ASCII");
         String s = "Writing text via BufferedReader";
         try (BufferedWriter writer = Files.newBufferedWriter(file, charset, StandardOpenOption.APPEND)) {
@@ -716,24 +716,24 @@ public class Main {
 
     private static void createFile() throws IOException {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\file_create_test.txt");
         try {
             Files.createFile(file);
         } catch (FileAlreadyExistsException x) {
-            System.err.format("file named %s" +
+            System.err.format("io_nio_nio2 named %s" +
                     " already exists%n", file);
         }
     }
 
     private static void createTempFile() throws IOException {
         Path tempFile = Files.createTempFile(null, ".myapp");
-        System.out.format("The temporary file has been created: %s%n", tempFile);
+        System.out.format("The temporary io_nio_nio2 has been created: %s%n", tempFile);
     }
 
 
     private static void randomAccessFileForReadWrite() {
         Path file = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\file_create_test.txt");
         String s = "I was here!\n";
         byte data[] = s.getBytes();
         ByteBuffer out = ByteBuffer.wrap(data);
@@ -741,20 +741,20 @@ public class Main {
         ByteBuffer copy = ByteBuffer.allocate(12);
 
         try (FileChannel fc = (FileChannel.open(file, StandardOpenOption.READ, StandardOpenOption.WRITE))) {
-            // Read the first 12 bytes of the file.
+            // Read the first 12 bytes of the io_nio_nio2.
             int nread;
             do {
                 nread = fc.read(copy);
             } while (nread != -1 && copy.hasRemaining());
 
-            // Write "I was here!" at the beginning of the file.
+            // Write "I was here!" at the beginning of the io_nio_nio2.
             fc.position(0);
             while (out.hasRemaining())
                 fc.write(out);
             out.rewind();
 
-            // Move to the end of the file.  Copy the first 12 bytes to
-            // the end of the file.  Then write "I was here!" again.
+            // Move to the end of the io_nio_nio2.  Copy the first 12 bytes to
+            // the end of the io_nio_nio2.  Then write "I was here!" again.
             long length = fc.size();
             fc.position(length - 1);
             copy.flip();
@@ -778,7 +778,7 @@ public class Main {
 
     private static void createAllDirsOnTheWay() throws IOException {
         Path dir = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\test_dir\\one_more_dir");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\test_dir\\one_more_dir");
 
         Files.createDirectories(dir);
     }
@@ -786,7 +786,7 @@ public class Main {
 
     private static void getDirFilteredContent() throws IOException {
         Path dir = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2");
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.txt")) {
             for (Path file : stream) {
@@ -808,7 +808,7 @@ public class Main {
                 };
 
         Path dir = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2");
 
         try (DirectoryStream<Path>
                      stream = Files.newDirectoryStream(dir, filter)) {
@@ -825,11 +825,11 @@ public class Main {
         /* РАСШИРЕНИЕ SimpleFileVisitor ДЛЯ ПОЛУЧЕНИЯ ИМПЛЕМЕНТАЦИИ ИНТЕРФЕЙСА FileVisitor */
         class PrintFiles extends SimpleFileVisitor<Path> {
 
-            // Print information about each type of file.
+            // Print information about each type of io_nio_nio2.
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attr) {
                 if (attr.isSymbolicLink()) System.out.format("Symbolic link: %s ", file);
-                else if (attr.isRegularFile()) System.out.format("Regular file: %s ", file);
+                else if (attr.isRegularFile()) System.out.format("Regular io_nio_nio2: %s ", file);
                 else System.out.format("Other: %s ", file);
                 System.out.println("(" + attr.size() + "bytes)");
                 return FileVisitResult.CONTINUE;
@@ -842,7 +842,7 @@ public class Main {
                 return FileVisitResult.CONTINUE;
             }
 
-            // If there is some error accessing the file, let the user know.
+            // If there is some error accessing the io_nio_nio2, let the user know.
             // If you don't override this method and an error occurs, an IOException is thrown.
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc) {
@@ -853,7 +853,7 @@ public class Main {
 
         /* ЗАПУСК ПРОЦЕССА */
         Path startingDir = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2");
         PrintFiles pf = new PrintFiles();
         Files.walkFileTree(startingDir, pf);
     }
@@ -868,7 +868,7 @@ public class Main {
                 matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
             }
 
-            // Compares the glob pattern against the file or directory name.
+            // Compares the glob pattern against the io_nio_nio2 or directory name.
             void find(Path file) {
                 Path name = file.getFileName();
                 if (name != null && matcher.matches(name)) {
@@ -882,7 +882,7 @@ public class Main {
                 System.out.println("Matched: " + numMatches);
             }
 
-            // Invoke the pattern matching method on each file.
+            // Invoke the pattern matching method on each io_nio_nio2.
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 find(file);
@@ -905,7 +905,7 @@ public class Main {
 
         /* ЗАПУСК ПРОЦЕССА ПОИСКА*/
         Path startingDir = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2");
         String pattern = "*.txt";
 
         Finder finder = new Finder(pattern);
@@ -917,12 +917,12 @@ public class Main {
 
     private static void determineMimeType() throws IOException {
         Path filename = Paths.get
-                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\file\\file_create_test.txt");
+                ("C:\\git\\ref_Java\\out\\production\\ref_Java\\io\\io_nio_nio2\\file_create_test.txt");
         String type = Files.probeContentType(filename);
         if (type == null) {
             System.err.format("'%s' has an" + " unknown filetype.%n", filename);
         } else if (!type.equals("text/plain")) {
-            System.err.format("'%s' is not" + " a plain text file.%n", filename);
+            System.err.format("'%s' is not" + " a plain text io_nio_nio2.%n", filename);
         } else System.out.println("Type is: " + type);
     }
 

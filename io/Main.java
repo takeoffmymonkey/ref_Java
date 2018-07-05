@@ -1,6 +1,6 @@
 package io;
 
-/* ФУНКЦИОНАЛ IO (НАХОДИТСЯ В ПАКЕТАХ JAVA.IO И JAVA.NIO)
+/* ФУНКЦИОНАЛ io (НАХОДИТСЯ В ПАКЕТАХ JAVA.io И JAVA.NIO)
  * - ввод и вывод через потоки данных, сериализацию и файловую систему
  * - наборы символов, декодеры и кодировщики для перевода между байтами и символами Unicode.
  * - доступ к файлу, его атрибутам и файловым системам
@@ -8,8 +8,8 @@ package io;
  * неблокирующего I/O */
 
 
-/* JAVA.IO
- * - используется для системного IO через потоки данных и сериализацию
+/* JAVA.io
+ * - используется для системного io через потоки данных и сериализацию
  *
  * - поток: НЕПРЕРЫВАЕМАЯ последовательность данных
  *
@@ -21,18 +21,18 @@ package io;
  *
  * - входящий поток для чтения данных из источника, исходящий поток для записи данных в цель
  *
- * - байтовые потоки для байтового IO и символьные потоки для символьного IO
+ * - байтовые потоки для байтового io и символьные потоки для символьного io
  *      - все классы байтовых потоков наследуют от InputStream или OutputStream
  *      - все классы символьных потоков наследуют от Reader или Write
  *      - байты/символы читаются/пишутся 1 за 1 в цикле
  *          - можно использовать буферизированные потоки BufferedInputStream/BufferedReader и
- *          BufferedOutputStream/BufferedWriter для улучшения производительности операций IO
+ *          BufferedOutputStream/BufferedWriter для улучшения производительности операций io
  *              - оборачивают небуфиризированные потоки
  *              - читают данные из области памяти (буфера)
  *
- * - операции IO являются блокирующими
+ * - операции io являются блокирующими
  *
- * - FILE IO:
+ * - FILE io:
  *      - класс File: представляет путь к файлу или папке
  *      - класс RandomAccessFile: чтение и запись в файл с неупорядоченным доступом */
 
@@ -40,7 +40,7 @@ package io;
 /* JAVA NIO
  * - является расширением, а не заменой java.io
  *
- * - предоставляет высокоэффективный IO для операций на большинстве ОС
+ * - предоставляет высокоэффективный io для операций на большинстве ОС
  *      - буферы для примитивных типов
  *      - кодеры/декодеры наборов символов
  *      - сверка с паттерном регуляртного выражения
@@ -62,30 +62,30 @@ package io;
  * */
 
 
-/* IO VS NIO
- * - конструкции NIO делают операции IO быстрее традицонного IO, так как они ближе к нативному IO ОС
+/* io VS NIO
+ * - конструкции NIO делают операции io быстрее традицонного io, так как они ближе к нативному io ОС
  * - чем больше размер передачи, тем заметнее
- * - NIO также предоставляет другие недоступные в IO фичи для потоковых операций
- * - но невозможно полностью заменить IO на NIO, так как NIO добавляет функционал к java.io
- *      - расширяет нативный IO API, добавляя новые возможности по манипулированию потоков данных
+ * - NIO также предоставляет другие недоступные в io фичи для потоковых операций
+ * - но невозможно полностью заменить io на NIO, так как NIO добавляет функционал к java.io
+ *      - расширяет нативный io API, добавляя новые возможности по манипулированию потоков данных
  *      более мощным способом */
 
 
-/* IO VS NIO
- * - IO: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
+/* io VS NIO
+ * - io: удобно, когда нужно держать открытыми ширококанальные подключения (напр. P2P)
  *      - ориентирован на поток (stream):
  *          - чтение 1 или нескольких байт за раз из потока
  *              - они нигде не кешируются
  *              - нельзя двигаться вперед-назад по потоку
  *                  - чтобы можно было - нужно сперва закешировать их в буфер
- *      - блокирующий IO:
+ *      - блокирующий io:
  *          - когда ветка вызывает read/write, она блокируется до конца выполнения
  *
  * - NIO: удобно, когда нужно управлять кучей малых коротких подключений одновременно (напр. чат)
  *      - ориентирован на буфер (buffer):
  *          - данные читаются в буфер, который затем обрабатывается
  *          - можно двигаться по буферу вперед-назад
- *      - неблокирующий IO:
+ *      - неблокирующий io:
  *          - ветка может запросить у канала чтение данных и получить только то, что сейчас доступно,
  *          или ничего, если ничего не доступно
  *              - не обязана ждать, пока появятся данные
@@ -100,21 +100,21 @@ package io;
 
 
 /* ПАКЕТЫ
- * - java.io: поддержка системного IO при помощи потоков данных, сериализации и файловой системы
+ * - java.io: поддержка системного io при помощи потоков данных, сериализации и файловой системы
  *
  * - java.nio: буферы (контейнер данных) для "кусочных" операций с памятью. Буферы могут быть
  * аллоцированы прямо в памяти для высокой скорости
  *
- * - java.nio.channels: каналы - т.е. связь между устройствами, способными производить операции IO.
- * Также определяет селекторы для мультиплексированного неблокирующего IO
+ * - java.nio.channels: каналы - т.е. связь между устройствами, способными производить операции io.
+ * Также определяет селекторы для мультиплексированного неблокирующего io
  *
  * - java.nio.channels.spi: имплементации для пакета java.nio.channels
  *
- * - java.nio.file: интерфейсы и классы для доступа к файлам, их атрибутам и файловой системе
+ * - java.nio.io_nio_nio2: интерфейсы и классы для доступа к файлам, их атрибутам и файловой системе
  *
- * - java.nio.file.attribute: интерфейсы для и классы для доступа к атрибутам файловой системы
+ * - java.nio.io_nio_nio2.attribute: интерфейсы для и классы для доступа к атрибутам файловой системы
  *
- * - java.nio.file.spi: классы для создания имплементации файловой системы
+ * - java.nio.io_nio_nio2.spi: классы для создания имплементации файловой системы
  *
  * - java.nio.charset (description): наборы символов, кодеры/декодеры для перевода между байтами и
  * символами Unicode
@@ -131,8 +131,8 @@ package io;
 
 
 
-/* IO VS NIO VS NIO
- * - IO:
+/* io VS NIO VS NIO
+ * - io:
  *      - с 1.0
  *
  *
@@ -193,81 +193,81 @@ package io;
  *      рекурсивные симлинки
  *
  * - перевод File в Path и обратно:
- *      Path input = file.toPath();
- *      File file = Path.toFile(input);
+ *      Path input = io_nio_nio2.toPath();
+ *      File io_nio_nio2 = Path.toFile(input);
  *
  * - соответствие функционала:
- *      - IO: java.io.File
- *      - NIO: java.nio.file.Path
+ *      - io: java.io.File
+ *      - NIO: java.nio.Path
  *
- *      - IO: java.io.RandomAccessFile
+ *      - io: java.io.RandomAccessFile
  *      - NIO: SeekableByteChannel
  *
- *      - IO: File.canRead, canWrite, canExecute
+ *      - io: File.canRead, canWrite, canExecute
  *      - NIO: Files.isReadable, Files.isWritable, and Files.isExecutable
  *
- *      - IO: Files.isReadable, Files.isWritable, and Files.isExecutable
+ *      - io: Files.isReadable, Files.isWritable, and Files.isExecutable
  *      - NIO: Files.isDirectory(Path, LinkOption...), Files.isRegularFile(Path, LinkOption...), and Files.size(Path)
  *
- *      - IO: File.lastModified() and File.setLastModified(long)
+ *      - io: File.lastModified() and File.setLastModified(long)
  *      - NIO: Files.getLastModifiedTime(Path, LinkOption...) and Files.setLastMOdifiedTime(Path, FileTime)
  *
- *      - IO: setExecutable, setReadable, setReadOnly, setWritable
+ *      - io: setExecutable, setReadable, setReadOnly, setWritable
  *      - NIO: setAttribute(Path, String, Object, LinkOption...)
  *
- *      - IO: new File(parent, "newfile")
+ *      - io: new File(parent, "newfile")
  *      - NIO: parent.resolve("newfile")
  *
- *      - IO: File.renameTo
+ *      - io: File.renameTo
  *      - NIO: Files.move
  *
- *      - IO: File.delete
+ *      - io: File.delete
  *      - NIO: Files.delete
  *
- *      - IO: File.createNewFile
+ *      - io: File.createNewFile
  *      - NIO: Files.createFile
  *
- *      - IO: File.deleteOnExit
+ *      - io: File.deleteOnExit
  *      - NIO: createFile(DELETE_ON_CLOSE)
  *
- *      - IO: File.createTempFile
+ *      - io: File.createTempFile
  *      - NIO: Files.createTempFile(Path, String, FileAttributes<?>), Files.createTempFile(Path, String, String, FileAttributes<?>)
  *
- *      - IO: File.exists
+ *      - io: File.exists
  *      - NIO: Files.exists and Files.notExists
  *
- *      - IO: File.compareTo and equals
+ *      - io: File.compareTo and equals
  *      - NIO: Path.compareTo and equals
  *
- *      - IO: File.getAbsolutePath and getAbsoluteFile
+ *      - io: File.getAbsolutePath and getAbsoluteFile
  *      - NIO: Path.toAbsolutePath
  *
- *      - IO: File.getCanonicalPath and getCanonicalFile
+ *      - io: File.getCanonicalPath and getCanonicalFile
  *      - NIO: Path.toRealPath or normalize
  *
- *      - IO: File.toURI
+ *      - io: File.toURI
  *      - NIO: Path.toURI
  *
- *      - IO: File.isHidden
+ *      - io: File.isHidden
  *      - NIO: Files.isHidden
  *
- *      - IO: File.list and listFiles
+ *      - io: File.list and listFiles
  *      - NIO: Path.newDirectoryStream
  *
- *      - IO: File.mkdir and mkdirs
+ *      - io: File.mkdir and mkdirs
  *      - NIO: Path.createDirectory
  *
- *      - IO: File.listRoots
+ *      - io: File.listRoots
  *      - NIO: FileSystem.getRootDirectories
  *
- *      - IO: File.getTotalSpace, File.getFreeSpace, File.getUsableSpace
+ *      - io: File.getTotalSpace, File.getFreeSpace, File.getUsableSpace
  *      - NIO: FileStore.getTotalSpace, FileStore.getUnallocatedSpace, FileStore.getUsableSpace, FileStore.getTotalSpace
  * */
 
 
-/* NIO (new IO) - неблокирующее IO - набор API для интенсивных IO операций.
+/* NIO (new io) - неблокирующее io - набор API для интенсивных io операций.
  * - Был добавлен в 1.4
- * - дополняет существующий IO
+ * - дополняет существующий io
  *
  *
  * - NIO2 - расширение для NIO, предоставляет новое API файловой системы
@@ -296,7 +296,7 @@ package io;
  * */
 
 /* NIO
- * - здесь операции IO идут с каналами и буферами
+ * - здесь операции io идут с каналами и буферами
  * - канал - как поток - представляет связь между ресурсом/целью и программой для передачи данных, но
  * в отличие от потока, является двунаправленным
  *      - из канала можно читать и в него можно писать
@@ -321,12 +321,12 @@ package io;
 
 /* NIO2
  * - добавлено много фич, связанных с эффективной работой с файловой системой и отсутствующих в
- * оригинальном IO
+ * оригинальном io
  * - с 1.7
  * - добавлены пакеты:
- *      - java.nio.file
- *      - java.nio.file.attribute
- *      - java.nio.file.spi
+ *      - java.nio.io_nio_nio2
+ *      - java.nio.io_nio_nio2.attribute
+ *      - java.nio.io_nio_nio2.spi
  *
  * - некоторые фичи:
  *      - возможность работы с разными ФС в 1 унифицированном виде
@@ -343,14 +343,14 @@ package io;
  *          - программа получает уведомление при наступлении отслеживаемого события
  *      - API для прохода по файловому дереву
  *          - возможность производить операции с узлами
- *      - поддержка асинхронного IO для сетевых сокетов и файлов
+ *      - поддержка асинхронного io для сетевых сокетов и файлов
  *      - мультикастинг при помощи DatagramChannel
  *
  * */
 
 import types_references_annotations.my_annotations.Ntrstn;
 
-@Ntrstn("NIO является не заменой IO, а скорее расширением")
-@Ntrstn("Одним из главных различий IO и NIO является то, что второй выполняет операции, не блокируя")
+@Ntrstn("NIO является не заменой io, а скорее расширением")
+@Ntrstn("Одним из главных различий io и NIO является то, что второй выполняет операции, не блокируя")
 public class Main {
 }
