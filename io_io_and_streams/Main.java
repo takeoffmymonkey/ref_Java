@@ -17,6 +17,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Scanner;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 
 /* БАЗОВЫЙ IO
@@ -40,6 +42,7 @@ import java.util.Scanner;
  *          - new BufferedReader(new FileReader("1.txt")); // класс, читающий посимвольно файлы,
  *          передается в класс, читающий символы при помощи буфера, и получается класс, читающий
  *          посимвольно файлы при помощи буфера
+ *      - FilterInputStream/FilterOutputStream - родитель для декораторов
  *
  * - с 1.1 2 новых родительских класса-удобства (мосты типа "байт-в-символ"), которые оборачивают
  * InputStream и OutputStream:
@@ -48,11 +51,20 @@ import java.util.Scanner;
  *          - пример наследования:
  *              - FileReader: считывает символы (в виде int от 0 до 65535) из файла
  *              - FileWriter: записывает символы (в виде int от 0 до 65535) в файл
- *      - если нет подходящей обертки Reader/Writer, есть 2 моста "байт-в-символ" общего
- *      назначения:
- *          - InputStreamReader
- *          - OutputStreamWriter
- *      - автоматически переводят из Unicode в/из локального набора символов */
+ *      - иерархия новых классов почти полностью дублирует байтовую
+ *      - являются более предпочтительными, но в некоторых случаях без байтовых классов не обойтись
+ *          - напр. при работе с java.util.zip или при передаче данных платформонезависимым способом
+ *          (в двоичном виде) классами DataInputStream/DataOutputStream
+ *      - если нет подходящей обертки Reader/Writer, есть 2 моста (т.е. адаптеры) "байт-в-символ"
+ *      общего назначения:
+ *          - InputStreamReader: переводит InputStream в Reader
+ *          - OutputStreamWriter: переводит OutputStream в Writer
+ *      - автоматически переводят из Unicode в/из локального набора символов
+ *      - причиной стал переход от 8-битового Unicode в 16-битовый
+ *
+ * - "каналы" или "трубы" (класс Piped..) предназначены для работы с несколькими программными
+ * потоками, т.е. concurrency
+ *      */
 
 
 /* ПОТОКИ (STREAMS) - ПОСЛЕДОВАТЕЛЬНОСТЬ ДАННЫХ, СЧИТЫВАЕМЫХ ИЗ ИСТОЧНИКА ИЛИ ЗАПИСЫВАЕМЫХ В ЦЕЛЬ
@@ -82,6 +94,106 @@ import java.util.Scanner;
  *      - манипулируют байтами, а не буферами (напр. с байтами) */
 
 
+/* ТИПИЧНОЕ ИСПОЛЬЗОВАНИЕ
+ * - буферизированное чтение из файла:
+ *      new BufferedReader(new FileReader("1.txt")).readLine();
+ *
+ * - чтение из памяти:
+ *          new StringReader(BufferedInputFile.read("1.txt")).read();
+ *
+ * - форматированное чтение из памяти:
+ *          new DataInputStream(new ByteArrayInputStream(BufferedInputFile.read("1.txt").getBytes()
+ *          .readByte())
+ *
+ * - вывод в файл:
+ *      new PrintWriter(new BufferedWriter(new FileWriter(file)));
+ *
+ * - сокращенная запись для вывода в текстовые файлы
+ *      - c J5
+ *      new PrintWriter(file);
+ *
+ * - сохранение и восстановление данных
+ *      new DataOutputStream(new BufferedOutputStream(new FileOutputStream("Data.txt"));
+ *      new DataInputStream(new BufferedInputStream(new FileIntputStream("Data.txt"));
+ *
+ * - чтение/запись файлов с произвольным доступом
+ *      new RandomAccessFile(file, "r").readDouble().close();
+ *      new RandomAccessFile(file, "rw").writeDouble(2d).close();
+ *      RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close();
+ */
+
+
+
+/* FILE
+ *
+ *
+ * */
+
+
+/* СЖАТИЕ ДАННЫХ
+ * - классы для сжатия базируются на существующих потоках IO и предоставляют функциональность сжатия
+ *      - входят в иерархию IOStream
+ *
+ * - классы:
+ *      - CheckedInputStream: метод getCheckSum() возвращает контрольную сумму для любого входного
+ *      потока InputStream (не только для потока распаковки)
+ *      - CheckedOutputStream: метод getCheckSum() возвращает контрольную сумму для любого выходного
+ *      потока OutputStream (не только для потока распаковки)
+ *      - DeflaterOutputStream: базовый класс для сжатия данных
+ *          - ZipOutputStream: производит сжатие данных в формате ZIP
+ *          - GZIPOutputStream: производит сжатие данных в формате GZIP
+ *      - InflaterInputStream: базовый класс для классов распаковки сжатых данных
+ *          - ZipIntputStream: распаковывает сжатые данные, хранящиеся в формате ZIP
+ *          - GZIPIntputStream: распаковывает сжатые данные, хранящиеся в формате GZIP
+ *
+ * - просто надстраиваются на потоки IO
+ *
+ * - можно работать и с несколькими файлами в архиве
+ *
+ * - 2 алгоритма проверки контрольной суммы:
+ *      - класс Adler32 - быстрый
+ *      - класс CRC32 - медленный, но гораздо точнее
+ * */
+
+
+/* СЕРИАЛИЗАЦИЯ
+ * - transient
+ * - Serializable - процесс сериализации происходит автоматически
+ * - Externalizable
+ *      - способность управлять процессом сериализации, напр. что сериализировать, а что нет
+ *      - transient нет смысла использовать, потому что процесс не автоматический
+ *
+ * - альтернатива Externalizable: реализовать интерфейс Serializable и добавить (а не переопределить)
+ * методы write/readObject
+ *      - будут автоматически вызваны при сериализации
+ * - версии
+ * - при восстановлении система не имеет представления о том, что объекты были уже восстановлены и
+ * имеются в программе, поэтому она создает новые
+ * - статические значения не сериализируются
+ * */
+
+/* RANDOM ACCESS FILE
+ * - implements Closeable, DataInput, DataOutput, AutoCloseable
+ * - не является частью иерархии потоков, так как позволяет перемещаться по файлу в обе стороны
+ * - по сути похож на пару совмещенных DataInputStream и DataOutputStream, дополненную методами
+ * getFilePointer для текущей позиции и length для максимального размера файла
+ * - имеет уже встроенную буферизацию
+ *
+ * */
+
+/* PREFERENCES API c 1.4
+ * - набор пар ключ-значение, образующих иерархию узлов
+ *      - обычно используется только 1 узел, названный как класс
+ * - хранить можно только примитивы и строки
+ *      - длина строки не больше 8 кб
+ * - позволяются автоматически сохранять и восстанавливать информацию о предпочтениях пользователя и
+ * конфигурации программы
+ * - методы userNodeForPackage/systemNodeForPackage: для пользовательских предпочтений и для общей
+ * конфигурационной инфы
+ * - система предпочтений привлекает для хранения данных подходящие системные возможности текущей ОС
+ *      - в Windows используется, например, реестр
+ *
+ * */
 
 /* Для эффективности, необходимо передавать байты/символы не по 1, а блоками
  * - для байтов: BufferedInputStream и BufferedOutputStream
@@ -111,14 +223,17 @@ import java.util.Scanner;
  * в зависимости от их типа данных
  *      - по дефолту использует пробелы (включая табуляции, разделители строк - узнать: Character.
  *      isWhitespace) для разделения на куски
- *      - Scanner
+ *      - java.util.Scanner
  *          - не является потоком (но внутри он есть?)
  *          - метод close() вызывает автоматически по завершении сканирования объекта
  *          - useDelimiter(): для своего разделителя
  *          - кусками могут быть строки, примитивы (кроме char) и BigInteger и BigDecimal
  *              - у численных значений могут корректно парситься разделитель тысячи (напр "32,767")
  *                  - зависит от локали
- *
+ *          - добавлен в J5
+ *          - работает только на чтение
+ *          - не относится к java.io
+ *          - предназначен в основном для создания обработчиков кода или "мини-языков"
  *
  * - Formatting API: собирает данные в форматированный вид
  *      - для потока битов: PrintStream
@@ -132,14 +247,24 @@ import java.util.Scanner;
  * */
 
 /* COMMAND-LINE io: СТАНДАРТНЫЕ ПОТОКИ И КОНСОЛЬ
+ * - "стандартный io" - концепция (UNIX) единого потока информации, используемого программой
+ *      - чтобы соединять выход одной программы со входом другой при помощи стандарта
+ *
  * - стандартный поток ввода (клавиатура): System.in
+ *      - откуда приходит информация
  *      - объект InputStream
+ *          - т.е. при работе нужно использовать обертку
+ *              - напр. new BufferedReader(new InputStreamReader(System.in));
+ *
  *
  * - стандартный поток вывода (дисплей): System.out
- *      - объект PrintStream, но внутри использует объект символьного потока
+ *      - куда записывается информация
+ *      - объект PrintStream, но внутри использует объект символьного потока OutputStream
  *
  * - стандартный поток ошибок: System.err
- *      - объект PrintStream, но внутри использует объект символьного потока
+ *      - объект PrintStream, но внутри использует объект символьного потока OutputStream
+ *
+ * - потоки можно перенаправлять методами: System.setIn(), System.setOut(), System.setErr()
  *
  * - Console - более продвинутая версия стандартных потоков
  *      - использует символьные потоки
@@ -274,7 +399,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, BackingStoreException {
         byteStreamCopy();
         charStreamCopy();
         charLineStreamCopy();
@@ -282,6 +407,7 @@ public class Main {
 //        askPasswordViaConsole();
         writeReadData();
         writeReadObjects();
+        preferencesDemo();
     }
 
 
@@ -290,8 +416,8 @@ public class Main {
         FileOutputStream out = null;
 
         try {
-            in = new FileInputStream("src\\io\\io_io_and_streams\\byte_test_src.txt");
-            out = new FileOutputStream("src\\io\\io_io_and_streams\\byte_test_dest.txt");
+            in = new FileInputStream("src\\io_io_and_streams\\byte_test_src.txt");
+            out = new FileOutputStream("src\\io_io_and_streams\\byte_test_dest.txt");
 
             int c;
 
@@ -315,8 +441,8 @@ public class Main {
         FileWriter out = null;
 
         try {
-            in = new FileReader("src\\io\\io_io_and_streams\\char_test_src.txt");
-            out = new FileWriter("src\\io\\io_io_and_streams\\char_test_dest.txt");
+            in = new FileReader("src\\io_io_and_streams\\char_test_src.txt");
+            out = new FileWriter("src\\io_io_and_streams\\char_test_dest.txt");
 
             int c;
             while ((c = in.read()) != -1) {
@@ -339,8 +465,8 @@ public class Main {
         PrintWriter out = null;
 
         try {
-            in = new BufferedReader(new FileReader("src\\io\\io_io_and_streams\\char_line_test_src.txt"));
-            out = new PrintWriter(new FileWriter("src\\io\\io_io_and_streams\\char_line_test_dest.txt"));
+            in = new BufferedReader(new FileReader("src\\io_io_and_streams\\char_line_test_src.txt"));
+            out = new PrintWriter(new FileWriter("src\\io_io_and_streams\\char_line_test_dest.txt"));
 
             String l;
             while ((l = in.readLine()) != null) {
@@ -362,7 +488,7 @@ public class Main {
         Scanner s = null;
 
         try {
-            s = new Scanner(new BufferedReader(new FileReader("src\\io\\io_io_and_streams\\scan_test_src.txt")));
+            s = new Scanner(new BufferedReader(new FileReader("src\\io_io_and_streams\\scan_test_src.txt")));
 
             int sum = 0;
 
@@ -400,7 +526,7 @@ public class Main {
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(new
-                    BufferedOutputStream(new FileOutputStream("src\\io\\io_io_and_streams\\write_data_test.txt")));
+                    BufferedOutputStream(new FileOutputStream("src\\io_io_and_streams\\write_data_test.txt")));
 
             out.writeInt(i);
             out.writeDouble(d);
@@ -413,7 +539,7 @@ public class Main {
         double total = 0.0;
         try {
             in = new DataInputStream(new
-                    BufferedInputStream(new FileInputStream("src\\io\\io_io_and_streams\\write_data_test.txt")));
+                    BufferedInputStream(new FileInputStream("src\\io_io_and_streams\\write_data_test.txt")));
 
             int unit;
             double price;
@@ -444,7 +570,7 @@ public class Main {
         ObjectOutputStream out = null;
         try {
             out = new ObjectOutputStream(new
-                    BufferedOutputStream(new FileOutputStream("src\\io\\io_io_and_streams\\write_obj_test.txt")));
+                    BufferedOutputStream(new FileOutputStream("src\\io_io_and_streams\\write_obj_test.txt")));
 
             out.writeObject(bigDecimal);
         } finally {
@@ -454,7 +580,7 @@ public class Main {
         ObjectInputStream in = null;
         try {
             in = new ObjectInputStream(new
-                    BufferedInputStream(new FileInputStream("src\\io\\io_io_and_streams\\write_obj_test.txt")));
+                    BufferedInputStream(new FileInputStream("src\\io_io_and_streams\\write_obj_test.txt")));
 
             BigDecimal bigDecimal1 = null;
 
@@ -467,6 +593,15 @@ public class Main {
             }
         } finally {
             in.close();
+        }
+    }
+
+
+    private static void preferencesDemo() throws BackingStoreException {
+        Preferences prefs = Preferences.userNodeForPackage(Main.class);
+        prefs.putInt("MyValue", 666);
+        for (String s : prefs.keys()) {
+            System.out.println(s + ":" + prefs.getInt(s, 0));
         }
     }
 }
