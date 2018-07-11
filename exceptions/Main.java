@@ -554,8 +554,8 @@ public class Main {
 
         /* В 1 БЛОКЕ TRY / 1 БЛОКЕ CATCH - (CHECKED EXCEPTION)*/
 //        try {
-//        File io_nio_nio2 = null;
-//        FileReader fileReader = new FileReader(io_nio_nio2);
+//        File io.io_nio_nio2 = null;
+//        FileReader fileReader = new FileReader(io.io_nio_nio2);
 //        } catch (IOException | Exception e) { // ошибка компилятора - родственники вместе
 //        }
 
@@ -568,8 +568,8 @@ public class Main {
 
         /* В 1 БЛОКЕ TRY / НЕСКОЛЬКИХ БЛОКАХ CATCH - CHECKED EXCEPTION */
 //        try {
-//            File io_nio_nio2 = null;
-//            FileReader fileReader = new FileReader(io_nio_nio2);
+//            File io.io_nio_nio2 = null;
+//            FileReader fileReader = new FileReader(io.io_nio_nio2);
 //        } catch (Exception e) {
 //        } catch (IOException e) { // ошибка компилятора - уже есть перехват
 //        }
@@ -586,8 +586,8 @@ public class Main {
         /* ВО ВЛОЖЕННЫХ TRY - CHECKED EXCEPTION */
 //        try {
 //            try {
-//                File io_nio_nio2 = null;
-//                FileReader fileReader = new FileReader(io_nio_nio2);
+//                File io.io_nio_nio2 = null;
+//                FileReader fileReader = new FileReader(io.io_nio_nio2);
 //            } catch (Exception e) {
 //            }
 //        } catch (IOException e) { // ошибка компилятора
@@ -612,8 +612,8 @@ public class Main {
 //        class Inner2 {
 //            void meth() {
 //                try {
-//                File io_nio_nio2 = null;
-//                FileReader fileReader = new FileReader(io_nio_nio2);
+//                File io.io_nio_nio2 = null;
+//                FileReader fileReader = new FileReader(io.io_nio_nio2);
 //                } catch (Exception e) {
 //                }
 //            }

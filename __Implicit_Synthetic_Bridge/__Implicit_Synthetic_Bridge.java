@@ -52,7 +52,7 @@ A compiler-created field that links a local inner class to a block's local varia
  *
  *
  * When the Java compiler encounters an enum construct, it creates several methods that are compatible
- * with the .class io_nio_nio2 structure and provide the expected functionality of the enum construct.
+ * with the .class io.io_nio_nio2 structure and provide the expected functionality of the enum construct.
 *
 * The formal parameters for the default constructor of an enum construct are not implicitly declared
 * because different compilers need not agree on the form of this constructor; another Java compiler
