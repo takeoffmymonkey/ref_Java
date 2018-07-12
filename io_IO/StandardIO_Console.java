@@ -27,5 +27,24 @@ package io_IO;
  *          - метод readPassword()
  *      - получить: System.console() */
 
+import java.io.Console;
+
 public class StandardIO_Console {
+
+    public static void main(String[] args) {
+        //        askPasswordViaConsole();
+
+    }
+
+    static void askPasswordViaConsole() {
+        Console c = System.console();
+        if (c == null) {
+            System.err.println("No console.");
+            System.exit(1);
+        }
+
+        String login = c.readLine("Enter your login: ");
+        char[] oldPassword = c.readPassword("Enter your old password: ");
+
+    }
 }

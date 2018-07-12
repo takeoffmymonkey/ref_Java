@@ -73,5 +73,92 @@ package io_IO;
  *      - символ возвращения каретки: "\r"
  *      - line-feed sequence: "\n" */
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 public class Streams {
+
+    public static void main(String[] args) throws IOException {
+        byteStreamCopy();
+        charStreamCopy();
+        charLineStreamCopy();
+    }
+
+
+    static void byteStreamCopy() throws IOException {
+        FileInputStream in = null;
+        FileOutputStream out = null;
+
+        try {
+            in = new FileInputStream("src\\io_io_and_streams\\byte_test_src.txt");
+            out = new FileOutputStream("src\\io_io_and_streams\\byte_test_dest.txt");
+
+            int c;
+
+            while ((c = in.read()) != -1) {
+                out.write(c);
+            }
+
+        } finally {
+            if (in != null) {
+                out.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+
+    static void charStreamCopy() throws IOException {
+        FileReader in = null;
+        FileWriter out = null;
+
+        try {
+            in = new FileReader("src\\io_io_and_streams\\char_test_src.txt");
+            out = new FileWriter("src\\io_io_and_streams\\char_test_dest.txt");
+
+            int c;
+            while ((c = in.read()) != -1) {
+                out.write(c);
+            }
+
+        } finally {
+            if (in != null) {
+                out.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+    static void charLineStreamCopy() throws IOException {
+        BufferedReader in = null;
+        PrintWriter out = null;
+
+        try {
+            in = new BufferedReader(new FileReader("src\\io_io_and_streams\\char_line_test_src.txt"));
+            out = new PrintWriter(new FileWriter("src\\io_io_and_streams\\char_line_test_dest.txt"));
+
+            String l;
+            while ((l = in.readLine()) != null) {
+                out.println(l); // может не совпадать с разделителем строки, который был изначально
+            }
+
+        } finally {
+            if (in != null) {
+                out.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
 }

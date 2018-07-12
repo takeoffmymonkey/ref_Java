@@ -19,5 +19,36 @@ package io_other;
  * */
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+
 public class ScannerApi {
+
+
+    public static void main(String[] args) throws IOException {
+        textScan();
+    }
+
+    static void textScan() throws IOException {
+        Scanner s = null;
+
+        try {
+            s = new Scanner(new BufferedReader(new FileReader("src\\io_io_and_streams\\scan_test_src.txt")));
+
+            int sum = 0;
+
+            while (s.hasNext()) { // метод close() вызывает автоматически по завершении сканирования
+                if (s.hasNextInt()) sum += s.nextInt();
+                else System.out.println(s.next());
+            }
+            System.out.println("sum = " + sum);
+
+        } finally {
+            if (s != null) {
+                s.close();
+            }
+        }
+    }
 }

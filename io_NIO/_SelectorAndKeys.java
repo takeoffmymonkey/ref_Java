@@ -4,5 +4,5 @@ package io_NIO;
  * неблокирующий функционал
  *      - из 3 веток для 3 задач, можно сделать 1 ветку, но многозадачную*/
 
-public class SelectorAndKeys {
+public class _SelectorAndKeys {
 }
