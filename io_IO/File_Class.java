@@ -129,7 +129,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class FileClass {
+public class File_Class {
 
     static File currentFolder = new File("C:\\git\\ref_Java\\src\\io_IO\\files\\");
     static File tempFile = new File(currentFolder, "temp.txt");

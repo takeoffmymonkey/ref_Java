@@ -4,7 +4,7 @@ import java.io.IOException;
 import types_references_annotations.my_annotations.Ntrstn;
 
 /* - Работает с байтами
- *      - Файловый канал можно получить от FileInputStream, FileOutputStream или RandomAccessFile,
+ *      - Файловый канал можно получить от FileInputStream, FileOutputStream или _RandomAccessFile,
  *      которые были для этого переделаны
  * - для работы не с байтами (через Writer/Reader) есть вспомогательный класс java.nio.Channels с
  * набором методов, производящих Writer/Reader

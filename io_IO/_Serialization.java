@@ -17,6 +17,10 @@ package io_IO;
  * - статические значения не сериализируются
  * */
 
+/*- объекты (напр. ObjectInputStream/ObjectOutputStream)
+ *          - если записываются объекты, которые содержат другие объекты - они записываются все
+ *              - объект дважды не записывается - записывается только ссылка на него*/
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -29,7 +33,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
-public class Serialization {
+public class _Serialization {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         writeReadData();

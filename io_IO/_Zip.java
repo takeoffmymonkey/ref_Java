@@ -25,5 +25,5 @@ package io_IO;
  *      - класс CRC32 - медленный, но гораздо точнее
  * */
 
-public class Zip {
+public class _Zip {
 }

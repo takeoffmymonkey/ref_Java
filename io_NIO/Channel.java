@@ -23,7 +23,7 @@ package io_NIO;
  *      - файловые каналы:
  *          - FileChannel: читает, записывает, мапит и манипулирует файлами
  *              - создается от статического метода open или вызовом getChannel у FileInputStream,
- *              FileOutputStream или RandomAccessFile
+ *              FileOutputStream или _RandomAccessFile
  *          - FileLock: блокировка (куска) файла
  *          - MappedByteBuffer: прямой байтовый буфер, замапенный на кусок файла*/
 
@@ -50,7 +50,7 @@ package io_NIO;
  *          - FileChannel: RW канал
  *              - всегда блокирующий
  *              - не могут создаваться напрямую, а через getChannel() на файловом объекте типа
- *              RandomAccessFile, FileInputStream, или FileOutputStream
+ *              _RandomAccessFile, FileInputStream, или FileOutputStream
  *              - потокобезопасен*/
 
 

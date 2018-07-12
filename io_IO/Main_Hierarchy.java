@@ -3,7 +3,7 @@ package io_IO;
 /* ИЕРАРХИЯ ПАКЕТА JAVA.IO
  * - File: путь к файлу или папке
  *
- * - RandomAccessFile: неупорядоченное RW в файл
+ * - _RandomAccessFile: неупорядоченное RW в файл
  *
  * - Console: методы доступа к символьному консольному устройству, если такое есть
  *
@@ -59,8 +59,8 @@ package io_IO;
  *      - BufferedReader: буферизирует символы из входящего потока для эффективного чтения
  *          - LineNumberReader: буферизированный входящий поток, который отслеживает номера строк
  *      - CharArrayReader: имплементирует символьный буфер, который можно использовать как входной
- *      симпольный поток
- *      - /FilterReader/: чтение фильтрованных симпольных потоков
+ *      символьный поток
+ *      - /FilterReader/: чтение фильтрованных символьных потоков
  *          - PushbackReader: позволяет символам "отступать назад" в потоке
  *      - InputStreamReader: мост между байтовыми и символьными потоками: читает байты и декодирует
  *      их в символы, используя указанный charset
@@ -73,7 +73,7 @@ package io_IO;
  *      - BufferedWriter: буферизирует символы для эффективной записи в исходящий поток
  *          - LineNumberWriter:
  *      - CharArrayWriter: имплементирует символьный буфер, который можно использовать как Writer
- *      - /FilterWriter/: запись в фильтрованные симпольные потоки
+ *      - /FilterWriter/: запись в фильтрованные символьные потоки
  *      - OutputStreamWriter: мост между символьным и байтовым потоком: записанные в него символы
  *      кодируются в байты, используя указанный charset
  *          - FileWriter: запись в символьный файл
@@ -145,9 +145,9 @@ package io_IO;
  *      new DataInputStream(new BufferedInputStream(new FileIntputStream("Data.txt"));
  *
  * - чтение/запись файлов с произвольным доступом
- *      new RandomAccessFile(file, "r").readDouble().close();
- *      new RandomAccessFile(file, "rw").writeDouble(2d).close();
- *      RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close(); */
+ *      new _RandomAccessFile(file, "r").readDouble().close();
+ *      new _RandomAccessFile(file, "rw").writeDouble(2d).close();
+ *      _RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close(); */
 
 
 public class Main_Hierarchy {

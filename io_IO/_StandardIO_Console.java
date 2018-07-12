@@ -29,7 +29,7 @@ package io_IO;
 
 import java.io.Console;
 
-public class StandardIO_Console {
+public class _StandardIO_Console {
 
     public static void main(String[] args) {
         //        askPasswordViaConsole();

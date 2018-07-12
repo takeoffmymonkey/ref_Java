@@ -12,5 +12,5 @@ package io_IO;
  *
  * */
 
-public class FormattingApi {
+public class _FormattingApi {
 }

@@ -43,10 +43,11 @@ package io;
 
 
 /* ПЕРЕДАЧА ДАННЫХ
- * - по передаваемым типам:
+ * - по типам, с которыми идет работа:
  *      - "байтовые": InputStream и OutputStream
  *      - "символьные": Reader и Writer
  *      - "с примитивами и объектами": сериализация, DataInputStream и DataOutputStream
+ *      - при этом сами данные внутри потока представлены как байты
  *
  * - есть "источник" и "цель":
  *      - файлы на диске
@@ -109,7 +110,7 @@ package io;
  *
  * - другие важные классы/интерфейсы:
  *      - java.io.File: путь к файлу или папке
- *      - java.io.RandomAccessFile: неупорядоченный доступ к файлу
+ *      - java.io._RandomAccessFile: неупорядоченный доступ к файлу
  *      - java.io.Console: символьное консольное устройство
  *      - java.io.Piped...: предназначены для работы с несколькими программными потоками, т.е.
  *      concurrency
@@ -187,7 +188,7 @@ package io;
  *      - IO: java.io.File
  *      - NIO: java.nio.file.Path
  *
- *      - IO: java.io.RandomAccessFile
+ *      - IO: java.io._RandomAccessFile
  *      - NIO: SeekableByteChannel
  *
  *      - IO: File.canRead, canWrite, canExecute
