@@ -245,7 +245,7 @@ import java.io.IOException;
  * - |Reader|: интерфейс */
 
 
-public class _Streams {
+public class Streams {
 
     static File currentFolder = new File("C:\\git\\ref_Java\\src\\io_IO\\files\\");
 
