@@ -3,7 +3,7 @@ package io_IO;
 /* ИЕРАРХИЯ ПАКЕТА JAVA.IO
  * - File: путь к файлу или папке
  *
- * - _RandomAccessFile: неупорядоченное RW в файл
+ * - RandomAccessFile: неупорядоченное RW в файл
  *
  * - Console: методы доступа к символьному консольному устройству, если такое есть
  *
@@ -145,9 +145,9 @@ package io_IO;
  *      new DataInputStream(new BufferedInputStream(new FileIntputStream("Data.txt"));
  *
  * - чтение/запись файлов с произвольным доступом
- *      new _RandomAccessFile(file, "r").readDouble().close();
- *      new _RandomAccessFile(file, "rw").writeDouble(2d).close();
- *      _RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close(); */
+ *      new RandomAccessFile(file, "r").readDouble().close();
+ *      new RandomAccessFile(file, "rw").writeDouble(2d).close();
+ *      RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close(); */
 
 
 public class Main_Hierarchy {

@@ -110,7 +110,7 @@ package io;
  *
  * - другие важные классы/интерфейсы:
  *      - java.io.File: путь к файлу или папке
- *      - java.io._RandomAccessFile: неупорядоченный доступ к файлу
+ *      - java.io.RandomAccessFile: неупорядоченный доступ к файлу
  *      - java.io.Console: символьное консольное устройство
  *      - java.io.Piped...: предназначены для работы с несколькими программными потоками, т.е.
  *      concurrency
@@ -188,7 +188,7 @@ package io;
  *      - IO: java.io.File
  *      - NIO: java.nio.file.Path
  *
- *      - IO: java.io._RandomAccessFile
+ *      - IO: java.io.RandomAccessFile
  *      - NIO: SeekableByteChannel
  *
  *      - IO: File.canRead, canWrite, canExecute
