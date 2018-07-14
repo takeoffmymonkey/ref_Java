@@ -39,7 +39,7 @@ public class RandomAccessFile_Class {
 
     static File currentFolder = new File("C:\\git\\ref_Java\\src\\io_IO\\files\\");
     static File tempFile = new File(currentFolder, "random_access_primitives_test.txt");
-    static File tempFile2 = new File(currentFolder, "random_access_bytes_test.txt");
+    static File tempFile2 = new File(currentFolder, "output_formatting.txt");
 
     public static void main(String[] args) throws IOException {
         readWriteByteRandom();
