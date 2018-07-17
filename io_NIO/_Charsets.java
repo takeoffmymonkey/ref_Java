@@ -23,5 +23,5 @@ package io_NIO;
  *          - CoderResult: описывает результаты кодера
  *          - CodingErrorAction: описывает действия при определении возникновения ошибки кодировки*/
 
-public class Charsets {
+public class _Charsets {
 }

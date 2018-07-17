@@ -78,7 +78,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-public class Channel {
+public class _Channel {
 
 
     private static void randomAccessFileForReadWrite() {
