@@ -220,7 +220,7 @@ import types_references_annotations.my_annotations.Ntrstn;
 @Ntrstn("Существует утилитный класс java.nio.channels.channels, который предоставляет утилитные " +
         "методы для перевода из потока в канал и обратно")
 
-public class _Channel {
+public class Channels_FileChannel {
 
     static File currentFolder = new File("C:\\git\\ref_Java\\src\\io_NIO\\files\\");
     static File testFile = new File(currentFolder, "temp2.txt");
