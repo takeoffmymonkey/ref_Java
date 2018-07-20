@@ -1,5 +1,7 @@
 package io_IO;
 
+import types_references_annotations.my_annotations.Ntrstn;
+
 /* ИЕРАРХИЯ ПАКЕТА JAVA.IO
  * - File: путь к файлу или папке
  *
@@ -119,35 +121,6 @@ package io_IO;
  * - /Reader/: абстрактный класс
  * - (Reader): финализированный класс
  * - |Reader|: интерфейс */
-
-
-
-/* ТИПИЧНОЕ ИСПОЛЬЗОВАНИЕ
- * - буферизированное чтение из файла:
- *      new BufferedReader(new FileReader("1.txt")).readLine();
- *
- * - чтение из памяти:
- *          new StringReader(BufferedInputFile.read("1.txt")).read();
- *
- * - форматированное чтение из памяти:
- *          new DataInputStream(new ByteArrayInputStream(BufferedInputFile.read("1.txt").getBytes()
- *          .readByte())
- *
- * - вывод в файл:
- *      new PrintWriter(new BufferedWriter(new FileWriter(file)));
- *
- * - сокращенная запись для вывода в текстовые файлы
- *      - c J5
- *      new PrintWriter(file);
- *
- * - сохранение и восстановление данных
- *      new DataOutputStream(new BufferedOutputStream(new FileOutputStream("Data.txt"));
- *      new DataInputStream(new BufferedInputStream(new FileIntputStream("Data.txt"));
- *
- * - чтение/запись файлов с произвольным доступом
- *      new RandomAccessFile(file, "r").readDouble().close();
- *      new RandomAccessFile(file, "rw").writeDouble(2d).close();
- *      RandomAccessFile(file, "rw").seek(5*8).writeDouble(2d).close(); */
 
 
 public class Main_Hierarchy {

@@ -2,6 +2,9 @@ package io_IO;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* JAVA.IO.RANDOMACCESSFILE
  * - implements Closeable, DataInput, DataOutput, AutoCloseable
@@ -35,6 +38,18 @@ import java.io.IOException;
  *      - методы DataInputStream и DataOutputStream - это методы типа read/writeInt и т.д. */
 
 
+@Ntrstn("Класс java.io.RandomAccessFile предназначен для чтения и записи байтов в файл с указанием " +
+        "нужного места, с которого нужно начинать операцию. По сути похож на пару совмещенных " +
+        "DataInputStream и DataOutputStream, дополненную методами getFilePointer для текущей позиции " +
+        "и length для максимального размера файла (методы DataInputStream и DataOutputStream - это " +
+        "методы типа read/writeInt и т.д.) Он не является частью иерархии потоков, так как позволяет " +
+        "перемещаться по файлу в обе стороны")
+
+@Ntrstn("Файл, представленный RandomAccessFile, ведет себя как как массив байтов, который сохранен в " +
+        "файловой системе: у него есть указатель и все операции чтения/записи начинаются с него")
+
+@Ntrstn("При открытии файла нужно указать в конструкторе флаг чтения/записи, например rw")
+
 public class RandomAccessFile_Class {
 
     static File currentFolder = new File("C:\\git\\ref_Java\\src\\io_IO\\files\\");
@@ -47,7 +62,7 @@ public class RandomAccessFile_Class {
     }
 
     private static void readWriteByteRandom() throws IOException {
-        try (java.io.RandomAccessFile rAF = new java.io.RandomAccessFile(tempFile2, "rw")) {
+        try (RandomAccessFile rAF = new RandomAccessFile(tempFile2, "rw")) {
             int i;
             while ((i = rAF.read()) != -1) {
                 rAF.write(i);
@@ -56,7 +71,7 @@ public class RandomAccessFile_Class {
     }
 
     private static void readWritePrimitivesRandom() throws IOException {
-        try (java.io.RandomAccessFile rAF = new java.io.RandomAccessFile(tempFile, "rw")) {
+        try (RandomAccessFile rAF = new RandomAccessFile(tempFile, "rw")) {
             rAF.writeByte(1);
             rAF.writeInt(222);
             rAF.writeBoolean(true);

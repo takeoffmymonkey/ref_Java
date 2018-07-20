@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
+import types_references_annotations.my_annotations.Ntrstn;
+
 
 /* SCANNER API
  * - разделяет вход на отдельные куски, ассоциированные с битами данных, и переводит их в зависимости
@@ -39,6 +41,17 @@ import java.util.Scanner;
  *      - findInLine(java.lang.String), findWithinHorizon(java.lang.String, int),
  *      skip(java.util.regex.Pattern): пытаются заматчить игнорируя разделитель */
 
+
+@Ntrstn("Scanner API (класс java.util.Scanner) предоставляет парсер объектов, которые являются " +
+        "Readable (например, строки или входящие потоки) и разбивать его на куски-токены (могут " +
+        "быть строками, примитивами (кроме char) и BigInteger и BigDecimal) по указанному " +
+        "разделительному паттерну (регулярное выражение; по дефолту простро пробел)")
+
+@Ntrstn("Продвигаться по объекту нужно в цикле при помощи методов hasNext/next и получать нужные " +
+        "типы соответствующими вариантами этих методов, например hasNextInt/nextInt")
+
+@Ntrstn("по завершении сканирования объекта метод close() вызывается автоматически, и при закрытии " +
+        "также закрывает ресурс, если тот Closeable")
 
 public class ScannerApi {
 
