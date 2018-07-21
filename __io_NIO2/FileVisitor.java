@@ -1,4 +1,4 @@
-package _io_NIO2;
+package __io_NIO2;
 
 /* ПРОХОД ПО ФАЙЛОВОМУ ДЕРЕВУ
  * - имплементация интерфейса FileVisitor

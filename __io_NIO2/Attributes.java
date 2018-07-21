@@ -1,4 +1,4 @@
-package _io_NIO2;
+package __io_NIO2;
 
 /* МЕТАДАННЫЕ (АТРИБУТЫ) ФАЙЛА
  * - size(Path): размер файла в байтах

@@ -1,4 +1,4 @@
-package _io_NIO2;
+package __io_NIO2;
 
 /* ИНТЕРФЕЙС PATH
  * - начиная с J7/API 26

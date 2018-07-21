@@ -1,7 +1,5 @@
 package io_IO;
 
-import types_references_annotations.my_annotations.Ntrstn;
-
 /* ИЕРАРХИЯ ПАКЕТА JAVA.IO
  * - File: путь к файлу или папке
  *

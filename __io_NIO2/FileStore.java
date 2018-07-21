@@ -1,4 +1,4 @@
-package _io_NIO2;
+package __io_NIO2;
 
 import java.io.IOException;
 import java.nio.file.Files;

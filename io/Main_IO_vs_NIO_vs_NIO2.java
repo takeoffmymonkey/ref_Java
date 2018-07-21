@@ -1,5 +1,7 @@
 package io;
 
+import types_references_annotations.my_annotations.Ntrstn;
+
 /* ПАКЕТЫ ФУНКЦИОНАЛА I/O
  * - IO: с 1.0
  *      - java.io: поддержка системного I/O при помощи потоков данных, сериализации и файловой системы
@@ -39,7 +41,8 @@ package io;
  * неблокирующего I/O
  * - проход по файловому дереву
  * - служба наблюдения за ресурсом
- * - работа с форматами ZIP и GZIP */
+ * - работа с форматами ZIP и GZIP
+ * - сканирование строки с разбитием по сепаратору и определению типа примитива*/
 
 
 /* ПЕРЕДАЧА ДАННЫХ
@@ -251,7 +254,6 @@ package io;
  *      - IO: File.getTotalSpace, File.getFreeSpace, File.getUsableSpace
  *      - NIO: FileStore.getTotalSpace, FileStore.getUnallocatedSpace, FileStore.getUsableSpace, FileStore.getTotalSpace */
 
-import types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Функционал I/O сосредоточен в следующих группах пакетов:" +
         "1 - IO (c 1.0): пакет java.io: поддержка системного I/O при помощи потоков данных, " +
@@ -292,7 +294,8 @@ import types_references_annotations.my_annotations.Ntrstn;
         "неблокирующего I/O" +
         " - проход по файловому дереву" +
         " - служба наблюдения за ресурсом" +
-        " - работа с форматами ZIP и GZIP")
+        " - работа с форматами ZIP и GZIP" +
+        " - сканирование строки с разбитием по сепаратору и определению типа примитива")
 
 @Ntrstn("Передавать можно следующие данные: байты, символы, примитивы и объекты. У передачи есть " +
         "цель и источник, можно передавать через буфер либо побайтово/посимвольно(неэффективно), " +
@@ -347,7 +350,7 @@ import types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Есть возможность переключаться между: " +
         " - байтовыми и символьными потоками: InputStreamReader/OutputStreamWriter" +
-        " - потоками и каналами: утилитный класс java.nio.channels.channels" +
+        " - потоками и каналами: утилитный класс java.nio.channels.Сhannels" +
         " - File и Path: file.toPath() и Path.toFile(input)")
 
 public class Main_IO_vs_NIO_vs_NIO2 {
