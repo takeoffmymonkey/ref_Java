@@ -1,11 +1,8 @@
 package __collections;
 
-import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,10 +11,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* АЛГОРИТМЫ, ИСПОЛЬЗУЕМЫЕ В ИМПЛЕМЕНТАЦИЯХ
  * - Array

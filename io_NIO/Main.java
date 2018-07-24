@@ -2,7 +2,7 @@ package io_NIO;
 
 import java.io.IOException;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* ОПЕРАЦИИ В NIO ПРОИСХОДЯТ С КАНАЛАМИ И БУФЕРАМИ. АНАЛОГИИ:
  * - канал: угольная шахта

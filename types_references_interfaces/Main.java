@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 /* ИНТЕРФЕЙС - ЭТО КОНТРАКТ
  * - класс, который его реализует, обязуется иметь в себе все методы данного интерфейса
  *      - т.е. будет известно ЧТО будет уметь класс

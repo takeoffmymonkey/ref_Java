@@ -27,7 +27,7 @@ strictfp public class StrictfpModifier {
  * (todo нуждается в подтверждении)*/
 strictfp interface StrictfpInterface {
     /*ПЕРЕМЕННАЯ ИНТЕРФЕЙСА
-     * - не может быть объявлен strictfp*/
+     * - не может быть объявлена strictfp*/
     int var = 0;
 
     /*МЕТОД ИНТЕРФЕЙСА

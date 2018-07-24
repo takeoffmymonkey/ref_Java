@@ -3,11 +3,10 @@ package io_IO;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.zip.DeflaterOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ПАКЕТ JAVA.UTIL.ZIP

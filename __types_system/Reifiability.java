@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* ДОСТУПНОСТЬ ИНФОРМАЦИИ О ТИПЕ ВО ВРЕМЯ РАБОТЫ С НИМ В RUNTIME ПОЗВОЛЯЕТ:
  * - позволяет использовать тип в качестве элемента массива

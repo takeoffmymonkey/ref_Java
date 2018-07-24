@@ -1,4 +1,4 @@
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("когда нет пакета, то относится к дефолтному unnamed")
 /* ОТНОСИТСЯ К ДЕФОЛТНОМУ ПАКЕТУ UNNAMED*/

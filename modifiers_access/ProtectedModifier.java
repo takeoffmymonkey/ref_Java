@@ -1,6 +1,6 @@
 package modifiers_access;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* - ограничивает область действия пакетом и всеми наследующими подклассами
  * - используется только при наследовании
@@ -75,7 +75,7 @@ class ProtectedModifier {
 
 
 /*ВНЕШНИЙ ИНТЕРФЕЙС
- * - может быть protected*/
+ * - не может быть protected*/
 interface ProtectedOuterInterface {
     /*ПЕРЕМЕННАЯ ИНТЕРФЕЙСА
      * - не может быть protected*/

@@ -35,7 +35,7 @@ package __ClassLoaders_Initialization;
  *      - либо в конструкторе */
 
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Если класс еще не был загружен, при получении его переменной через метод Class.forName(), " +
         "он будет загружен, но при обращении к его переменной класса через .class (альтернатива " +

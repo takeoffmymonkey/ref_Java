@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 /* ИСКЛЮЧЕНИЕ
  * - исключительное событие, которое происходит во время исполнения программы и нарушает нормальный
  * ход ее инструкций
@@ -341,7 +341,7 @@ import types_references_annotations.my_annotations.Ntrstn;
         "под методами будут подразумеваться оба")
 
 @Ntrstn("Система пытается обработать исключение, для чего в обратном порядке от метода, вызвавшего " +
-        "исключение, назад по стеку вызовов идет поиск в этих методахподходящего обработчика для " +
+        "исключение, назад по стеку вызовов идет поиск в этих методах подходящего обработчика для " +
         "возникшего исключения")
 
 @Ntrstn("Существует требование Catch or Specify, которое указывает, что если код способен вызвать " +

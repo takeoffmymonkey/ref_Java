@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 
 /* SCANNER API

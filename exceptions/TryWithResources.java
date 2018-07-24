@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* БЛОК TRY-WITH-RESOURCES - ЗАМЕНА БЛОКУ TRY-FINALLY, ГДЕ НУЖНО ЗАКРЫТИЕ РЕСУРСОВ
  * - блок finally в try для этого обычно и используется */

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* JAVA.IO.FILE - АБСТРАКЦИЯ ИМЕНИ ПУТИ К ФАЙЛУ ИЛИ ПАПКЕ
  * - implements Serializable, Comparable<File>

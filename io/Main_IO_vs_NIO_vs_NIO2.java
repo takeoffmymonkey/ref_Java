@@ -1,6 +1,6 @@
 package io;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* ПАКЕТЫ ФУНКЦИОНАЛА I/O
  * - IO: с 1.0

@@ -1,6 +1,6 @@
 package modifiers_access;
 
-import types_references_annotations.my_annotations.Ntrstn;
+import _types_references_annotations.my_annotations.Ntrstn;
 
 /* Ограничивает по умолчанию область действия пакетом */
 
