@@ -140,8 +140,8 @@ import _types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Обращение с внутренними классами происходит на уровне компилятора, а не JVM. Для их " +
         "обозначения используется знак $, разделяющий имена внешних и внутренних классов. В " +
-        "результате компиляции получаются 2 класса __Implicit_Synthetic_Bridge.class и __Implicit_Synthetic_Bridge$Inner.class. Таким образом, для " +
-        "JVM внутренние классы неотличимы от внешних")
+        "результате компиляции получаются 2 класса Outer.class и Outer$Inner.class. Таким образом, " +
+        "для JVM внутренние классы неотличимы от внешних")
 
 
 public class InnerMain {

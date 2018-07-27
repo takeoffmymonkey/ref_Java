@@ -1,4 +1,4 @@
-package _generics;
+package generics;
 
 /* ВЫВЕДЕНИЕ ТИПА
  * - определение компилятором типов аргументов, которые сможет принять метод, основываясь на его
@@ -55,7 +55,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TypeInference_TypeWitness {
+public class _TypeInference_TypeWitness {
     static <T> T pick(T a1, T a2) {
         return a2;
     }

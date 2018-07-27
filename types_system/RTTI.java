@@ -1,4 +1,4 @@
-package __types_system;
+package types_system;
 
 import _types_references_annotations.my_annotations.Ntrstn;
 

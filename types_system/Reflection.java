@@ -1,4 +1,4 @@
-package __types_system;
+package types_system;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -853,7 +853,7 @@ public class Reflection<T extends Number> {
         TypeVariable[] typeVariable = Reflection.class.getTypeParameters();
         typeVariable[0].getName(); // T
         Type t = typeVariable[0].getBounds()[0]; // class java.lang.Number
-        typeVariable[0].getGenericDeclaration(); // class __types_system.Reflection
+        typeVariable[0].getGenericDeclaration(); // class types_system.Reflection
 
 
         /* ~~~~~~~~~~~~~~~~~~~~~~~ПОЛУЧЕНИЕ АННОТАЦИЙ~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -998,7 +998,7 @@ public class Reflection<T extends Number> {
         c = Reflection.class;
         f = c.getDeclaredField("testEnum");
 
-        c = f.getType(); // class __types_system.Reifiability$TestEnum
+        c = f.getType(); // class types_system.Reifiability$TestEnum
         c.isEnum(); // true
 
         /*ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ КОНСТАНТ */

@@ -1,4 +1,4 @@
-package _abstract_vs_interface;
+package abstract_vs_interface;
 
 import _types_references_annotations.my_annotations.Ntrstn;
 
