@@ -1,4 +1,4 @@
-package _types_references_classes;
+package types_references_classes;
 
 //TODO: закончить
 

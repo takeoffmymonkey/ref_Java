@@ -1,4 +1,4 @@
-package _types_references_classes.classes_inside.nested_static;
+package types_references_classes.classes_inside.nested_static;
 
 import _types_references_annotations.my_annotations.Ntrstn;
 

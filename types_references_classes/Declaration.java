@@ -1,4 +1,4 @@
-package _types_references_classes;
+package types_references_classes;
 
 import java.io.Serializable;
 
