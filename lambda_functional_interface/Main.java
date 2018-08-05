@@ -1,4 +1,4 @@
-package _lambda_functional_interface;
+package lambda_functional_interface;
 
 import com.sun.istack.internal.NotNull;
 
@@ -108,7 +108,6 @@ import java.util.Arrays;
  *          - т.е. представляет 1 действие
  *
  * - может, помимо этого, иметь статические и дефолтные методы
- *      - todo они обычно используются для конкретных реализаций
  *
  * - абстрактный метод должен быть совместим с Л-В по:
  *      - возвращаемому типу

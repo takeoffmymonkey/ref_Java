@@ -1,6 +1,6 @@
 package types_references_classes;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ВНУТРИ МЕТОДА ИЛИ КОНСТРУКТОРА ДЛЯ ССЫЛКИ НА ТЕКУЩИЙ ОБЪЕКТ

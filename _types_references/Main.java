@@ -1,6 +1,6 @@
 package _types_references;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ССЫЛОЧНЫЕ ТИПЫ
  * - все, кроме примитивов:

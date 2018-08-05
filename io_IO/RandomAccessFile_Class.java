@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* JAVA.IO.RANDOMACCESSFILE
  * - implements Closeable, DataInput, DataOutput, AutoCloseable

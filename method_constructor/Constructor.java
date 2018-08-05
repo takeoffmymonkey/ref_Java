@@ -1,10 +1,10 @@
-package _method_constructor;
+package method_constructor;
 
 import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ЯВЛЯЕТСЯ СПЕЦИАЛЬНЫМ МЕТОДОМ ДЛЯ СОЗДАНИЯ ЭКЗЕМПЛЯРА КЛАССА

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* СТАНДАРТНЫЕ ПОТОКИ

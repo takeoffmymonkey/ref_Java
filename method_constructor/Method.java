@@ -1,4 +1,4 @@
-package _method_constructor;
+package method_constructor;
 
 import com.sun.istack.internal.NotNull;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.BiFunction;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ОПРЕДЕЛЕНИЕ МЕТОДА
  * 1. Модификаторы
@@ -122,7 +122,7 @@ import _types_references_annotations.my_annotations.Ntrstn;
  *                      - ошибка компилятора
  *              - "статичность" методов родителя и наследника с одной и той же сигнатурой должна
  *              совпадать
- *                  - иначе ошибка комплитора
+ *                  -
  * - желательно указать @Override
  *      - если ошибемся в переопределении, получим ошибку компилятора
  * - если метод находится в финализированном классе, он также автоматически финализирован

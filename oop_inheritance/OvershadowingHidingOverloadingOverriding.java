@@ -1,6 +1,6 @@
 package oop_inheritance;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ЗАТЕМНЕНИЕ
  * - происходит при наложении одной области видимости на другую

@@ -1,4 +1,4 @@
-package _types_references_annotations;
+package types_references_annotations;
 
 import com.sun.istack.internal.NotNull;
 
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
-/*ФОРМА МЕТАДАННЫХ СО СПРАВОЧНЫМИ ДАННЫМИ О ПРОГРАММЕ
+/* ФОРМА МЕТАДАННЫХ СО СПРАВОЧНЫМИ ДАННЫМИ О ПРОГРАММЕ
  * - обработка компилятором: использует ее для обнаружения ошибок и подавления предупреждений
  * - обработка во время компиляции и деплоя - программные инструменты могут обрабатывать
  * информацию из аннотаций для генерации кода, XML файлов и т.д. (напр. JavaDoc)

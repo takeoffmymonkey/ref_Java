@@ -1,6 +1,6 @@
 package oop_inheritance;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* МНОЖЕСТВЕННОЕ НАСЛЕДОВАНИЕ КЛАССОВ ЗАПРЕЩЕНО
  * - класс (не считая Object) может иметь только 1 родителя

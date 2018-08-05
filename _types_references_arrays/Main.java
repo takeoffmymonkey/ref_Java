@@ -155,7 +155,7 @@ package _types_references_arrays;
 
 import java.util.Arrays;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Тип массива - объект типа, содержащегося в массиве")
 @Ntrstn("Все массивы имплементируют интерфейс Cloneable, а метод clone() для них возвращает массив " +

@@ -2,7 +2,7 @@ package variance;
 
 import java.util.ArrayList;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ВАРИАНТНОСТЬ
  * - определяет, какие другие типы можно передавать в место, где требуется определенный тип

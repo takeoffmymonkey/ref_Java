@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* АЛГОРИТМЫ, ИСПОЛЬЗУЕМЫЕ В ИМПЛЕМЕНТАЦИЯХ
  * - Array

@@ -1,6 +1,6 @@
 package types_system;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* RTTI (runtime type identification) - (АВТОМАТИЧЕСКИЙ) МЕХАНИЗМ ДИНАМИЧЕСКОГО ОПРЕДЕЛЕНИЯ ТИПОВ
  * - использует в runtime информацию о типе класса, доступную при компиляции

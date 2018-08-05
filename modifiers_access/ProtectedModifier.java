@@ -1,6 +1,6 @@
 package modifiers_access;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* - ограничивает область действия пакетом и всеми наследующими подклассами
  * - используется только при наследовании

@@ -2,7 +2,7 @@ package types_references_classes.classes_inside.inner;
 
 import java.io.Serializable;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* АНОНИМНЫЙ КЛАСС - КАК ЛОКАЛЬНЫЙ - ОПРЕДЕЛЕН В ЛЮБОМ БЛОКЕ КОДА - НО НЕ ИМЕЕТ ИМЕНИ

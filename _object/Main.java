@@ -196,7 +196,7 @@ package _object;
 
 import java.util.Objects;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 @Ntrstn("Метод clone() копирует значения, а не клонирует их. Т.е. примитивные значения копируются " +
         "как надо, а для ссылочных переменных создаются их копии, а не копии объектов по их ссылкам")

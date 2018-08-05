@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ПАКЕТ JAVA.LANG.REFLECTION~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * - предоставляет программный доступ к информации о полях, методах и конструкторах загруженных

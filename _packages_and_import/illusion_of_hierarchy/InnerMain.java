@@ -2,7 +2,7 @@ package _packages_and_import.illusion_of_hierarchy;
 
 //import packages_and_import.*; // не импортирует вложенные пакеты
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /*МНИМОСТЬ ИЕРАРХИИ ПАКЕТОВ
  * - пакеты packages_and_import.illusion_of_hierarchy и packages_and_import.other_package

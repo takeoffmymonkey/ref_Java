@@ -29,7 +29,7 @@ package _packages_and_import;
  * 	            import graphics.A*;
  * 	    - не влияет на объем кода*/
 
-import _types_references_annotations.my_annotations.Ntrstn; // импорт члена
+import types_references_annotations.my_annotations.Ntrstn; // импорт члена
 
 //import packages_and_import.other_package.*; // импорт всего пакета
 

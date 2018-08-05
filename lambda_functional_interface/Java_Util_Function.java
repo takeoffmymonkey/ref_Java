@@ -1,4 +1,4 @@
-package _lambda_functional_interface;
+package lambda_functional_interface;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,8 +8,8 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-import _types_references_annotations.my_annotations.MakeUse;
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.MakeUse;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* (НЕКОТОРЫЕ) ПРЕДОПРЕДЕЛЕННЫЕ ИНТЕРФЕЙСЫ java.util.function
  * - Predicate<T> - определяет, удовлетворяет ли объект типа Т некоторому ограничительному условию.

@@ -1,6 +1,6 @@
 package _oop_binding;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* СВЯЗЫВАНИЕ (ВЫЗОВА МЕТОДА В КОДЕ С РЕАЛЬНЫМ МЕТОДОМ, КОТОРЫЙ НУЖНО ВЫЗВАТЬ)
  * - методы должны быть одноименными

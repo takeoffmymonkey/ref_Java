@@ -1,6 +1,6 @@
 package types_references_classes.classes_inside.inner;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* (ПРОСТОЙ) ВНУТРЕННИЙ КЛАСС - КЛАСС БЕЗ МОДИФИКАТОРА STATIC, ВЛОЖЕННЫЙ В ДРУГОЙ КЛАСС ИЛИ

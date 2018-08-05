@@ -2,7 +2,7 @@ package _types_references_strings;
 
 import java.util.Formatter;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* СПЕЦИАЛЬНЫЕ КЛАССЫ ДЛЯ РАБОТЫ СО СТРОКАМИ
  * - в отличие от String, их можно менять без создания нового объекта

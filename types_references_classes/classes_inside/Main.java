@@ -1,6 +1,6 @@
 package types_references_classes.classes_inside;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ПОДКЛАСС - ОБЪЯВЛЕНИЕ КЛАССА МОЖЕТ БЫТЬ ВНУТРИ ДРУГОГО КЛАССА/ИНТЕРФЕЙСА/ПЕРЕЧИСЛЕНИЯ/БЛОКА КОДА */

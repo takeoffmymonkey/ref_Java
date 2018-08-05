@@ -1,6 +1,6 @@
 package _types_references_strings;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* КЛАСС STRING
  * public final class String

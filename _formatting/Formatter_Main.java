@@ -3,7 +3,7 @@ package _formatting;
 import java.util.Date;
 import java.util.Formatter;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* КЛАСС
  * public final class Formatter

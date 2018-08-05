@@ -3,7 +3,7 @@ package io_other;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ПАКЕТ JAVA.UTIL.PREFERENCES
  * - позволяет приложениям сохранять и восстанавливать пользовательские и системные предпочтения

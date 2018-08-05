@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 /* ИСКЛЮЧЕНИЕ
  * - исключительное событие, которое происходит во время исполнения программы и нарушает нормальный
  * ход ее инструкций

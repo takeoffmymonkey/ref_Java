@@ -24,7 +24,7 @@ package _types_null;
  *      - видимо, что статическому методу и не нужен объект в принципе*/
 
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 @Ntrstn("для ссылочной переменной со значением null можно вызвать статический метод ее типа без " +

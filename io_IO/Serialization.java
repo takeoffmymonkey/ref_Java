@@ -10,7 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 
 /* ДЕ/СЕРИАЛИЗАЦИЯ - ЧТЕНИЕ/ЗАПИСЬ ДАННЫХ В ПЕРЕНОСИМОЙ ФОРМЕ

@@ -1,6 +1,6 @@
 package _garbage_collection_finalize;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* РАЗНЫЕ JVM ИМЕЮТ РАЗНЫЕ АЛГОРИТМЫ СБОРКИ МУСОРА*/
 

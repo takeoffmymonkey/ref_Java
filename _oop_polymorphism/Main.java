@@ -3,7 +3,7 @@ package _oop_polymorphism;
 import java.util.ArrayList;
 import java.util.List;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* ПОЛИМОРФИЗМ - МНОГООБРАЗИЕ ФОРМ (РЕАЛИЗАЦИИ) И 1 ИНТЕРФЕЙС ВЗАИМОДЕЙСТВИЯ С НИМИ
  * - работает в связке с абстакцией, наследованием, переопределением методов, восходящим приведением

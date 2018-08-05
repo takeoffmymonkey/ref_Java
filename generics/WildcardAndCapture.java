@@ -3,7 +3,7 @@ package generics;
 import java.util.ArrayList;
 import java.util.List;
 
-import _types_references_annotations.my_annotations.Ntrstn;
+import types_references_annotations.my_annotations.Ntrstn;
 
 /* МЕТАСИМВОЛ ОБОЗНАЧАЕТ ОПРЕДЕЛЕННОЕ СЕМЕЙСТВО НЕИЗВЕСТНЫХ ПАРАМЕТРОВ ТИПА ДЛЯ ЭКЗЕМПЛЯРА
  * ОБОБЩЕННОГО ТИПА
