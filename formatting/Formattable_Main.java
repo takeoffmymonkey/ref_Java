@@ -1,4 +1,4 @@
-package _formatting;
+package formatting;
 
 /* ИНТЕРФЕЙС FORMATTABLE
  * - для кастомных классов
