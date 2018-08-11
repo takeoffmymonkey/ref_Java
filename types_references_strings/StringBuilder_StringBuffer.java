@@ -1,4 +1,4 @@
-package _types_references_strings;
+package types_references_strings;
 
 import java.util.Formatter;
 
@@ -108,8 +108,8 @@ import types_references_annotations.my_annotations.Ntrstn;
 /*ДРУГИЕ МЕТОДЫ
  *  reverse(): Этот метод изменяет значение объекта StringBuffer, который вызывает метод.
  *  insert(int offset, int i) Этот метод вставляет строку s в позицию упомянутую по смещению.
- *  replace(int start, int end, String str) Этот метод заменяет символы в подстроке данного StringBuffer символами в указанной строке.
- * - остальные методы похожи на методы String */
+ *  replace(int start, int end, String str) Этот метод заменяет символы в подстроке данного
+ *  StringBuffer символами в указанной строке остальные методы похожи на методы String */
 
 
 @Ntrstn("Главное предназначение классов StringBuilder и StringBuffer является их возможность изменять " +

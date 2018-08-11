@@ -1,4 +1,4 @@
-package _types_references_strings;
+package types_references_strings;
 
 import types_references_annotations.my_annotations.Ntrstn;
 
@@ -359,6 +359,7 @@ public class Strings {
         stringA1 = null;
         stringBuilderA = null;
         stringA = stringA + stringA1 + stringBuilderA; // даст aaanullnull
+        System.out.println("!!!!" + String.join("", null, null));
 
 
         /*~~~~~~~~~~~~~~STRING POOL (СТРОКОВЫЙ ПУЛ)~~~~~~~~~~~~~~*/
