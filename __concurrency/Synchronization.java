@@ -85,31 +85,50 @@ package __concurrency;
  * */
 
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static __concurrency.ThreadsColor.ANSI_GREEN;
 import static __concurrency.ThreadsColor.ANSI_PURPLE;
+import static __concurrency.ThreadsColor.ANSI_RED;
 
 public class Synchronization {
+    static int v;
+
     public static void main(String[] args) {
-        Counter counter = new Counter();
-        SynchronizedCounter counter2 = new SynchronizedCounter();
+/*        Counter counter = new Counter();
 
-//        Thread t0 = new Thread(new MyThread(counter));
-//        Thread t1 = new Thread(new MyThread2(counter));
-//        t0.start();
-//        t1.start();
+        Thread t0 = new Thread(new MyThread(counter));
+        Thread t1 = new Thread(new MyThread2(counter));
+        t0.start();
+        t1.start();*/
 
-        Thread t2 = new Thread(new MyThread(counter2));
-        Thread t3 = new Thread(new MyThread2(counter2));
-        t2.start();
-        t3.start();
+        Runnable r0 = () -> {
+            for (int i = 0; i < 10_000_00; i++) {
+                Synchronization.v++;
+                System.out.println(Thread.currentThread().getName() + v);
+            }
+        };
+
+        Runnable r1 = () -> {
+            for (int i = 0; i < 10_000_00; i++) {
+                Synchronization.v--;
+                System.out.println(v);
+            }
+        };
+
+        Thread t0 = new Thread(r0);
+        Thread t1 = new Thread(r1);
+        t0.start();
+        t1.start();
+
     }
 }
 
 class Counter {
-    private int c = 0;
+    private volatile int c = 0;
 
     public void increment() {
         c++; // 3 действия: получить, увеличить, вписать новое значение
@@ -124,21 +143,6 @@ class Counter {
     }
 }
 
-class SynchronizedCounter extends Counter {
-    private int c = 0;
-
-    public synchronized void increment() {
-        c++;
-    }
-
-    public synchronized void decrement() {
-        c--;
-    }
-
-    public synchronized int value() {
-        return c;
-    }
-}
 
 class MyThread implements Runnable {
     Counter c;
