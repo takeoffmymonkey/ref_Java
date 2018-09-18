@@ -254,7 +254,8 @@ import static __concurrency.ThreadsColor.ANSI_GREEN;
 @Ntrstn("Метод run в Thread есть потому, что он и сам имплементирует Runnable")
 @Ntrstn("бессмысленность синхрониции конструкторов и локальных переменных")
 
-
+@Ntrstn("Существую 2 аспекта безопасной многопоточности - порядок исполнения кода (в т.ч. порядок " +
+        "инструкций) и видимость памяти")
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         Thread t = sleepyThread(2000);
