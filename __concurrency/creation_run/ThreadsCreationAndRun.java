@@ -1,10 +1,12 @@
-package __concurrency;
+package __concurrency.creation_run;
 
+import static __concurrency.ThreadsColor.ANSI_BLUE;
 import static __concurrency.ThreadsColor.ANSI_CYAN;
 import static __concurrency.ThreadsColor.ANSI_GREEN;
 import static __concurrency.ThreadsColor.ANSI_PURPLE;
+import static __concurrency.ThreadsColor.ANSI_RED;
 
-public class ThreadsCreation {
+public class ThreadsCreationAndRun {
 
     public static void main(String[] args) {
         System.out.println(ANSI_PURPLE + "Main thread");
@@ -33,5 +35,20 @@ public class ThreadsCreation {
                 System.out.println(ANSI_CYAN + "Anonymous runnable");
             }
         }).start();
+    }
+}
+
+
+class ThreadSon extends Thread {
+    @Override
+    public void run() {
+        System.out.println(ANSI_BLUE + "ThreadSon: " + currentThread().getName());
+    }
+}
+
+class MyRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println(ANSI_RED + "MyRunnable");
     }
 }
