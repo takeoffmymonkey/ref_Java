@@ -1,4 +1,4 @@
-package __concurrency;
+package __concurrency.synchronization;
 
 public class Deadlock {
     static class Friend {
