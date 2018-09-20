@@ -490,6 +490,9 @@ import static __concurrency.ThreadsColor.ANSI_GREEN;
 
 @Ntrstn("Проблемы отладки многопоточных приложений сложны из-за того, что ситуации, способные " +
         "вызвать проблемы, возникают не всегда, а, скорее даже, крайне редко")
+
+@Ntrstn("Модель памяти в Java позволяет публикацию еще не до конца созданного объекта, поэтому " +
+        "другая ветка уже может обратиться к недостроенному объекту")
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         Thread t = sleepyThread(2000);
