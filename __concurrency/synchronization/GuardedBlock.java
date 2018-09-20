@@ -23,12 +23,12 @@ public class GuardedBlock {
 
         Runnable r1 = () -> {
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            g.b = true;
             synchronized (g) {
+                g.b = true;
                 g.notifyAll();
             }
         };
