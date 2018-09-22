@@ -1,4 +1,4 @@
-package __concurrency.synchronization;
+package concurrency.synchronization;
 
 public class LiveLock {
     public static void main(String[] args) {

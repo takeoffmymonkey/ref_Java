@@ -1,4 +1,4 @@
-package __concurrency;
+package concurrency;
 
 public class ThreadsColor {
     public static final String ANSI_RESET = "\u001B[0m";

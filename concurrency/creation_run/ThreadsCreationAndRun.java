@@ -1,10 +1,10 @@
-package __concurrency.creation_run;
+package concurrency.creation_run;
 
-import static __concurrency.ThreadsColor.ANSI_BLUE;
-import static __concurrency.ThreadsColor.ANSI_CYAN;
-import static __concurrency.ThreadsColor.ANSI_GREEN;
-import static __concurrency.ThreadsColor.ANSI_PURPLE;
-import static __concurrency.ThreadsColor.ANSI_RED;
+import static concurrency.ThreadsColor.ANSI_BLUE;
+import static concurrency.ThreadsColor.ANSI_CYAN;
+import static concurrency.ThreadsColor.ANSI_GREEN;
+import static concurrency.ThreadsColor.ANSI_PURPLE;
+import static concurrency.ThreadsColor.ANSI_RED;
 
 public class ThreadsCreationAndRun {
 

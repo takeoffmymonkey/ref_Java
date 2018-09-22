@@ -1,4 +1,4 @@
-package __concurrency.synchronization;
+package concurrency.synchronization;
 
 public class DoubleCheckedLockingSingleton {
 
@@ -32,7 +32,7 @@ class SlowSynchroLoner {
 class FasterSynchroLoner {
     private volatile FasterSynchroLoner loner; // должен быть volatile - читай ниже!
 
-    public FasterSynchroLoner getLoner() { // правильно, но медленно при частом обращении
+    public FasterSynchroLoner getLoner() {
         if (loner == null) { // если уже инициализирована, то можно пропустить код дальше
             synchronized (this) { // захват блока
                 if (loner == null) { // повторная проверка, т.к. кто-то мог до блока уже инициализировать

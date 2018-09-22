@@ -1,10 +1,10 @@
-package __concurrency;
+package concurrency;
 
 import types_references_annotations.my_annotations.Ntrstn;
 
-import static __concurrency.ThreadsColor.ANSI_BLUE;
-import static __concurrency.ThreadsColor.ANSI_CYAN;
-import static __concurrency.ThreadsColor.ANSI_GREEN;
+import static concurrency.ThreadsColor.ANSI_BLUE;
+import static concurrency.ThreadsColor.ANSI_CYAN;
+import static concurrency.ThreadsColor.ANSI_GREEN;
 
 /* PROCESS, THREAD, CONCURRENCY (MULTI-THREADING)
  * - даже если 1 ядро у процессора, его время делится между процессами и ветками через фичу ОС
@@ -156,7 +156,8 @@ import static __concurrency.ThreadsColor.ANSI_GREEN;
  *              stop (при этом не volatile!) в данной ветке не меняется, и если его изменит другая
  *              ветка, то изменение не будет видно, возможно, никогда!
  *                  - решение - volatile
- *          - другая ветка можно получить ссылку на неготовый объект
+ *          - другая ветка может
+  *          получить ссылку на неготовый объект
  *              - модель памяти позволяет такое
  *              - решение - volatile
  *      - например:
@@ -313,14 +314,14 @@ import static __concurrency.ThreadsColor.ANSI_GREEN;
  *      освобождения следующего
  *      - выполнение прекращается
  *
- * - livelock (редко): постоянно выполняется бесполезная работа (реакция на действие другой ветки,
+ * - livelock (реже) постоянно выполняется бесполезная работа (реакция на действие другой ветки,
  * т.е. бесконечный луп), не способная снять блок
  *      - например: продавец продаст товар, только когда получит деньги, а покупатель даст деньги,
  *      только когда получит товар. Оба постоянно проверяют статус полученности соотв. товара или
  *      денег
  *      - выполнение НЕ прекращается (постоянный луп)
  *
- * - starvation (редко): ветке требуется доступ к ресурсу, но он недоступен из-за того, что очень
+ * - starvation (реже): ветке требуется доступ к ресурсу, но он недоступен из-за того, что очень
  * часто занят другой "жадной" веткой
  *      - например: у объекта есть синхронизированный метод, который долго исоплняется. Если ветка
  *      часто его вызывает, то другие ветки, которым тоже нужен частый синхронизированный доступ,
@@ -463,7 +464,7 @@ import static __concurrency.ThreadsColor.ANSI_GREEN;
  * - не являются общими заменителями для оберток, так как не определяют методов тех классов
  * - классы AtomicBoolean, AtomicInteger, AtomicLong, и AtomicReference: доступ и обновление
  * переменной соответствующего типа, а также другие удобства, например инкрементация
- * - классы Updater: можно использовать для получения compareAndSet операций для любобо выбранного
+ * - классы Updater: можно использовать для получения compareAndSet операций для любого выбранного
  * volatile поля любого класса
  * - классы AtomicIntegerArray, AtomicLongArray, and AtomicReferenceArray поддерживают volatile
  * доступ к элементам массива, что обычным способом не поддерживается */

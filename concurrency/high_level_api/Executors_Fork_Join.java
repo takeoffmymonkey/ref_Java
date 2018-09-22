@@ -1,4 +1,4 @@
-package __concurrency.high_level_api;
+package concurrency.high_level_api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +7,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
 public class Executors_Fork_Join {
 

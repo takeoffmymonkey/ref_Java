@@ -1,4 +1,4 @@
-package __concurrency.high_level_api;
+package concurrency.high_level_api;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
