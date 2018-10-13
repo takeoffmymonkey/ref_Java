@@ -17,6 +17,7 @@ package algorithms_datastructures.algorithms.sort;
  *      получаем отсортированный участок
  * - в коллекциях это дефолтный алгоритм сортировки
  *
+ * - not in place
  * */
 
 
