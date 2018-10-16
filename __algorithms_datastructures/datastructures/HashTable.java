@@ -1,4 +1,4 @@
-package algorithms_datastructures.datastructures;
+package __algorithms_datastructures.datastructures;
 
 /*
  * hash function  - мапит ключи рандомно в слоты (индексы массива) таблицы Т (массима), т.е.

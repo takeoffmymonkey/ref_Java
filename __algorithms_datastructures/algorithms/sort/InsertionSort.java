@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /*сложность: n^2
  * - проход с первого элемента по массиву. каждый новый элемент сравнивается

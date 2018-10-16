@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /*Сложность: линейная
  * - для каждого значения создается типа корзины и потом проход по всем элементам, раскладывая их в

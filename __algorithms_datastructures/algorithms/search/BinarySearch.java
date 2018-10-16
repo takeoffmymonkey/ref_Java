@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.search;
+package __algorithms_datastructures.algorithms.search;
 
 /* сложность: логарифмическая
  *

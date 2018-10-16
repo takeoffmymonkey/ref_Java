@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /* на основе рекурсии
  * - сложность:

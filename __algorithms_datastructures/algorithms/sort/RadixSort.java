@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /* Сложность линейная
  * - проход по всем цифрам у чисел: сначала все сортится по единицам в числе, потом по десяткам,

@@ -1,4 +1,4 @@
-package algorithms_datastructures;
+package __algorithms_datastructures;
 
 /* Обязательно требуется break condition, чтобы не было stackoverflow
  *      - но даже с ним при высоком значении может быть stackoverflow

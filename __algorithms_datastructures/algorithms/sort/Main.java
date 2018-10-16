@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 /* Stable sort vs unstable
  *
  * Stable - порядок равных элементов сохраняется при сравнении

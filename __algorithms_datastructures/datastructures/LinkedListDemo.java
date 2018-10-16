@@ -1,4 +1,4 @@
-package algorithms_datastructures.datastructures;
+package __algorithms_datastructures.datastructures;
 
 /* упорядоченные элементы (Nodes)
  * каждый пред элемент имеет

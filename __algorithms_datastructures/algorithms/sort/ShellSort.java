@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /* сложность: O(n^7/6) - O(n^3/2)
 * imporoved insertion sort

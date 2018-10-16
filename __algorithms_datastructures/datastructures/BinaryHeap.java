@@ -1,4 +1,4 @@
-package algorithms_datastructures.datastructures;
+package __algorithms_datastructures.datastructures;
 
 /* Не путать с памятью в жаве
  * - является binary tree, которое:

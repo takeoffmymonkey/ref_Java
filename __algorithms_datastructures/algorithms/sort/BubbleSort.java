@@ -1,4 +1,4 @@
-package algorithms_datastructures.algorithms.sort;
+package __algorithms_datastructures.algorithms.sort;
 
 /* Берется пара, сравнивается, меняется местами если надо, так самое большое значение поднимается в
  * конец
