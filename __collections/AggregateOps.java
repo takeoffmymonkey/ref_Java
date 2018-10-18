@@ -75,7 +75,8 @@ package __collections;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AggregateOps {
+public class
+AggregateOps {
 
     public static void main(String[] args) {
         List<Person> roster = new ArrayList<>();
