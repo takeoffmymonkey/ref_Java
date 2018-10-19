@@ -70,7 +70,7 @@ import types_references_annotations.my_annotations.Ntrstn;
  *                  операции, естественный порядок/компаратор
  *
  *      - <<Queue>>: 1-сторонняя очередь (обычно FIFO), коллекция элементов для обработки
- *          - PriorityQueue: [Priority (Binary) Heap], натуральный порядок/компаратор
+ *          - PriorityQueue*: [Priority (Binary) Heap], натуральный порядок/компаратор
  *          - ConcurrentLinkedQueue: [Linked List], потокобезопасен, эффективный неблокирующий алгоритм
  *          - <<Deque>>: двусторонняя очередь (FIFO, LIFO)
  *              - ArrayDeque*: [Array], быстрый
@@ -485,7 +485,7 @@ ConcurrentSkipListMap | O(log n) |   O(log n)  | O(1)     | Skip List */
  *                  - операции с возрастающим могут быть быстрее
  *              - дополнительные методы:
  *                  - возрват элементов при помощи сравнения: lower, floor, ceiling, higher
- *                  - удаление первого/последнего элемента: pollFirst, pollLas
+ *                  - удаление первого/последнего элемента: pollFirst, pollLast
  *
  *              - реализации (общего назначения):
  *                  - TreeSet
@@ -835,6 +835,8 @@ ConcurrentSkipListMap | O(log n) |   O(log n)  | O(1)     | Skip List */
  *      - swap*: поменять местами элементы в List
  *      - addAll: добавляет все элементы в коллекцию
  *          - намного быстрее collection.addAll для большинства имплементаций!
+ *          - можно перечислять через запятую
+ *
  *
  * - проверка содержания:
  *      - binarySearch*: поиск элемента
