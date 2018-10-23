@@ -1,4 +1,4 @@
-package __collections;
+package __aggregate_ops;
 
 /* Pipeline (труба)
  * - последовательность агрегатных операций
