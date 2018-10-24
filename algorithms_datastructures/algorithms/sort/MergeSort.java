@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* MergeSort
  * - ключевая идея: легко слиять 2 сортированных массива!

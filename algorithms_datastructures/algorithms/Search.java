@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms;
+package algorithms_datastructures.algorithms;
 
 /* Линейный поиск
  * - сложность: O(n)

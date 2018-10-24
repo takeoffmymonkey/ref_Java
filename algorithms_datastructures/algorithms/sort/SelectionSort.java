@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* SelectionSort
  * - ключевая идея: с каждой итерацией находить наименьший элемент и переносить его в конец

@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* QuickSort
  * - ключевая идея: элемент сортирован, если все элементы до него меньше, а после - больше

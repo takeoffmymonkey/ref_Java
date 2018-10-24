@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* ShellSort
  * - ключевая идея:

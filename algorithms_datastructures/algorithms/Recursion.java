@@ -1,4 +1,4 @@
-package __algorithms_datastructures;
+package algorithms_datastructures.algorithms;
 
 /* Рекурсия
  * - позволяет описать повторяющееся (или даже потенциально бесконечное) вычисление

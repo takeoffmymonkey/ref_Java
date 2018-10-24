@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* RadixSort
  * - ключевая идея: сортировать числа по разрядам за каждый проход, увеличивая сортируемый разряд с

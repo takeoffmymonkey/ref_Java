@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* BucketSort/BinSort
  * - ключевая идея: распределить все значения по 10 корзинам, соответсвующим определенным числовым
@@ -19,10 +19,10 @@ package __algorithms_datastructures.algorithms.sort;
  *
  * - смесь Counting и Radix
  *
- * - сложность:
- *      - лучшая: O()
- *      - средняя: O()
- *      - худшая: O() */
+ * - сложность: k - диапазон
+ *      - лучшая: O(n+k)
+ *      - средняя: O(n+k)
+ *      - худшая: O(n+k) */
 
 
 public class Bucket_BinSort {

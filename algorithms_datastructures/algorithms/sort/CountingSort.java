@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* CountingSort
  * - ключевая идея: для каждого значения элемента в массиве подсчитывается сколько раз оно встречается,

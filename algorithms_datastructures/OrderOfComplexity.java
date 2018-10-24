@@ -1,4 +1,4 @@
-package __algorithms_datastructures;
+package algorithms_datastructures;
 
 /* АНАЛИЗ АЛГОРИТМА
  * - space complexity: сколько места занимает структура данных

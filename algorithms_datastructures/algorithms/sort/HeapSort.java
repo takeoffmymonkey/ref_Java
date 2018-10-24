@@ -1,6 +1,6 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
-/* Sort
+/* HeapSort
  * - ключевая идея: в Binary Heap максимальный элемент всегда сверху, поэтому его можно каждый раз
  * переносить в сортированный массив, давая "всплыть" вверх следующему максимальному элементу
  *

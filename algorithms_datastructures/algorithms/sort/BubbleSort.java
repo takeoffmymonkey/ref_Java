@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* Bubble Sort
  * - ключевая идея: если сравнивать элемент с соседним, и так до конца массива, то наибольший элемент

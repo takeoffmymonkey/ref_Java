@@ -1,4 +1,4 @@
-package __algorithms_datastructures.algorithms.sort;
+package algorithms_datastructures.algorithms.sort;
 
 /* InsertionSort
  * - ключевая идея: сравнивать новый элемент со всей сортированной группой и помещать его в
